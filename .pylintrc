@@ -1,0 +1,5 @@
+[MASTER]
+max-line-length=120
+disable=broad-except
+ignore-patterns=.*_test.py
+generated-members=arcpy.da.SearchCursor,arcpy.da.UpdateCursor,arcpy.da.InsertCursor,arcpy.da.Describe,arcpy.env.scratchFolder,arcpy.env.scratchGDB

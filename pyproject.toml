@@ -1,0 +1,11 @@
+[tool.black]
+line-length = 120
+
+[tool.isort]
+line_length = 120
+multi_line_output = 5
+
+[tool.pytest.ini_options]
+norecursedirs = [".env", "data", "maps", ".vscode"]
+addopts = "--cov-branch --cov=row --cov-report term --cov-report xml:cov.xml --instafail --isort"
+minversion = "7.0"
