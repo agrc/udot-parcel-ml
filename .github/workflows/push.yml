@@ -45,11 +45,12 @@ jobs:
   release:
     name: Create release
     runs-on: ubuntu-latest
+    needs: [test-unit]
 
     steps:
       - uses: agrc/release-composite-action@v1
         with:
-          create-major-minor-tags: false
+          release-type: python
           prerelease: ${{ github.ref_name == 'dev' }}
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           github-app-id: ${{ secrets.UGRC_RELEASE_BOT_APP_ID }}
