@@ -1,0 +1,6 @@
+[project]
+id = "utdot-parcel-ml"
+name = "utdot-parcel-ml"
+version = "1.0.0"
+authors = ["sgourley@utah.gov", "eneemann@utah.gov"]
+license = "MIT"
