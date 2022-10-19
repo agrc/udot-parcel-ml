@@ -9,7 +9,7 @@ from pathlib import Path
 
 import row
 
-root = Path()
+root = Path(__file__).parent
 
 
 def test_convert_pdf_to_pil_single_page_pdf():
