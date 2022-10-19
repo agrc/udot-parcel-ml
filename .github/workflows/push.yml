@@ -30,6 +30,9 @@ jobs:
         with:
           python-version: 3.9
 
+      - name: 🖇️ Install dependencies
+        run: apt-get update && apt-get install libpoppler-dev
+
       - name: 📥 Download dependencies
         run: pip install -r requirements.tests.txt
 
