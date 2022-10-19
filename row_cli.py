@@ -26,6 +26,8 @@ Examples:
     row
 """
 
+from pathlib import Path
+
 from docopt import docopt
 
 import row
@@ -34,12 +36,43 @@ import row
 def main():
     """doc string"""
     args = docopt(__doc__, version="1.0")  # type: ignore
-    print(args)
+
+    if args["test"]:
+        print("great job dude")
+        return
+
+    if args["storage"] and args["download"]:
+        return
+        # row.download(args["--from-bucket"], args["--task-index"], args["--testing"])
+
+    if args["images"] and args["process"]:
+        return
+
+    if args["image"]:
+        if args["convert"]:
+            pdf = Path(args["<file_name>"])
+            if not pdf.exists():
+                print("file does not exist")
+                return
+
+            images, count, messages = row.convert_pdf_to_pil(pdf.read_bytes())
+            print(f"{pdf.name} contained {count} pages and converted with message {messages}")
+
+            if args["--output-directory"]:
+                print(f'saving {count} images to {args["--output-directory"]}')
+
+                directory = Path(args["--output-directory"])
+                if not directory.exists():
+                    print("directory does not exist")
+                    return
+
+                for index, image in enumerate(images):
+                    image.save(directory / f"{pdf.stem}_{index+1}.jpg")
+
+            return
+        if args["rotate"]:
+            return
 
 
-def test():
-    """doc string"""
-    greeting = row.function()
-    print(greeting)
-
-    return greeting
+if __name__ == "__main__":
+    main()

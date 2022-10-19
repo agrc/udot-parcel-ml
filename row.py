@@ -38,6 +38,4 @@ def convert_pdf_to_pil(pdf_as_bytes):
 
     count = len(images)
 
-    print(f"number of images: {count}")
-
     return (images, count, messages)
