@@ -22,8 +22,8 @@ Options:
     --task-index=index              The index of the task running
     --output-directory=directory    The location to output the stuff
 Examples:
-    row storage download --from-bucket=bucket-name --task-index=0
-    row
+    row_cli.py storage download --from-bucket=bucket-name --task-index=0
+    row_cli.py image convert ./test/data/multiple_page.pdf --output-directory=./test
 """
 
 from pathlib import Path
