@@ -22,7 +22,7 @@ jobs:
           python-version: 3.9
 
       - name: 🖇️ Install dependencies
-        run: sudo apt-get update && sudo apt-get install libpoppler-utils -y
+        run: sudo apt-get update && sudo apt-get install poppler-utils -y
 
       - name: 📥 Download dependencies
         run: pip install -r requirements.tests.txt
