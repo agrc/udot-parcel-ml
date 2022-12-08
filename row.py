@@ -4,10 +4,16 @@
 UDOT Right of Way (ROW) Parcel Number Extraction
 Right of way module containing methods
 """
+import logging
 from pathlib import Path
+
+import google.cloud.logging
 import google.cloud.storage
 from pdf2image import convert_from_bytes
 from pdf2image.exceptions import PDFInfoNotInstalledError, PDFPageCountError, PDFSyntaxError
+
+CLIENT = google.cloud.logging.Client()
+CLIENT.setup_logging()
 
 
 def main():
@@ -41,11 +47,17 @@ def get_job_files(bucket, page_index, job_size=10, testing=False):
 
         return [str(item) for i, item in enumerate(folder.iterdir()) if i < job_size]
 
+    logging.debug("creating storage client")
+
     storage_client = google.cloud.storage.Client()
     iterator = storage_client.list_blobs(bucket, page_size=job_size, max_results=None, versions=False)
 
     for page in iterator.pages:
+        logging.debug("page %i", iterator.page_number)
+
         if iterator.page_number < page_index:
+            logging.debug("skipping page %i", iterator.page_number)
+
             continue
 
         return [blob.name for blob in page]
