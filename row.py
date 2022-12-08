@@ -5,6 +5,7 @@ UDOT Right of Way (ROW) Parcel Number Extraction
 Right of way module containing methods
 """
 import logging
+from os import environ
 from pathlib import Path
 
 import google.cloud.logging
@@ -12,8 +13,9 @@ import google.cloud.storage
 from pdf2image import convert_from_bytes
 from pdf2image.exceptions import PDFInfoNotInstalledError, PDFPageCountError, PDFSyntaxError
 
-CLIENT = google.cloud.logging.Client()
-CLIENT.setup_logging()
+if "PY_ENV" in environ and environ["PY_ENV"] == "production":
+    client = google.cloud.logging.Client()
+    client.setup_logging()
 
 
 def main():
