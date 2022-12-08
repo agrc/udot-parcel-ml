@@ -16,7 +16,7 @@ def test_convert_pdf_to_pil_single_page_pdf():
     print(root)
     print(root.parent)
 
-    pdf = root / "test" / "data" / "single_page.pdf"
+    pdf = root / "test" / "data" / "single_page.PDF"
 
     images, count, _ = row.convert_pdf_to_pil(pdf.read_bytes())
 
