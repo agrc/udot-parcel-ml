@@ -11,6 +11,9 @@ import row
 
 root = Path(__file__)
 
+print(root)
+print(root.parent)
+
 
 def test_convert_pdf_to_pil_single_page_pdf():
 
