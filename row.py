@@ -4,6 +4,8 @@
 UDOT Right of Way (ROW) Parcel Number Extraction
 Right of way module containing methods
 """
+from pathlib import Path
+import google.cloud.storage
 from pdf2image import convert_from_bytes
 from pdf2image.exceptions import PDFInfoNotInstalledError, PDFPageCountError, PDFSyntaxError
 
@@ -17,6 +19,38 @@ def function():
     """doc string"""
 
     return "hi"
+
+
+def get_job_files(bucket, page_index, job_size=10, testing=False):
+    """gets the blob names from the bucket based on the page index and job size
+
+    bucket: the bucket to get the files from. Use a folder path for testing
+    page_index: the index of the page to get the files from
+    job_size: the number of files to get for the job
+    testing: trick the tool to not use google data and from and to use local file paths"""
+
+    page_index = int(page_index)
+    job_size = int(job_size)
+    testing = bool(testing)
+
+    if testing is True:
+        folder = Path(bucket)
+
+        if not folder.exists():
+            raise Exception("folder does not exist")
+
+        return [str(item) for i, item in enumerate(folder.iterdir()) if i < job_size]
+
+    storage_client = google.cloud.storage.Client()
+    iterator = storage_client.list_blobs(bucket, page_size=job_size, max_results=None, versions=False)
+
+    for page in iterator.pages:
+        if iterator.page_number < page_index:
+            continue
+
+        return [blob.name for blob in page]
+
+    return []
 
 
 def convert_pdf_to_pil(pdf_as_bytes):
