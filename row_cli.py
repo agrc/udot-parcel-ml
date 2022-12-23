@@ -33,6 +33,11 @@ from docopt import docopt
 
 import row
 
+try:
+    from . import config
+except ImportError:
+    import config
+
 
 def main():
     """doc string"""
