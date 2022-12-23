@@ -30,7 +30,7 @@ python row_cli.py storage get_job_files --from-bucket=ut-udot-row-county-parcels
 Detect circles in an image
 
 ```py
-python row_cli.py circle detect "path_to_image.jpg" --output-directory="outpu_directory_path"
+python row_cli.py circle detect "path_to_image.jpg" --output-directory="output_directory_path"
 ```
 
 OCR all image in a directory
