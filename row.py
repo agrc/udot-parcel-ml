@@ -101,6 +101,35 @@ def convert_pdf_to_pil(pdf_as_bytes):
     count = len(images)
 
     return (images, count, messages)
+
+
+def process():
+    """reads in image and checks dimensions"""
+
+    return "hi"
+
+
+def export_circles_from_image(circles, out_dir, file_path, im, hgt, wdth, ins):
+    """export detected circles from an image as jpegs to the out_dir
+
+    circles: list of circles returned from cv2.HoughCircles algorithm
+    out_dir: path object of output directory for cropped images of detected circles
+    file_path: path object of image file
+    im: cv2 image object (numpy.ndarray)
+    hgt: height of original image
+    wdth: width of original image
+    ins: inset distance (pixels) to aid image cropping
+
+    returns: a list of images and the count of images
+    """
+    print(f"{len(circles[0])} circles found in {file_path}")
+
+    #: Convert the circle parameters a, b and r to integers.
+    for cir in circles:
+        print(cir)
+    circles = np.uint16(np.around(circles))
+
+    num = 0
     for i in circles[0, :]:
         #: prepare a black canvas on which to draw circles
         canvas = np.zeros((hgt, wdth))
