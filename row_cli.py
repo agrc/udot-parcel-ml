@@ -76,6 +76,22 @@ def main():
         if args["rotate"]:
             return
 
+    if args["circle"] and args["detect"]:
+        print("detecting circles ...")
+        row.circle_detect(Path(args["<file_name>"]), Path(args["--output-directory"]))
+
+        return
+
+    if args["ocr"] and args["detect"]:
+        print("OCRing images ...")
+
+        ocr_directory = Path(args["--ocr-directory"])
+        out_csv = ocr_directory / "detected_parcels.csv"
+
+        ocr_df = row.ocr_images(ocr_directory, config.OCR_CONFIG)
+        ocr_df.to_csv(out_csv)
+        return
+
 
 if __name__ == "__main__":
     main()
