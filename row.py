@@ -5,11 +5,16 @@ UDOT Right of Way (ROW) Parcel Number Extraction
 Right of way module containing methods
 """
 import logging
+import math
 from os import environ
 from pathlib import Path
 
+import cv2
 import google.cloud.logging
 import google.cloud.storage
+import numpy as np
+import pandas as pd
+import pytesseract
 from pdf2image import convert_from_bytes
 from pdf2image.exceptions import PDFInfoNotInstalledError, PDFPageCountError, PDFSyntaxError
 
