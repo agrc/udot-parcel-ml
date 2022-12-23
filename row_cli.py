@@ -9,10 +9,10 @@ Usage:
     row_cli.py image convert <file_name> (--output-directory=directory)
     row_cli.py image rotate <file_name>
     row_cli.py circle prepare <file_name>
-    row_cli.py circle detect <prepared_file_name>
+    row_cli.py circle detect <file_name> (--output-directory=directory)
     row_cli.py circle crop <file_name>
     row_cli.py ocr prepare <file_name>
-    row_cli.py ocr detect <image>
+    row_cli.py ocr detect (--ocr-directory=directory)
     row_cli.py results write
 
 Options:
