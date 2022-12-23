@@ -23,6 +23,10 @@ try:
 except ImportError:
     import config
 
+#: Point to the tessdata directory that contains .traineddata files and executable file
+environ["TESSDATA_PREFIX"] = config.TESSDATA
+pytesseract.pytesseract.tesseract_cmd = config.TESSERACT_EXE
+
 if "PY_ENV" in environ and environ["PY_ENV"] == "production":
     client = google.cloud.logging.Client()
     client.setup_logging()
