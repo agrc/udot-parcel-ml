@@ -260,8 +260,12 @@ def ocr_images(directory, ocr_options):
         byte_img = ocr_full_path.read_bytes()
         ocr_img = cv2.imdecode(np.frombuffer(byte_img, dtype=np.uint8), 1)  # 1 means flags=cv2.IMREAD_COLOR
 
-        #: convert image to grayscale
+        #: process images to improve OCR results
         ocr_gray = cv2.cvtColor(ocr_img, cv2.COLOR_BGR2GRAY)
+        se = cv2.getStructuringElement(cv2.MORPH_RECT, (8, 8))
+        bg = cv2.morphologyEx(ocr_gray, cv2.MORPH_DILATE, se)
+        out_gray = cv2.divide(ocr_gray, bg, scale=255)
+        # out_binary = cv2.threshold(out_gray, 0, 255, cv2.THRESH_OTSU)[1]
 
         ocr_text = pytesseract.image_to_string(ocr_gray, config=ocr_options)
         ocr_text = ocr_text.replace("\n", "").replace("\t", "").replace(" ", "")
