@@ -267,7 +267,12 @@ def ocr_images(directory, ocr_options):
         out_gray = cv2.divide(ocr_gray, bg, scale=255)
         # out_binary = cv2.threshold(out_gray, 0, 255, cv2.THRESH_OTSU)[1]
 
-        ocr_text = pytesseract.image_to_string(ocr_gray, config=ocr_options)
+        #: export final OCR'd image (for reviewing results)
+        # original_basename = ocr_file.stem
+        # out_file = directory / f"{original_basename}_temp.jpg"
+        # cv2.imwrite(str(out_file), out_gray)
+
+        ocr_text = pytesseract.image_to_string(out_gray, config=ocr_options)
         ocr_text = ocr_text.replace("\n", "").replace("\t", "").replace(" ", "")
         df_new = pd.DataFrame(
             {
