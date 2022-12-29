@@ -151,6 +151,12 @@ def export_circles_from_image(circles, out_dir, file_path, im, hgt, wdth, ins):
         y = centerY - radius - 20
         h = 2 * radius + 40
         w = 2 * radius + 40
+        #: prevent cropping failure when circle center is outside of the image
+        x = max(x, 0)
+        x = min(wdth, x)
+        y = max(y, 0)
+        y = min(hgt, y)
+
         cropped_img = im_copy[y : y + h, x : x + w]
 
         original_basename = file_path.stem
