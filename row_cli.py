@@ -9,7 +9,7 @@ Usage:
     row_cli.py image convert <file_name> (--output-directory=directory)
     row_cli.py image rotate <file_name>
     row_cli.py circle prepare <file_name>
-    row_cli.py circle detect <file_name> (--output-directory=directory)
+    row_cli.py circle detect <file_name> [--output-directory=directory]
     row_cli.py circle crop <file_name>
     row_cli.py ocr prepare <file_name>
     row_cli.py ocr detect (--ocr-directory=directory)
@@ -71,13 +71,17 @@ def main():
         if args["rotate"]:
             return
 
-        if args["circle"] and args["detect"]:
-            print("detecting circles ...")
-            row.circle_detect(Path(args["<file_name>"]), Path(args["--output-directory"]))
+    if args["detect"]:
+        if args["circle"]:
+            output_directory = None
+            if args["--output-directory"]:
+                output_directory = Path(args["--output-directory"])
+
+            row.circle_detect(Path(args["<file_name>"]), output_directory)
 
             return
 
-        if args["ocr"] and args["detect"]:
+        if args["ocr"]:
             print("OCRing images ...")
 
             ocr_directory = Path(args["--ocr-directory"])
