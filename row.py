@@ -25,6 +25,7 @@ if "PY_ENV" in environ and environ["PY_ENV"] == "production":
 ACCEPTABLE_CHARACTERS = "0123456789ABCDEFGHJKLMNPQRSTUVWXYZ:-"
 OCR_CONFIG = f"--oem 0 --psm 6 -c tessedit_char_whitelist={ACCEPTABLE_CHARACTERS}"
 environ["TESSDATA_PREFIX"] = str(Path(__file__).parent / "training-data")
+pytesseract.pytesseract.tesseract_cmd = "tesseract"
 
 
 def main():
