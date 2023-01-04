@@ -12,7 +12,6 @@ To work with the CLI,
 1. Execute the CLI to see the commands and options available
    - `python row_cli.py`
 
-
 ### Examples
 
 Get files while testing
@@ -25,4 +24,16 @@ Get files from bucket
 
 ```py
 python row_cli.py storage get_job_files --from-bucket=ut-udot-row-county-parcels --task-index=0
+```
+
+Detect circles in an image
+
+```py
+python row_cli.py circle detect "path_to_image.jpg" --output-directory="output_directory_path"
+```
+
+OCR all image in a directory
+
+```py
+python row_cli.py ocr detect --ocr-directory="directory_path"
 ```
