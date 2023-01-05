@@ -300,6 +300,20 @@ def export_circles_from_image(circles, out_dir, file_path, cv2_image, height, wi
         crop_height = 2 * radius + 40
         crop_width = 2 * radius + 40
 
+        #: outside of original left edge of image
+        if crop_x < 0:
+            crop_x = 0
+        #: outside of original right edge of image
+        if crop_x > width:
+            crop_x = width
+
+        #: outside of original top edge of image
+        if crop_y < 0:
+            crop_y = 0
+        #: outside of original bottom edge of image
+        if crop_y > height:
+            crop_y = height
+
         masked_image = image_copy[crop_y : crop_y + crop_height, crop_x : crop_x + crop_width]
 
         if out_dir:
