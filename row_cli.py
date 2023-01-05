@@ -8,7 +8,7 @@ Usage:
     row_cli.py images process <file_name>
     row_cli.py image convert <file_name> (--output-directory=directory)
     row_cli.py detect circles <file_name> [--output-directory=directory]
-    row_cli.py detect characters (--ocr-directory=directory)
+    row_cli.py detect characters <file_name> [--ocr-directory=directory]
     row_cli.py results write
 
 Options:
@@ -25,6 +25,7 @@ Examples:
 
 from pathlib import Path
 
+import numpy as np
 from docopt import docopt
 
 import row
@@ -76,15 +77,22 @@ def main():
             return row.get_circles(Path(args["<file_name>"]), output_directory)
 
         if args["characters"]:
-            print("OCRing images ...")
+            item_path = Path(args["<file_name>"])
 
-            ocr_directory = Path(args["--ocr-directory"])
-            out_csv = ocr_directory / "detected_parcels.csv"
+            if not item_path.exists():
+                print("file does not exist")
 
-            ocr_df = row.ocr_images(ocr_directory)
-            ocr_df.to_csv(out_csv)
+                return
 
-            return
+            if not item_path.name.casefold().endswith(("jpg", "jpeg", "tif", "tiff", "png")):
+                print("item is incorrect file type")
+
+                return
+
+            image_array = np.frombuffer(item_path.read_bytes(), dtype=np.uint8)
+            print("detecting circles in %s", item_path)
+
+            return row.get_characters(image_array)
 
 
 if __name__ == "__main__":

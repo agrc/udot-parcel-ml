@@ -6,6 +6,7 @@ Right of way module containing methods
 """
 import logging
 import math
+import re
 from os import environ
 from pathlib import Path
 from sys import stdout
@@ -32,6 +33,7 @@ if "PY_ENV" in environ and environ["PY_ENV"] == "production":
 
 ACCEPTABLE_CHARACTERS = "0123456789ABCDEFGHJKLMNPQRSTUVWXYZ:-"
 OCR_CONFIG = f"--oem 0 --psm 6 -c tessedit_char_whitelist={ACCEPTABLE_CHARACTERS}"
+EXPRESSION = re.compile(r"\s", flags=re.MULTILINE)
 environ["TESSDATA_PREFIX"] = str(Path(__file__).parent / "training-data")
 pytesseract.pytesseract.tesseract_cmd = "tesseract"
 
@@ -209,49 +211,45 @@ def get_circles(item_path, output_path):
     )
 
 
-def ocr_images(directory):
-    """OCRs all image files (.jpg) in directory
+def get_characters(image):
+    """detect characters in an image
 
     Args:
+        image (np.array): The image to detect characters in
 
-         directory (Path): The directory where the images are located
-
-     Returns:
-         pd.dataframe: A dataframe with OCR results
+    Returns:
+        list: A list of detected characters
     """
-    #: create initial dataframe to work with
-    working_df = pd.DataFrame({"Number": [], "Filename": [], "Parcel": []})
-    working_df = working_df.astype({"Number": int, "Filename": object, "Parcel": object})
+    image_channels = cv2.imdecode(np.frombuffer(image, dtype=np.uint8), 1)  # 1 means flags=cv2.IMREAD_COLOR
 
-    #: read all files in the directory
-    ocr_num = 0
-    file_list = list(directory.glob("*.jpg"))
-    for ocr_file in file_list:
-        ocr_count = ocr_file.stem.rsplit("_", 1)[1]
+    #: convert image to grayscale
+    grayscale_image = cv2.cvtColor(image_channels, cv2.COLOR_BGR2GRAY)
 
-        logging.debug("working on: %s", ocr_file.stem)
-        ocr_full_path = directory / ocr_file
-        #: read in image from bytes
-        byte_img = ocr_full_path.read_bytes()
-        ocr_img = cv2.imdecode(np.frombuffer(byte_img, dtype=np.uint8), 1)  # 1 means flags=cv2.IMREAD_COLOR
+    structure = cv2.getStructuringElement(cv2.MORPH_RECT, (8, 8))
+    morph = cv2.morphologyEx(grayscale_image, cv2.MORPH_DILATE, structure)
 
-        #: convert image to grayscale
-        ocr_gray = cv2.cvtColor(ocr_img, cv2.COLOR_BGR2GRAY)
+    final_image = cv2.divide(grayscale_image, morph, scale=255)
 
-        ocr_text = pytesseract.image_to_string(ocr_gray, config=OCR_CONFIG)
-        ocr_text = ocr_text.replace("\n", "").replace("\t", "").replace(" ", "")
-        df_new = pd.DataFrame(
-            {
-                "Number": [int(ocr_count)],
-                "Filename": [ocr_file],
-                "Parcel": [ocr_text],
-            }
-        )
+    #: perform text detection
+    result = pytesseract.image_to_string(final_image, config=OCR_CONFIG)
 
-        working_df = pd.concat([working_df, df_new], ignore_index=True, sort=False)
-        ocr_num += 1
+    result = clean_ocr_text(result)
 
-    return working_df
+    logging.info('detected characters: "%s"', result)
+
+    return result
+
+
+def clean_ocr_text(text):
+    """clean up OCR text
+
+    Args:
+        text (str): The text to clean up
+
+    Returns:
+        str: The cleaned up text
+    """
+    return re.sub(pattern=EXPRESSION, repl="", string=text, count=0)
 
 
 def export_circles_from_image(circles, out_dir, file_path, cv2_image, height, width, inset_distance):
