@@ -102,7 +102,7 @@ def convert_pdf_to_pil(pdf_as_bytes):
     try:
         images = convert_from_bytes(pdf_as_bytes, dpi)
     except (TypeError, PDFInfoNotInstalledError, PDFPageCountError, PDFSyntaxError) as error:
-        logging.debug(error)
+        logging.error(error)
         messages = error
 
     count = len(images)
@@ -124,7 +124,7 @@ def get_circles(item_path, output_path):
 
         return []
 
-    logging.debug("detecting circles in %s", item_path)
+    logging.info("detecting circles in %s", item_path)
     #: read in image from bytes
     byte_img = item_path.read_bytes()
     img = cv2.imdecode(np.frombuffer(byte_img, dtype=np.uint8), 1)  # 1 means flags=cv2.IMREAD_COLOR
@@ -200,6 +200,8 @@ def get_circles(item_path, output_path):
 
         count_down -= 1
 
+    logging.info("Circles: %4i", circle_count)
+
     return export_circles_from_image(
         detected_circles,
         output_path,
@@ -265,7 +267,7 @@ def export_circles_from_image(circles, out_dir, file_path, cv2_image, height, wi
             inset_distance (number): The inset distance in pixels to aid image cropping
 
     Returns:
-        list: a list of images and the count of images
+        list: a list of images
     """
     #: round the values to the nearest integer
     circles = np.uint16(np.around(circles))
