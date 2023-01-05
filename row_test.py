@@ -100,3 +100,13 @@ def test_get_job_files_returns_the_page_size_for_the_second_page(storage_client)
     assert len(jobs) == 10
     assert jobs[0] == "page2"
     page_one_blob.assert_not_called()
+
+
+def test_get_circles_finds_circles():
+    image = root / "five_circles_with_text.png"
+
+    circles = row.get_circles(image, None)
+
+    assert circles is not None
+
+    assert len(circles) == 5
