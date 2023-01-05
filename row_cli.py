@@ -7,12 +7,8 @@ Usage:
     row_cli.py storage get_job_files (--from-bucket=bucket --task-index=index) [--job-size=size --testing=test]
     row_cli.py images process <file_name>
     row_cli.py image convert <file_name> (--output-directory=directory)
-    row_cli.py image rotate <file_name>
-    row_cli.py circle prepare <file_name>
-    row_cli.py circle detect <file_name> [--output-directory=directory]
-    row_cli.py circle crop <file_name>
-    row_cli.py ocr prepare <file_name>
-    row_cli.py ocr detect (--ocr-directory=directory)
+    row_cli.py detect circles <file_name> [--output-directory=directory]
+    row_cli.py detect characters (--ocr-directory=directory)
     row_cli.py results write
 
 Options:
@@ -72,7 +68,7 @@ def main():
             return
 
     if args["detect"]:
-        if args["circle"]:
+        if args["circles"]:
             output_directory = None
             if args["--output-directory"]:
                 output_directory = Path(args["--output-directory"])
@@ -81,7 +77,7 @@ def main():
 
             return
 
-        if args["ocr"]:
+        if args["characters"]:
             print("OCRing images ...")
 
             ocr_directory = Path(args["--ocr-directory"])
