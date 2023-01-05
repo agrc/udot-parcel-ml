@@ -8,6 +8,8 @@ A module that contains tests for the project module.
 from pathlib import Path
 from unittest.mock import Mock, PropertyMock, patch
 
+import numpy as np
+
 import row
 
 root = Path(__file__).parent / "test-data"
@@ -131,3 +133,28 @@ def test_get_circles_saves_images_to_output():
     assert output.exists()
 
     assert len(list(output.glob("*.jpg"))) == 5
+
+
+def test_clean_ocr_text_removes_newlines():
+    text = """this is a
+
+test"""
+
+    assert row.clean_ocr_text(text) == "thisisatest"
+
+    text = """this is a               test"""
+    assert row.clean_ocr_text(text) == "thisisatest"
+
+
+def test_get_characters_finds_characters():
+    for item_path in root.glob("crop_*"):
+        file_name = item_path.name
+
+        image_array = np.frombuffer(item_path.read_bytes(), dtype=np.uint8)
+
+        characters = row.get_characters(image_array)
+
+        file_name = file_name.replace("crop_", "").replace("_", ":").replace(".jpg", "")
+
+        assert characters is not None
+        assert characters == file_name
