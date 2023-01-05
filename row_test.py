@@ -10,11 +10,11 @@ from unittest.mock import Mock, PropertyMock, patch
 
 import row
 
-root = Path(__file__).parent
+root = Path(__file__).parent / "test-data"
 
 
 def test_convert_pdf_to_pil_single_page_pdf():
-    pdf = root / "test" / "data" / "single_page.PDF"
+    pdf = root / "single_page.PDF"
 
     images, count, _ = row.convert_pdf_to_pil(pdf.read_bytes())
 
@@ -23,7 +23,7 @@ def test_convert_pdf_to_pil_single_page_pdf():
 
 
 def test_convert_pdf_to_pil_multi_page_pdf():
-    pdf = root / "test" / "data" / "multiple_page.pdf"
+    pdf = root / "multiple_page.pdf"
 
     images, count, _ = row.convert_pdf_to_pil(pdf.read_bytes())
 
@@ -32,7 +32,7 @@ def test_convert_pdf_to_pil_multi_page_pdf():
 
 
 def test_convert_pdf_to_pil_handles_invalid_pdf():
-    pdf = root / "test" / "data" / "invalid.pdf"
+    pdf = root / "invalid.pdf"
 
     images, count, message = row.convert_pdf_to_pil(pdf.read_bytes())
 
