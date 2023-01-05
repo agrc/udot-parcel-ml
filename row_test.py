@@ -110,3 +110,24 @@ def test_get_circles_finds_circles():
     assert circles is not None
 
     assert len(circles) == 5
+
+
+def test_get_circles_ignores_non_image_files():
+    image = root / "five_circles_with_text.txt"
+
+    circles = row.get_circles(image, None)
+
+    assert circles is not None
+
+    assert len(circles) == 0
+
+
+def test_get_circles_saves_images_to_output():
+    image = root / "five_circles_with_text.png"
+    output = Path(__file__).parent / "data" / "nested"
+
+    row.get_circles(image, output)
+
+    assert output.exists()
+
+    assert len(list(output.glob("*.jpg"))) == 5
