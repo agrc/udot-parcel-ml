@@ -15,7 +15,6 @@ import cv2
 import google.cloud.logging
 import google.cloud.storage
 import numpy as np
-import pandas as pd
 import pytesseract
 from pdf2image import convert_from_bytes
 from pdf2image.exceptions import PDFInfoNotInstalledError, PDFPageCountError, PDFSyntaxError
@@ -129,12 +128,6 @@ def get_circles(item_path, output_path):
     byte_img = item_path.read_bytes()
     img = cv2.imdecode(np.frombuffer(byte_img, dtype=np.uint8), 1)  # 1 means flags=cv2.IMREAD_COLOR
 
-    if output_path:
-        outfile = str(output_path / "test_1.jpg")  #: checking to make sure the image looks right
-
-        logging.debug(outfile)
-        cv2.imwrite(outfile, img)
-
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     gray_blur = cv2.blur(gray, (5, 5))
 
@@ -157,6 +150,7 @@ def get_circles(item_path, output_path):
     circle_count = 0
     detected_circles = None
     inset = 0
+
     while (circle_count > 100 or circle_count == 0) and count_down > 0:
         i += 1
         logging.debug("Run: %8d", i)
