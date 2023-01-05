@@ -38,16 +38,21 @@ pytesseract.pytesseract.tesseract_cmd = "tesseract"
 
 def main():
     """doc string"""
+
     return None
 
 
 def get_job_files(bucket, page_index, job_size=10, testing=False):
     """gets the blob names from the bucket based on the page index and job size
+    Args:
+        bucket (str): the bucket to get the files from. Use a folder path for testing
+        page_index (number): the index of the page to get the files from
+        job_size (number): the number of files to get for the job
+        testing (bool): trick the tool to not use google data and from and to use local file paths
 
-    bucket: the bucket to get the files from. Use a folder path for testing
-    page_index: the index of the page to get the files from
-    job_size: the number of files to get for the job
-    testing: trick the tool to not use google data and from and to use local file paths"""
+    Returns:
+        list(str): a list of blob names
+    """
 
     page_index = int(page_index)
     job_size = int(job_size)
@@ -82,9 +87,11 @@ def get_job_files(bucket, page_index, job_size=10, testing=False):
 def convert_pdf_to_pil(pdf_as_bytes):
     """convert pdf to jpg images
 
-    pdf_as_bytes: a pdf as bytes
+    Args:
+        pdf_as_bytes: a pdf as bytes
 
-    returns: a list of images and the count of images
+    Returns:
+        tuple(list, number): A tuple of a list of images and the count of images
     """
     dpi = 300
     images = []
@@ -101,11 +108,15 @@ def convert_pdf_to_pil(pdf_as_bytes):
     return (images, count, messages)
 
 
-def circle_detect(item_path, output_path):
+def get_circles(item_path, output_path):
     """detect circles in an image and export them to output_path
-    item_path: path object of image file
-    output_path: path object of output directory for cropped images of detected circles
-    returns: nothing; cropped images are exported to output_path
+
+    Args:
+        item_path (Path): The location of the image to detect circles in
+        output_path (Path): The output directory for cropped images of detected circles to be stored
+
+    Returns:
+        array: An array of binary images
     """
     if not item_path.name.casefold().endswith(("jpg", "jpeg", "tif", "tiff", "png")):
 
@@ -200,8 +211,13 @@ def circle_detect(item_path, output_path):
 
 def ocr_images(directory):
     """OCRs all image files (.jpg) in directory
-    directory: path object of directory in which to OCR all .jpg image files
-    returns: dataframe with OCR results
+
+    Args:
+
+         directory (Path): The directory where the images are located
+
+     Returns:
+         pd.dataframe: A dataframe with OCR results
     """
     #: create initial dataframe to work with
     working_df = pd.DataFrame({"Number": [], "Filename": [], "Parcel": []})
@@ -213,7 +229,7 @@ def ocr_images(directory):
     for ocr_file in file_list:
         ocr_count = ocr_file.stem.rsplit("_", 1)[1]
 
-        logging.debug(f"working on: {ocr_file.stem}")
+        logging.debug("working on: %s", ocr_file.stem)
         ocr_full_path = directory / ocr_file
         #: read in image from bytes
         byte_img = ocr_full_path.read_bytes()
@@ -240,14 +256,18 @@ def ocr_images(directory):
 
 def export_circles_from_image(circles, out_dir, file_path, cv2_image, height, width, inset_distance):
     """export detected circles from an image as jpegs to the out_dir
-    circles: list of circles returned from cv2.HoughCircles algorithm
-    out_dir: path object of output directory for cropped images of detected circles
-    file_path: path object of image file
-    cv2_image: cv2 image object (numpy.ndarray)
-    height: height of original image
-    width: width of original image
-    inset_distance: inset distance (pixels) to aid image cropping
-    returns: a list of images and the count of images
+
+        Args:
+            circles (array): Circle locations returned from cv2.HoughCircles algorithm
+            out_dir (Path): The output directory for cropped images of detected circles
+            file_path (Path): The location of the image file
+            cv2_image (numpy.ndarray): The image as a numpy array
+            height (number): The height of original image
+            width (number): The width of original image
+            inset_distance (number): The inset distance in pixels to aid image cropping
+
+    Returns:
+        list: a list of images and the count of images
     """
     #: round the values to the nearest integer
     circles = np.uint16(np.around(circles))
@@ -259,8 +279,10 @@ def export_circles_from_image(circles, out_dir, file_path, cv2_image, height, wi
         if not out_dir.exists():
             out_dir.mkdir(parents=True)
 
+    masked_images = []
+
     for i, data in enumerate(circles[0, :]):  # type: ignore
-        #: prepare a black canvas on which to draw circles
+        # #: prepare a black canvas on which to draw circles
         canvas = np.zeros((height, width))
         #: draw a white circle on the canvas where detected:
         center_x = data[0]
@@ -271,20 +293,22 @@ def export_circles_from_image(circles, out_dir, file_path, cv2_image, height, wi
         cv2.circle(canvas, (center_x, center_y), radius, color, thickness)
 
         #: create a copy of the input (3-band image) and mask input to white from the canvas:
-        im_copy = cv2_image.copy()
-        im_copy[canvas == 0] = (255, 255, 255)
+        image_copy = cv2_image.copy()
+        image_copy[canvas == 0] = (255, 255, 255)
 
         #: crop image to the roi:
-        x = center_x - radius - 20
-        y = center_y - radius - 20
-        h = 2 * radius + 40
-        w = 2 * radius + 40
+        crop_x = center_x - radius - 20
+        crop_y = center_y - radius - 20
+        crop_height = 2 * radius + 40
+        crop_width = 2 * radius + 40
 
-        cropped_img = im_copy[y : y + h, x : x + w]
+        masked_image = image_copy[crop_y : crop_y + crop_height, crop_x : crop_x + crop_width]
 
         if out_dir:
             original_basename = file_path.stem
             out_file = out_dir / f"{original_basename}_{i}.jpg"
-            cv2.imwrite(str(out_file), cropped_img)
+            cv2.imwrite(str(out_file), masked_image)
 
-        return cropped_img
+        masked_images.append(masked_image)
+
+    return masked_images
