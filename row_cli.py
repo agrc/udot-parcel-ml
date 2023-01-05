@@ -73,9 +73,7 @@ def main():
             if args["--output-directory"]:
                 output_directory = Path(args["--output-directory"])
 
-            row.circle_detect(Path(args["<file_name>"]), output_directory)
-
-            return
+            return row.get_circles(Path(args["<file_name>"]), output_directory)
 
         if args["characters"]:
             print("OCRing images ...")
