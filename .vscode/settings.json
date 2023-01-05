@@ -12,6 +12,7 @@
     "imwrite",
     "instafail",
     "isort",
+    "levelname",
     "ndarray",
     "opencv",
     "pylint",
