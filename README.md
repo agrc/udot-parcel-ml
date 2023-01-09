@@ -36,4 +36,5 @@ OCR all image in a directory
 
 ```py
 python row_cli.py detect characters --ocr-directory="directory_path"
+python row_cli.py detect characters ./test-data/crop_808_A.jpg
 ```
