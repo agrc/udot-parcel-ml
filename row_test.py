@@ -154,7 +154,7 @@ def test_get_characters_finds_characters():
 
         characters = row.get_characters(image_array)
 
-        file_name = file_name.replace("crop_", "").replace("_", ":").replace(".jpg", "")
+        expected_characters = file_name.replace("crop_", "").replace("_", ":").replace(".jpg", "")
 
         assert characters is not None
-        assert characters == file_name
+        assert characters == expected_characters
