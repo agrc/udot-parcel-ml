@@ -25,7 +25,6 @@ Examples:
 
 from pathlib import Path
 
-import numpy as np
 from docopt import docopt
 
 import row
@@ -89,10 +88,9 @@ def main():
 
                 return
 
-            image_array = np.frombuffer(item_path.read_bytes(), dtype=np.uint8)
             print("detecting circles in %s", item_path)
 
-            return row.get_characters(image_array)
+            return row.get_characters(item_path.read_bytes())
 
 
 if __name__ == "__main__":
