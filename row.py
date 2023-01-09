@@ -211,7 +211,7 @@ def get_characters(image):
     """detect characters in an image
 
     Args:
-        image (np.array): The image to detect characters in
+        image (bytes): The image to detect characters in
 
     Returns:
         list: A list of detected characters
