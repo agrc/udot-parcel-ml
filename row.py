@@ -34,6 +34,7 @@ if "PY_ENV" in environ and environ["PY_ENV"] == "production":
 ACCEPTABLE_CHARACTERS = "0123456789ABCDEFGHJKLMNPQRSTUVWXYZ:-"
 OCR_CONFIG = f"--oem 0 --psm 6 -c tessedit_char_whitelist={ACCEPTABLE_CHARACTERS}"
 EXPRESSION = re.compile(r"\s", flags=re.MULTILINE)
+URI_TEXTFILE = Path(__file__).parent / "bucket-info" / "udot_bucket_uris.txt"
 environ["TESSDATA_PREFIX"] = str(Path(__file__).parent / "training-data")
 pytesseract.pytesseract.tesseract_cmd = "tesseract"
 
@@ -84,6 +85,45 @@ def get_job_files(bucket, page_index, job_size=10, testing=False):
         return [blob.name for blob in page]
 
     return []
+
+
+def get_job_files_from_text_index(bucket_name, task_index, task_count, testing=False):
+    """gets the blob names from the bucket based on the page index and job size
+    Args:
+        bucket_name (str): the bucket to get the files from. Use a folder path for testing
+        task_index (number): the index of the current cloud run task
+        task_count (number): the total number of cloud run tasks
+        testing (bool): trick the tool to not use google data and from and to use local file paths
+
+    Returns:
+        list(str): a list of uris from the bucket based on index text file
+    """
+
+    uri_df = pd.read_csv(URI_TEXTFILE, sep="\n", skip_blank_lines=False)
+    total_files = len(uri_df.index)
+    job_size = math.ceil(total_files / task_count)
+
+    if testing is True:
+        folder = Path(bucket_name)
+
+        if not folder.exists():
+            raise Exception("folder does not exist")
+
+        return [str(item) for i, item in enumerate(folder.iterdir()) if i < job_size]
+
+    logging.debug("calculating files to process for task %i", task_index)
+
+    first_index = task_index * job_size
+    last_index = total_files - 1
+    if task_index != (task_count - 1):
+        last_index = task_index * job_size + job_size
+
+    files_to_process_df = uri_df.loc[first_index:last_index]  #: get files specific to current job
+    uri_list = files_to_process_df["URI"].to_list()
+
+    logging.debug("task number %i will work on file indices from %i to %i", task_index, first_index, last_index)
+
+    return uri_list
 
 
 def convert_pdf_to_pil(pdf_as_bytes):
