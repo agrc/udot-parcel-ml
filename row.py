@@ -88,7 +88,7 @@ def get_job_files(bucket, page_index, job_size=10, testing=False):
 
 
 def get_job_files_from_text_index(bucket_name, task_index, task_count, testing=False):
-    """gets the blob names from the bucket based on the page index and job size
+    """gets the blob names from the bucket based on the task index and total task count
     Args:
         bucket_name (str): the bucket to get the files from. Use a folder path for testing
         task_index (number): the index of the current cloud run task
@@ -99,7 +99,9 @@ def get_job_files_from_text_index(bucket_name, task_index, task_count, testing=F
         list(str): a list of uris from the bucket based on index text file
     """
 
+    #: Read index of URIs in the UDOT bucket (these are full URIs 'gs://bucket-name/filename.ext')
     uri_df = pd.read_csv(URI_TEXTFILE, sep="\n", skip_blank_lines=False)
+    #: Calculate total number of files to process and job_size based on the total task count
     total_files = len(uri_df.index)
     job_size = math.ceil(total_files / task_count)
 
@@ -512,6 +514,7 @@ def upload_csv(df, bucket_name, out_name):
     Returns:
         nothing
     """
+    logging.info("uploading %s to %s", out_name, bucket_name)
     storage_client = google.cloud.storage.Client()
     bucket = storage_client.bucket(bucket_name)
     new_blob = bucket.blob(out_name)
