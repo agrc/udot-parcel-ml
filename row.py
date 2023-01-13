@@ -158,7 +158,7 @@ def get_circles(item_path, output_path):
         output_path (Path): The output directory for cropped images of detected circles to be stored
 
     Returns:
-        array: An array of binary images
+        list: a list of images
     """
     if not item_path.name.casefold().endswith(("jpg", "jpeg", "tif", "tiff", "png")):
 
@@ -341,7 +341,7 @@ def get_circles_from_image_bytes(byte_img):
 
 
 def get_characters(image):
-    """detect characters in an image
+    """detect characters in an image (bytes)
 
     Args:
         image (bytes): The image to detect characters in
