@@ -248,6 +248,98 @@ def get_circles(item_path, output_path):
     )
 
 
+def get_circles_from_image_bytes(byte_img):
+    """detect circles in an image (bytes) and export them as a list of cropped images
+
+    Args:
+        byte_img (bytes): The image to detect circles in
+
+    Returns:
+        list: a list of images
+    """
+
+    #: read in image from bytes
+    img = cv2.imdecode(np.frombuffer(byte_img, dtype=np.uint8), 1)  # 1 means flags=cv2.IMREAD_COLOR
+
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    gray_blur = cv2.blur(gray, (5, 5))
+
+    #: to calculate circle radius, get input image size
+    [height, width, _] = img.shape
+
+    logging.debug("dimensions: %d x %d", height, width)
+
+    #: original multiplier of 0.01, bigger seems to work better (0.025)
+    multipliers = [
+        [0.035, 12],
+        [0.015, 12],
+        [0.0325, 12],
+        [0.0175, 12],
+        [0.025, 10],
+    ]
+
+    i = 0
+    count_down = 5
+    circle_count = 0
+    detected_circles = None
+    inset = 0
+
+    while (circle_count > 100 or circle_count == 0) and count_down > 0:
+        i += 1
+        logging.debug("Run: %8d", i)
+
+        [ratio_multiplier, fudge_value] = multipliers[count_down - 1]
+
+        min_rad = math.ceil(ratio_multiplier * height) - fudge_value
+        max_rad = math.ceil(ratio_multiplier * height) + fudge_value
+
+        if min_rad < 15:
+            min_rad = 15
+
+        if max_rad < 30:
+            max_rad = 30
+
+        #: original inset multiplier of 0.075, bigger seems to work better (0.1)
+        inset = int(0.1 * max_rad)
+
+        #: apply Hough transform on the blurred image.
+        detected_circles = cv2.HoughCircles(
+            image=gray_blur,
+            method=cv2.HOUGH_GRADIENT,
+            dp=1,
+            minDist=min_rad,  #: space out circles to prevent multiple detections on the same object
+            param1=50,
+            param2=50,  #: increased from 30 to 50 to weed out some false circles (seems to work well)
+            minRadius=min_rad,
+            maxRadius=max_rad,
+        )
+
+        if detected_circles is None:
+            circle_count = 0
+        else:
+            circle_count = len(detected_circles[0])
+
+        logging.debug("Circles: %4i", circle_count)
+        logging.debug("Multiplier: %5.4f", ratio_multiplier)
+        logging.debug("Fudge: %7i", fudge_value)
+        logging.debug("Radius: %6d-%d", min_rad, max_rad)
+        logging.debug("Inset: %6i", inset)
+
+        count_down -= 1
+
+    logging.info("Circles: %4i", circle_count)
+
+    return export_circles_from_image(
+        detected_circles,
+        None,
+        None,
+        img,
+        height,
+        width,
+        inset,
+    )
+
+
 def get_characters(image):
     """detect characters in an image
 
