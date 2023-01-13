@@ -481,6 +481,25 @@ def export_circles_from_image(circles, out_dir, file_path, cv2_image, height, wi
         masked_images.append(masked_image)
 
     return masked_images
+
+
+def write_results(df, obj_name, results):
+    """write detected results to a dataframe by concatenating them onto the end of
+        the exisiting dataframe
+
+    Args:
+        df (dataframe): dataframe containing the existing results
+        obj_name (str): the name of the object (example.pdf, example.jpg, etc.) being processes
+        results (list): list of strings containing OCR results from the current file
+
+    Returns:
+        dataframe: an updated version of the input dataframe
+    """
+    df_new = pd.DataFrame({"Filename": [obj_name], "Parcels": [results]})
+    df = pd.concat([df, df_new], ignore_index=True, sort=False)
+
+    return df
+
 def format_time(seconds):
     """seconds: number
     returns a human-friendly string describing the amount of time
