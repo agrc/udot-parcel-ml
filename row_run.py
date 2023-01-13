@@ -3,7 +3,16 @@
 """
 the file to run to start the project
 """
+
+import logging
+from pathlib import Path
+from sys import stdout
+from os import environ
 from time import perf_counter
+import google.cloud.logging
+import google.cloud.storage
+import pandas as pd
+
 import row
 
 start_seconds = perf_counter()
