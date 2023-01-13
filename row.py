@@ -500,6 +500,24 @@ def write_results(df, obj_name, results):
 
     return df
 
+
+def upload_csv(df, bucket_name, out_name):
+    """upload results dataframe to a GCP bucket as a CSV file
+
+    Args:
+        df (dataframe): dataframe containing the final results
+        bucket_name (str): the name of the destination bucket
+        out_name (str): the name of the CSV file
+
+    Returns:
+        nothing
+    """
+    storage_client = google.cloud.storage.Client()
+    bucket = storage_client.bucket(bucket_name)
+    new_blob = bucket.blob(out_name)
+    new_blob.upload_from_string(df.to_csv(), content_type="text/csv")
+
+
 def format_time(seconds):
     """seconds: number
     returns a human-friendly string describing the amount of time
