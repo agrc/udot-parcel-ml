@@ -15,6 +15,13 @@ import pandas as pd
 
 import row
 
+logging.basicConfig(
+    stream=stdout,
+    format="%(levelname)-7s %(asctime)s %(module)10s:%(lineno)5s %(message)s",
+    datefmt="%m-%d %H:%M:%S",
+    level=logging.DEBUG,
+)
+
 start_seconds = perf_counter()
 
 row.main()
