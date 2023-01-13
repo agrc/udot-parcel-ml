@@ -369,6 +369,34 @@ def get_characters(image):
     return result
 
 
+def get_characters_from_image(image):
+    """detect characters in an image object
+
+    Args:
+        image: The image to detect characters in
+
+    Returns:
+        list: A list of detected characters
+    """
+
+    #: convert image to grayscale
+    grayscale_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    structure = cv2.getStructuringElement(cv2.MORPH_RECT, (8, 8))
+    morph = cv2.morphologyEx(grayscale_image, cv2.MORPH_DILATE, structure)
+
+    final_image = cv2.divide(grayscale_image, morph, scale=255)
+
+    #: perform text detection
+    result = pytesseract.image_to_string(final_image, config=OCR_CONFIG)
+
+    result = clean_ocr_text(result)
+
+    logging.info('detected characters: "%s"', result)
+
+    return result
+
+
 def clean_ocr_text(text):
     """clean up OCR text
 
