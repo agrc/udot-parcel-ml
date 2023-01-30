@@ -34,6 +34,7 @@ TASK_COUNT = environ["CLOUD_RUN_TASK_COUNT"]
 #: Set up main function
 def main():
     start_seconds = perf_counter()
+    """the main function to execute when cloud run starts the job"""
 
     #: Set up results dataframe
     df = pd.DataFrame({"Filename": [], "Parcels": []})
