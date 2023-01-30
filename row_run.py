@@ -25,11 +25,12 @@ logging.basicConfig(
 )
 
 #: Set up variables
-URI_TEXTFILE = Path(__file__).parent / "bucket-info" / "udot_bucket_uris.txt"
-UDOT_BUCKET_NAME = "ut-udot-row-county-parcels"
-OUTPUT_BUCKET_NAME = "ut-dts-agrc-udot-parcel-recog"
+INDEX = environ["INDEX_FILE_LOCATION"]
+BUCKET_NAME = environ["INPUT_BUCKET"]
+OUTPUT_BUCKET_NAME = environ["OUTPUT_BUCKET"]
 TASK_INDEX = environ["CLOUD_RUN_TASK_INDEX"]
 TASK_COUNT = environ["CLOUD_RUN_TASK_COUNT"]
+TOTAL_FILES = environ["TOTAL_FILES"]
 
 #: Set up main function
 def main():
@@ -37,15 +38,15 @@ def main():
     job_start = perf_counter()
 
     #: Set up results dataframe
-    df = pd.DataFrame({"Filename": [], "Parcels": []})
-    df = df.astype({"Filename": object, "Parcels": object})
+    result_dataframe = pd.DataFrame({"Filename": [], "Parcels": []})
+    result_dataframe = result_dataframe.astype({"Filename": object, "Parcels": object})
 
     #: Get files to process for this job
-    uri_list = row.get_job_files_from_text_index(UDOT_BUCKET_NAME, TASK_INDEX, TASK_COUNT, testing=False)
+    files = row.get_files_from_index(INDEX, TASK_INDEX, TASK_COUNT, TOTAL_FILES)
 
     #: Initialize GCP storage client and bucket
     storage_client = google.cloud.storage.Client()
-    bucket = bucket = storage_client.bucket(UDOT_BUCKET_NAME)
+    bucket = storage_client.bucket(BUCKET_NAME)
 
     #: Iterate over objects to detect circles and perform OCR
     for object_name in files:
@@ -109,7 +110,7 @@ def main():
         result_dataframe = row.write_results(result_dataframe, object_name, all_results)
 
     #: Upload results to GCP bucket as CSV file
-    row.upload_csv(df, OUTPUT_BUCKET_NAME, f"ocr_results_{TASK_INDEX}.csv")
+    row.upload_csv(result_dataframe, OUTPUT_BUCKET_NAME, f"ocr_results_{TASK_INDEX}.csv")
 
     logging.info("job %i: time taken for entire job %s", TASK_INDEX, row.format_time(perf_counter() - job_start))
 
