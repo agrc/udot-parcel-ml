@@ -5,6 +5,7 @@ UDOT Right of Way (ROW) Parcel Number Extraction
 
 Usage:
     row_cli.py storage get_job_files (--from-bucket=bucket --task-index=index) [--job-size=size --testing=test]
+    row_cli.py storage generate-index (--from=location) [--save-to=location]
     row_cli.py images process <file_name>
     row_cli.py image convert <file_name> (--output-directory=directory)
     row_cli.py detect circles <file_name> [--output-directory=directory]
@@ -19,7 +20,7 @@ Options:
     --job-size=size                 The size of the job [default: 10]
     --output-directory=directory    The location to output the stuff
 Examples:
-    row_cli.py storage download --from-bucket=bucket-name --task-index=0
+    row_cli.py storage generate-index --from=./test-data --save-to=./data
     row_cli.py image convert ./test/data/multiple_page.pdf --output-directory=./test
 """
 
@@ -34,9 +35,17 @@ def main():
     """doc string"""
     args = docopt(__doc__, version="1.0")  # type: ignore
 
+    if args["storage"] and args["generate-index"]:
+        index = row.generate_index(args["--from"], args["--save-to"])
+        print(index)
+        print(f"total job size: {len(index)}")
+
+        return
+
     if args["storage"] and args["get_job_files"]:
         jobs = row.get_job_files(args["--from-bucket"], args["--task-index"], args["--job-size"], args["--testing"])
         print(jobs)
+
         return
 
     if args["images"] and args["process"]:
@@ -47,6 +56,7 @@ def main():
             pdf = Path(args["<file_name>"])
             if not pdf.exists():
                 print("file does not exist")
+
                 return
 
             images, count, messages = row.convert_pdf_to_pil(pdf.read_bytes())
@@ -58,6 +68,7 @@ def main():
                 directory = Path(args["--output-directory"])
                 if not directory.exists():
                     print("directory does not exist")
+
                     return
 
                 for index, image in enumerate(images):

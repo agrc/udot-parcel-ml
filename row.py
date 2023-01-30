@@ -7,6 +7,7 @@ Right of way module containing methods
 import logging
 import math
 import re
+from io import BytesIO
 from os import environ
 from pathlib import Path
 from sys import stdout
@@ -39,10 +40,62 @@ environ["TESSDATA_PREFIX"] = str(Path(__file__).parent / "training-data")
 pytesseract.pytesseract.tesseract_cmd = "tesseract"
 
 
-def main():
-    """doc string"""
+def generate_index(from_location, save_location):
+    """reads file names from the `from_location` and optionally saves the list to the `save_location` as an index.txt
+    file. Cloud storage buckets must start with `gs://`
+    Args:
+        from_location (str): the directory to read the files from. Prefix GSC buckets with gs://.
+        save_location (str): the directory to save the list of files to. An index.txt file will be created within this
+                             directory
+    Returns:
+        list(str): a list of file names
+    """
 
-    return None
+    files = list([])
+
+    logging.debug('reading files from "%s"', from_location)
+    if from_location.startswith("gs://"):
+        storage_client = google.cloud.storage.Client()
+        iterator = storage_client.list_blobs(from_location[5:], max_results=None, versions=False)
+
+        files = [blob.name for blob in iterator]
+    else:
+        from_location = Path(from_location)
+
+        if not from_location.exists():
+            logging.warning("from location %s does not exists", from_location)
+
+            return files
+
+        iterator = from_location.glob("**/*")
+        files = [str(item) for item in iterator if item.is_file()]
+
+    if save_location is None:
+        return files
+
+    if save_location.startswith("gs://"):
+        storage_client = google.cloud.storage.Client()
+        bucket = storage_client.bucket(save_location[5:])
+        blob = bucket.blob("index.txt")
+
+        with BytesIO() as data:
+            for item in files:
+                data.write(str(item).encode("utf-8") + b"\n")
+
+            blob.upload_from_string(data.getvalue())
+    else:
+        save_location = Path(save_location)
+
+        if not save_location.exists():
+            logging.warning("save location %s does not exists", save_location)
+
+            return files
+
+        with save_location.joinpath("index.txt").open("w", encoding="utf-8", newline="") as output:
+            for item in files:
+                output.write(str(item) + "\n")
+
+    return files
 
 
 def get_job_files(bucket, page_index, job_size=10, testing=False):
