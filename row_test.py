@@ -51,57 +51,30 @@ def test_convert_pdf_to_pil_handles_empty_bytes():
     assert message != ""
 
 
-@patch("google.cloud.storage.Client")
-def test_get_job_files_returns_the_page_size(storage_client):
-    job_size = 10
-    page_index = 0
+def test_get_files_from_index_returns_the_page_size():
+    task_index = 0
+    task_count = 10
+    total_size = 100
 
-    page = iter([Mock() for _ in range(job_size)])
-
-    iterator = Mock()
-    iterator.pages = iter([page])
-    type(iterator).page_number = PropertyMock(return_value=1)
-
-    client = Mock()
-    client.list_blobs = Mock(return_value=iterator)
-
-    storage_client.return_value = client
-
-    jobs = row.get_job_files("bucket", page_index, job_size)
+    jobs = row.get_files_from_index("test-data", task_index, task_count, total_size)
 
     assert jobs is not None
     assert len(jobs) == 10
+    assert int(jobs[0]) == 1
+    assert int(jobs[9]) == 10
 
 
-@patch("google.cloud.storage.Client")
-def test_get_job_files_returns_the_page_size_for_the_second_page(storage_client):
-    job_size = 10
-    page_index = 2
+def test_get_files_from_index_returns_the_page_size_for_the_second_page():
+    task_index = 1
+    task_count = 10
+    total_size = 100
 
-    blob = Mock()
-    type(blob).name = PropertyMock(return_value="page2")
-
-    page_one_blob = Mock()
-
-    page1 = iter([page_one_blob for _ in range(job_size)])
-    page2 = iter([blob for _ in range(job_size)])
-
-    iterator = Mock()
-    iterator.pages = iter([page1, page2])
-    #: logging calls invoke the side effect
-    type(iterator).page_number = PropertyMock(side_effect=[1, 1, 1, 2, 2, 2])
-
-    client = Mock()
-    client.list_blobs = Mock(return_value=iterator)
-
-    storage_client.return_value = client
-
-    jobs = row.get_job_files("bucket", page_index, job_size)
+    jobs = row.get_files_from_index("test-data", task_index, task_count, total_size)
 
     assert jobs is not None
     assert len(jobs) == 10
-    assert jobs[0] == "page2"
-    page_one_blob.assert_not_called()
+    assert int(jobs[0]) == 11
+    assert int(jobs[9]) == 20
 
 
 def test_get_circles_finds_circles():
