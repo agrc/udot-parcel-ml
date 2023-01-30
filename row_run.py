@@ -5,10 +5,11 @@ the file to run to start the project
 """
 
 import logging
+from os import environ
 from pathlib import Path
 from sys import stdout
-from os import environ
 from time import perf_counter
+
 import google.cloud.logging
 import google.cloud.storage
 import pandas as pd
