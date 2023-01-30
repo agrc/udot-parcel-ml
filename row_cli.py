@@ -7,9 +7,9 @@ Usage:
     row_cli.py storage generate-index (--from=location) [--save-to=location]
     row_cli.py storage pick-range (--from=location --task-index=index --file-count=count --instances=size)
     row_cli.py images process <file_name>
-    row_cli.py image convert <file_name> (--output-directory=directory)
-    row_cli.py detect circles <file_name> [--output-directory=directory]
-    row_cli.py detect characters <file_name> [--ocr-directory=directory]
+    row_cli.py image convert <file_name> (--save-to=location)
+    row_cli.py detect circles <file_name> [--save-to=location]
+    row_cli.py detect characters <file_name>
     row_cli.py results write
 
 Options:
@@ -61,10 +61,10 @@ def main():
             images, count, messages = row.convert_pdf_to_pil(pdf.read_bytes())
             print(f"{pdf.name} contained {count} pages and converted with message {messages}")
 
-            if args["--output-directory"]:
-                print(f'saving {count} images to {args["--output-directory"]}')
+            if args["--save-to"]:
+                print(f'saving {count} images to {args["--save-to"]}')
 
-                directory = Path(args["--output-directory"])
+                directory = Path(args["--save-to"])
                 if not directory.exists():
                     print("directory does not exist")
 
@@ -80,8 +80,8 @@ def main():
     if args["detect"]:
         if args["circles"]:
             output_directory = None
-            if args["--output-directory"]:
-                output_directory = Path(args["--output-directory"])
+            if args["--save-to"]:
+                output_directory = Path(args["--save-to"])
 
             return row.get_circles(Path(args["<file_name>"]), output_directory)
 
