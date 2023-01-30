@@ -4,8 +4,8 @@
 UDOT Right of Way (ROW) Parcel Number Extraction
 
 Usage:
-    row_cli.py storage get_job_files (--from-bucket=bucket --task-index=index) [--job-size=size --testing=test]
     row_cli.py storage generate-index (--from=location) [--save-to=location]
+    row_cli.py storage pick-range (--from=location --task-index=index --file-count=count --instances=size)
     row_cli.py images process <file_name>
     row_cli.py image convert <file_name> (--output-directory=directory)
     row_cli.py detect circles <file_name> [--output-directory=directory]
@@ -13,15 +13,14 @@ Usage:
     row_cli.py results write
 
 Options:
-    --from-bucket=bucket            The bucket to find the image
-    --testing=test                  Trick the tool to not use google data and from and to become
-                                        file paths [default: False]
+    --from=location                 The bucket or directory to operate on
     --task-index=index              The index of the task running
-    --job-size=size                 The size of the job [default: 10]
-    --output-directory=directory    The location to output the stuff
+    --instances=size                The number of containers running the job [default: 10]
+    --save-to=location    The location to output the stuff
 Examples:
-    row_cli.py storage generate-index --from=./test-data --save-to=./data
-    row_cli.py image convert ./test/data/multiple_page.pdf --output-directory=./test
+    python row_cli.py storage generate-index --from=./test-data --save-to=./data
+    python row_cli.py storage pick-range --from=.ephemeral --task-index=0 --instances=10 --file-count=100
+    python row_cli.py image convert ./test/data/multiple_page.pdf --save-to=./test
 """
 
 from pathlib import Path
@@ -42,8 +41,8 @@ def main():
 
         return
 
-    if args["storage"] and args["get_job_files"]:
-        jobs = row.get_job_files(args["--from-bucket"], args["--task-index"], args["--job-size"], args["--testing"])
+    if args["storage"] and args["pick-range"]:
+        jobs = row.get_files_from_index(args["--from"], args["--task-index"], args["--instances"], args["--file-count"])
         print(jobs)
 
         return
