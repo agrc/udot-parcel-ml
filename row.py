@@ -8,6 +8,7 @@ import logging
 import math
 import re
 from io import BytesIO
+from itertools import islice
 from os import environ
 from pathlib import Path
 from sys import stdout
@@ -98,87 +99,55 @@ def generate_index(from_location, save_location):
     return files
 
 
-def get_job_files(bucket, page_index, job_size=10, testing=False):
-    """gets the blob names from the bucket based on the page index and job size
+def get_files_from_index(from_location, task_index, task_count, total_size):
+    """reads the index.txt file from the `from_location`. Based on the task index and total task count a list of files
+    is returned. Cloud storage buckets must start with `gs://`
     Args:
-        bucket (str): the bucket to get the files from. Use a folder path for testing
-        page_index (number): the index of the page to get the files from
-        job_size (number): the number of files to get for the job
-        testing (bool): trick the tool to not use google data and from and to use local file paths
-
-    Returns:
-        list(str): a list of blob names
-    """
-
-    page_index = int(page_index)
-    job_size = int(job_size)
-    testing = bool(testing)
-
-    if testing is True:
-        folder = Path(bucket)
-
-        if not folder.exists():
-            raise Exception("folder does not exist")
-
-        return [str(item) for i, item in enumerate(folder.iterdir()) if i < job_size]
-
-    logging.debug("creating storage client")
-
-    storage_client = google.cloud.storage.Client()
-    iterator = storage_client.list_blobs(bucket, page_size=job_size, max_results=None, versions=False)
-
-    for page in iterator.pages:
-        logging.debug("page %i", iterator.page_number)
-
-        if iterator.page_number < page_index:
-            logging.debug("skipping page %i", iterator.page_number)
-
-            continue
-
-        return [blob.name for blob in page]
-
-    return []
-
-
-def get_job_files_from_text_index(bucket_name, task_index, task_count, testing=False):
-    """gets the blob names from the bucket based on the task index and total task count
-    Args:
-        bucket_name (str): the bucket to get the files from. Use a folder path for testing
+        from_location (str): the directory to where the index.txt file resides. Prefix GSC buckets with gs://.
         task_index (number): the index of the current cloud run task
         task_count (number): the total number of cloud run tasks
-        testing (bool): trick the tool to not use google data and from and to use local file paths
+        total_size (number): the total number of files to process
 
     Returns:
         list(str): a list of uris from the bucket based on index text file
     """
+    task_index = int(task_index)
+    task_count = int(task_count)
+    total_size = int(total_size)
 
-    #: Read index of URIs in the UDOT bucket (these are full URIs 'gs://bucket-name/filename.ext')
-    uri_df = pd.read_csv(URI_TEXTFILE, sep="\n", skip_blank_lines=False)
-    #: Calculate total number of files to process and job_size based on the total task count
-    total_files = len(uri_df.index)
-    job_size = math.ceil(total_files / task_count)
-
-    if testing is True:
-        folder = Path(bucket_name)
+    index = Path(__file__).parent / ".ephemeral" / "index.txt"
+    if from_location.startswith("gs://"):
+        storage_client = google.cloud.storage.Client()
+        bucket = storage_client.bucket(from_location[5:])
+        blob = bucket.blob("index.txt")
+        blob.download_to_filename(str(index))
+    else:
+        folder = Path(from_location)
 
         if not folder.exists():
             raise Exception("folder does not exist")
 
-        return [str(item) for i, item in enumerate(folder.iterdir()) if i < job_size]
+        index = folder.joinpath("index.txt")
 
-    logging.debug("calculating files to process for task %i", task_index)
+        if not index.exists():
+            raise Exception("index.txt file does not exist")
 
+    job_size = math.ceil(total_size / task_count)
     first_index = task_index * job_size
-    last_index = total_files - 1
+    last_index = total_size - 1
     if task_index != (task_count - 1):
         last_index = task_index * job_size + job_size
 
-    files_to_process_df = uri_df.loc[first_index:last_index]  #: get files specific to current job
-    uri_list = files_to_process_df["URI"].to_list()
+    file_list = []
 
-    logging.debug("task number %i will work on file indices from %i to %i", task_index, first_index, last_index)
+    with index.open("r", encoding="utf-8") as data:
+        file_list = list(islice(data, first_index, last_index))
 
-    return uri_list
+    logging.info("calculating files to process for task %i", task_index)
+
+    logging.info("task number %i will work on file indices from %i to %i", task_index, first_index, last_index)
+
+    return file_list
 
 
 def convert_pdf_to_pil(pdf_as_bytes):
