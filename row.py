@@ -26,7 +26,7 @@ logging.basicConfig(
     stream=stdout,
     format="%(levelname)-7s %(asctime)s %(module)10s:%(lineno)5s %(message)s",
     datefmt="%m-%d %H:%M:%S",
-    level=logging.DEBUG,
+    level=logging.INFO,
 )
 
 if "PY_ENV" in environ and environ["PY_ENV"] == "production":
@@ -54,7 +54,7 @@ def generate_index(from_location, save_location):
 
     files = list([])
 
-    logging.debug('reading files from "%s"', from_location)
+    logging.info('reading files from "%s"', from_location)
     if from_location.startswith("gs://"):
         storage_client = google.cloud.storage.Client()
         iterator = storage_client.list_blobs(from_location[5:], max_results=None, versions=False)
@@ -199,7 +199,7 @@ def get_circles(item_path, output_path):
     #: to calculate circle radius, get input image size
     [height, width, _] = img.shape
 
-    logging.debug("dimensions: %d x %d", height, width)
+    logging.info("dimensions: %d x %d", height, width)
 
     #: original multiplier of 0.01, bigger seems to work better (0.025)
     multipliers = [
@@ -218,7 +218,7 @@ def get_circles(item_path, output_path):
 
     while (circle_count > 100 or circle_count == 0) and count_down > 0:
         i += 1
-        logging.debug("Run: %8d", i)
+        logging.info("Run: %8d", i)
 
         [ratio_multiplier, fudge_value] = multipliers[count_down - 1]
 
@@ -251,11 +251,11 @@ def get_circles(item_path, output_path):
         else:
             circle_count = len(detected_circles[0])
 
-        logging.debug("Circles: %4i", circle_count)
-        logging.debug("Multiplier: %5.4f", ratio_multiplier)
-        logging.debug("Fudge: %7i", fudge_value)
-        logging.debug("Radius: %6d-%d", min_rad, max_rad)
-        logging.debug("Inset: %6i", inset)
+        logging.info("Circles: %4i", circle_count)
+        logging.info("Multiplier: %5.4f", ratio_multiplier)
+        logging.info("Fudge: %7i", fudge_value)
+        logging.info("Radius: %6d-%d", min_rad, max_rad)
+        logging.info("Inset: %6i", inset)
 
         count_down -= 1
 
@@ -291,7 +291,7 @@ def get_circles_from_image_bytes(byte_img):
     #: to calculate circle radius, get input image size
     [height, width, _] = img.shape
 
-    logging.debug("dimensions: %d x %d", height, width)
+    logging.info("dimensions: %d x %d", height, width)
 
     #: original multiplier of 0.01, bigger seems to work better (0.025)
     multipliers = [
@@ -310,7 +310,7 @@ def get_circles_from_image_bytes(byte_img):
 
     while (circle_count > 100 or circle_count == 0) and count_down > 0:
         i += 1
-        logging.debug("Run: %8d", i)
+        logging.info("Run: %8d", i)
 
         [ratio_multiplier, fudge_value] = multipliers[count_down - 1]
 
@@ -343,11 +343,11 @@ def get_circles_from_image_bytes(byte_img):
         else:
             circle_count = len(detected_circles[0])
 
-        logging.debug("Circles: %4i", circle_count)
-        logging.debug("Multiplier: %5.4f", ratio_multiplier)
-        logging.debug("Fudge: %7i", fudge_value)
-        logging.debug("Radius: %6d-%d", min_rad, max_rad)
-        logging.debug("Inset: %6i", inset)
+        logging.info("Circles: %4i", circle_count)
+        logging.info("Multiplier: %5.4f", ratio_multiplier)
+        logging.info("Fudge: %7i", fudge_value)
+        logging.info("Radius: %6d-%d", min_rad, max_rad)
+        logging.info("Inset: %6i", inset)
 
         count_down -= 1
 
