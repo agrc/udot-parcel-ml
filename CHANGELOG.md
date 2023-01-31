@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.0-2](https://github.com/agrc/udot-parcel-ml/compare/v1.0.0-1...v1.0.0-2) (2023-01-31)
+
+
+### 🐛 Bug Fixes
+
+* create parent folders for file index ([2ca84ac](https://github.com/agrc/udot-parcel-ml/commit/2ca84acae337ccd93640c5bd15822bb46049c7da))
+
 ## 1.0.0-0 (2023-01-31)
 
 
