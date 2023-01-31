@@ -21,14 +21,6 @@ jobs:
       - name: ⬇️ Checkout code
         uses: actions/checkout@v3
 
-      - name: 🐍 Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: 3.9
-
-      - name: 🖇️ Install dependencies
-        run: sudo apt-get update && sudo apt-get install libpoppler-dev poppler-utils tesseract-ocr libtesseract-dev -y
-
       - name: 🗝️ Authenticate to Google Cloud
         id: auth
         uses: google-github-actions/auth@v1
@@ -60,9 +52,12 @@ jobs:
       - name: 🔰 Setup pack
         uses: buildpacks/github-actions/setup-pack@v5.0.1
 
+      - name: 🖇️ Create custom pack run image
+        run: docker build -t custom-run-image -f run.Dockerfile .
+
       - name: 📦 Build image
         shell: bash
-        run: pack build job --builder gcr.io/buildpacks/builder -t ${{ steps.meta.outputs.tags }}
+        run: pack build job --builder gcr.io/buildpacks/builder:v1 --run-image custom-run-image -t ${{ steps.meta.outputs.tags }}
 
       - name: 🏺 Push images to artifact registry
         shell: bash
