@@ -6,8 +6,10 @@ on:
   workflow_dispatch:
 
 permissions:
+  contents: write
   id-token: write
-  contents: read
+  deployments: write
+  pull-requests: write
 
 jobs:
   create-artifact:
@@ -32,10 +34,9 @@ jobs:
         id: auth
         uses: google-github-actions/auth@v1
         with:
-          access_token_scopes: "email, openid, https://www.googleapis.com/auth/cloud-platform, https://www.googleapis.com/auth/firebase"
+          access_token_scopes: "email, openid, https://www.googleapis.com/auth/cloud-platform"
           workload_identity_provider: ${{ secrets.IDENTITY_PROVIDER }}
           service_account: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
-          token_format: "access_token"
           create_credentials_file: true
 
       - name: ☁️ Set up Cloud SDK
