@@ -77,7 +77,7 @@ def main():
         circle_start = perf_counter()
 
         for image in images:
-            circle_images = row.get_circles_from_image_bytes(image)
+            circle_images = row.get_circles_from_image_bytes(image, None, object_name)
             all_detected_circles.extend(circle_images)  #: extend because circle_images will be a list
 
         logging.info(
