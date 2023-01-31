@@ -5,4 +5,3 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   libpoppler-dev poppler-utils tesseract-ocr libtesseract-dev libgl1-mesa-glx && \
   apt-get clean && \
   rm -rf /var/lib/apt/lists/*
-USER dummy
