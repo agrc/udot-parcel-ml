@@ -1,12 +1,16 @@
 {
   "cSpell.words": [
+    "accesstoken",
     "agrc",
     "astype",
+    "buildpacks",
     "Codecov",
     "dataframe",
     "docopt",
     "dtype",
     "frombuffer",
+    "gcloud",
+    "gserviceaccount",
     "imdecode",
     "IMREAD",
     "imwrite",
