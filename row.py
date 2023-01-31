@@ -112,7 +112,14 @@ def get_files_from_index(from_location, task_index, task_count, total_size):
         storage_client = google.cloud.storage.Client()
         bucket = storage_client.bucket(from_location[5:])
         blob = bucket.blob("index.txt")
-        blob.download_to_filename(str(index))
+
+        try:
+            blob.download_to_filename(str(index))
+        except Exception as ex:
+            logging.error("job %i: error downloading file index %s. %s", task_index, index, ex, exc_info=True)
+
+            raise ex
+
     else:
         folder = Path(from_location)
 
