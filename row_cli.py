@@ -83,7 +83,19 @@ def main():
             if args["--save-to"]:
                 output_directory = Path(args["--save-to"])
 
-            return row.get_circles(Path(args["<file_name>"]), output_directory)
+            item_path = Path(args["<file_name>"])
+
+            if not item_path.exists():
+                print("file does not exist")
+
+                return
+
+            if not item_path.name.casefold().endswith(("jpg", "jpeg", "tif", "tiff", "png")):
+                print("item is incorrect file type")
+
+                return
+
+            return row.get_circles_from_image_bytes(item_path.read_bytes(), output_directory, item_path.name)
 
         if args["characters"]:
             item_path = Path(args["<file_name>"])

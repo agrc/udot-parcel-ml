@@ -80,28 +80,18 @@ def test_get_files_from_index_returns_the_page_size_for_the_second_page():
 def test_get_circles_finds_circles():
     image = root / "five_circles_with_text.png"
 
-    circles = row.get_circles(image, None)
+    circles = row.get_circles_from_image_bytes(image.read_bytes(), None, image.name)
 
     assert circles is not None
 
     assert len(circles) == 5
 
 
-def test_get_circles_ignores_non_image_files():
-    image = root / "five_circles_with_text.txt"
-
-    circles = row.get_circles(image, None)
-
-    assert circles is not None
-
-    assert len(circles) == 0
-
-
 def test_get_circles_saves_images_to_output():
     image = root / "five_circles_with_text.png"
     output = Path(__file__).parent / "data" / "nested"
 
-    row.get_circles(image, output)
+    row.get_circles_from_image_bytes(image.read_bytes(), output, image.name)
 
     assert output.exists()
 
