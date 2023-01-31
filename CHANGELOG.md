@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.0-3](https://github.com/agrc/udot-parcel-ml/compare/v1.0.0-2...v1.0.0-3) (2023-01-31)
+
+
+### 🐛 Bug Fixes
+
+* bucket name has gs:// which needs to be removed ([4130c24](https://github.com/agrc/udot-parcel-ml/commit/4130c24ea60209011ad6173f0fda1b95d9f64f30))
+* rstrip any newlines or spaces in file name ([31f09ba](https://github.com/agrc/udot-parcel-ml/commit/31f09ba7b17bee88108d269beb00d4dbae9a191f))
+
 ## [1.0.0-2](https://github.com/agrc/udot-parcel-ml/compare/v1.0.0-1...v1.0.0-2) (2023-01-31)
 
 
