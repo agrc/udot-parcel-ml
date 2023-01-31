@@ -58,7 +58,7 @@ def main():
 
                 return
 
-            images, count, messages = row.convert_pdf_to_pil(pdf.read_bytes())
+            images, count, messages = row.convert_pdf_to_jpg_bytes(pdf.read_bytes())
             print(f"{pdf.name} contained {count} pages and converted with message {messages}")
 
             if args["--save-to"]:

@@ -150,7 +150,7 @@ def get_files_from_index(from_location, task_index, task_count, total_size):
     return file_list
 
 
-def convert_pdf_to_pil(pdf_as_bytes):
+def convert_pdf_to_jpg_bytes(pdf_as_bytes):
     """convert pdf to jpg images
 
     Args:
@@ -171,6 +171,7 @@ def convert_pdf_to_pil(pdf_as_bytes):
 
     count = len(images)
 
+    images = [image.tobytes() for image in images if image is not None]
 
     return (images, count, messages)
 
