@@ -2,6 +2,7 @@ name: Release Events
 
 on:
   release:
+    types: [created, edited, published]
   workflow_dispatch:
 
 permissions:
