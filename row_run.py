@@ -28,9 +28,9 @@ logging.basicConfig(
 INDEX = environ["INDEX_FILE_LOCATION"]
 BUCKET_NAME = environ["INPUT_BUCKET"]
 OUTPUT_BUCKET_NAME = environ["OUTPUT_BUCKET"]
-TASK_INDEX = environ["CLOUD_RUN_TASK_INDEX"]
-TASK_COUNT = environ["CLOUD_RUN_TASK_COUNT"]
-TOTAL_FILES = environ["TOTAL_FILES"]
+TASK_INDEX = int(environ["CLOUD_RUN_TASK_INDEX"])
+TASK_COUNT = int(environ["CLOUD_RUN_TASK_COUNT"])
+TOTAL_FILES = int(environ["TOTAL_FILES"])
 
 #: Set up main function
 def main():
