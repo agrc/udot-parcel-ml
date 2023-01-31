@@ -11,7 +11,6 @@ from io import BytesIO
 from itertools import islice
 from os import environ
 from pathlib import Path
-from sys import stdout
 
 import cv2
 import google.cloud.logging
@@ -21,13 +20,6 @@ import pandas as pd
 import pytesseract
 from pdf2image import convert_from_bytes
 from pdf2image.exceptions import PDFInfoNotInstalledError, PDFPageCountError, PDFSyntaxError
-
-logging.basicConfig(
-    stream=stdout,
-    format="%(levelname)-7s %(asctime)s %(module)10s:%(lineno)5s %(message)s",
-    datefmt="%m-%d %H:%M:%S",
-    level=logging.INFO,
-)
 
 if "PY_ENV" in environ and environ["PY_ENV"] == "production":
     client = google.cloud.logging.Client()

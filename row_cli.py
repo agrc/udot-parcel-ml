@@ -23,11 +23,20 @@ Examples:
     python row_cli.py image convert ./test-data/multiple_page.pdf --save-to=./test
 """
 
+import logging
 from pathlib import Path
+from sys import stdout
 
 from docopt import docopt
 
 import row
+
+logging.basicConfig(
+    stream=stdout,
+    format="%(levelname)-7s %(asctime)s %(module)10s:%(lineno)5s %(message)s",
+    datefmt="%m-%d %H:%M:%S",
+    level=logging.INFO,
+)
 
 
 def main():
