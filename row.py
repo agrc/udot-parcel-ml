@@ -171,26 +171,22 @@ def convert_pdf_to_pil(pdf_as_bytes):
 
     count = len(images)
 
+
     return (images, count, messages)
 
 
-def get_circles(item_path, output_path):
-    """detect circles in an image and export them to output_path
+def get_circles_from_image_bytes(byte_img, output_path, file_name):
+    """detect circles in an image (bytes) and export them as a list of cropped images
 
     Args:
-        item_path (Path): The location of the image to detect circles in
+        byte_img (bytes): The image to detect circles in
         output_path (Path): The output directory for cropped images of detected circles to be stored
-
+        file_name (str): The name of the file to be stored
     Returns:
         list: a list of images
     """
-    if not item_path.name.casefold().endswith(("jpg", "jpeg", "tif", "tiff", "png")):
 
-        return []
-
-    logging.info("detecting circles in %s", item_path)
     #: read in image from bytes
-    byte_img = item_path.read_bytes()
     img = cv2.imdecode(np.frombuffer(byte_img, dtype=np.uint8), 1)  # 1 means flags=cv2.IMREAD_COLOR
 
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -264,99 +260,7 @@ def get_circles(item_path, output_path):
     return export_circles_from_image(
         detected_circles,
         output_path,
-        item_path,
-        img,
-        height,
-        width,
-        inset,
-    )
-
-
-def get_circles_from_image_bytes(byte_img):
-    """detect circles in an image (bytes) and export them as a list of cropped images
-
-    Args:
-        byte_img (bytes): The image to detect circles in
-
-    Returns:
-        list: a list of images
-    """
-
-    #: read in image from bytes
-    img = cv2.imdecode(np.frombuffer(byte_img, dtype=np.uint8), 1)  # 1 means flags=cv2.IMREAD_COLOR
-
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    gray_blur = cv2.blur(gray, (5, 5))
-
-    #: to calculate circle radius, get input image size
-    [height, width, _] = img.shape
-
-    logging.info("dimensions: %d x %d", height, width)
-
-    #: original multiplier of 0.01, bigger seems to work better (0.025)
-    multipliers = [
-        [0.035, 12],
-        [0.015, 12],
-        [0.0325, 12],
-        [0.0175, 12],
-        [0.025, 10],
-    ]
-
-    i = 0
-    count_down = 5
-    circle_count = 0
-    detected_circles = None
-    inset = 0
-
-    while (circle_count > 100 or circle_count == 0) and count_down > 0:
-        i += 1
-        logging.info("Run: %8d", i)
-
-        [ratio_multiplier, fudge_value] = multipliers[count_down - 1]
-
-        min_rad = math.ceil(ratio_multiplier * height) - fudge_value
-        max_rad = math.ceil(ratio_multiplier * height) + fudge_value
-
-        if min_rad < 15:
-            min_rad = 15
-
-        if max_rad < 30:
-            max_rad = 30
-
-        #: original inset multiplier of 0.075, bigger seems to work better (0.1)
-        inset = int(0.1 * max_rad)
-
-        #: apply Hough transform on the blurred image.
-        detected_circles = cv2.HoughCircles(
-            image=gray_blur,
-            method=cv2.HOUGH_GRADIENT,
-            dp=1,
-            minDist=min_rad,  #: space out circles to prevent multiple detections on the same object
-            param1=50,
-            param2=50,  #: increased from 30 to 50 to weed out some false circles (seems to work well)
-            minRadius=min_rad,
-            maxRadius=max_rad,
-        )
-
-        if detected_circles is None:
-            circle_count = 0
-        else:
-            circle_count = len(detected_circles[0])
-
-        logging.info("Circles: %4i", circle_count)
-        logging.info("Multiplier: %5.4f", ratio_multiplier)
-        logging.info("Fudge: %7i", fudge_value)
-        logging.info("Radius: %6d-%d", min_rad, max_rad)
-        logging.info("Inset: %6i", inset)
-
-        count_down -= 1
-
-    logging.info("Circles: %4i", circle_count)
-
-    return export_circles_from_image(
-        detected_circles,
-        None,
-        None,
+        file_name,
         img,
         height,
         width,
@@ -433,13 +337,13 @@ def clean_ocr_text(text):
     return re.sub(pattern=EXPRESSION, repl="", string=text, count=0)
 
 
-def export_circles_from_image(circles, out_dir, file_path, cv2_image, height, width, inset_distance):
+def export_circles_from_image(circles, out_dir, file_name, cv2_image, height, width, inset_distance):
     """export detected circles from an image as jpegs to the out_dir
 
         Args:
             circles (array): Circle locations returned from cv2.HoughCircles algorithm
             out_dir (Path): The output directory for cropped images of detected circles
-            file_path (Path): The location of the image file
+            file_name (str): The name of the image file
             cv2_image (numpy.ndarray): The image as a numpy array
             height (number): The height of original image
             width (number): The width of original image
@@ -498,7 +402,7 @@ def export_circles_from_image(circles, out_dir, file_path, cv2_image, height, wi
         masked_image = image_copy[crop_y : crop_y + crop_height, crop_x : crop_x + crop_width]
 
         if out_dir:
-            original_basename = file_path.stem
+            original_basename = Path(file_name).stem
             out_file = out_dir / f"{original_basename}_{i}.jpg"
             cv2.imwrite(str(out_file), masked_image)
 
