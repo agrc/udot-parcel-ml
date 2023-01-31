@@ -10,6 +10,8 @@ jobs:
   create-artifact:
     name: Create artifact
     runs-on: ubuntu-latest
+    environment:
+      name: dev
 
     steps:
       - name: ⬇️ Checkout code
