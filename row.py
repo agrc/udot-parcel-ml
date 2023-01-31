@@ -395,12 +395,12 @@ def export_circles_from_image(circles, out_dir, file_name, cv2_image, height, wi
     return masked_images
 
 
-def write_results(df, obj_name, results):
+def write_results(frame, obj_name, results):
     """write detected results to a dataframe by concatenating them onto the end of
-        the exisiting dataframe
+        the existing dataframe
 
     Args:
-        df (dataframe): dataframe containing the existing results
+        frame (dataframe): dataframe containing the existing results
         obj_name (str): the name of the object (example.pdf, example.jpg, etc.) being processes
         results (list): list of strings containing OCR results from the current file
 
@@ -408,16 +408,16 @@ def write_results(df, obj_name, results):
         dataframe: an updated version of the input dataframe
     """
     df_new = pd.DataFrame({"Filename": [obj_name], "Parcels": [results]})
-    df = pd.concat([df, df_new], ignore_index=True, sort=False)
+    frame = pd.concat([frame, df_new], ignore_index=True, sort=False)
 
-    return df
+    return frame
 
 
-def upload_csv(df, bucket_name, out_name):
+def upload_csv(frame, bucket_name, out_name):
     """upload results dataframe to a GCP bucket as a CSV file
 
     Args:
-        df (dataframe): dataframe containing the final results
+        frame (dataframe): dataframe containing the final results
         bucket_name (str): the name of the destination bucket
         out_name (str): the name of the CSV file
 
@@ -428,7 +428,7 @@ def upload_csv(df, bucket_name, out_name):
     storage_client = google.cloud.storage.Client()
     bucket = storage_client.bucket(bucket_name)
     new_blob = bucket.blob(out_name)
-    new_blob.upload_from_string(df.to_csv(), content_type="text/csv")
+    new_blob.upload_from_string(frame.to_csv(), content_type="text/csv")
 
 
 def format_time(seconds):
