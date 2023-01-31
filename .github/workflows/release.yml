@@ -55,7 +55,6 @@ jobs:
         with:
           images: us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job
           tags: |
-            type=semver,pattern={{version}}
             type=raw,value=latest
 
       - name: 🔰 Setup pack
