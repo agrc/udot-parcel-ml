@@ -4,3 +4,4 @@ name = "utdot-parcel-ml"
 version = "1.0.0"
 authors = ["sgourley@utah.gov", "eneemann@utah.gov"]
 license = "MIT"
+requires-python = "==3.9"
