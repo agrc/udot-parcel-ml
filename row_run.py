@@ -46,7 +46,7 @@ def main():
 
     #: Initialize GCP storage client and bucket
     storage_client = google.cloud.storage.Client()
-    bucket = storage_client.bucket(BUCKET_NAME)
+    bucket = storage_client.bucket(BUCKET_NAME[5:])
 
     #: Iterate over objects to detect circles and perform OCR
     for object_name in files:
