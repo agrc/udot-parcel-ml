@@ -51,6 +51,7 @@ def main():
     #: Iterate over objects to detect circles and perform OCR
     for object_name in files:
         object_start = perf_counter()
+        object_name = object_name.rstrip()
         extension = Path(object_name).suffix.casefold()
 
         if extension == ".pdf":
