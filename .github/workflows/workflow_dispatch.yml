@@ -1,6 +1,9 @@
 name: On Demand
 
-on: workflow_dispatch
+on:
+  push:
+    branches:
+      - dev
 
 permissions:
   contents: write
