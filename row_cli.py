@@ -20,7 +20,7 @@ Options:
 Examples:
     python row_cli.py storage generate-index --from=./test-data --save-to=./data
     python row_cli.py storage pick-range --from=.ephemeral --task-index=0 --instances=10 --file-count=100
-    python row_cli.py image convert ./test/data/multiple_page.pdf --save-to=./test
+    python row_cli.py image convert ./test-data/multiple_page.pdf --save-to=./test
 """
 
 from pathlib import Path
