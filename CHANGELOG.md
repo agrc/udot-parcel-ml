@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.0-4](https://github.com/agrc/udot-parcel-ml/compare/v1.0.0-3...v1.0.0-4) (2023-01-31)
+
+
+### 🐛 Bug Fixes
+
+* add periods to suffix list ([25d3a06](https://github.com/agrc/udot-parcel-ml/commit/25d3a06637ee46d140cc61713d00501e2bd3c61f))
+* fix logging issue where numbers were expected ([c379a15](https://github.com/agrc/udot-parcel-ml/commit/c379a1595c6d41b75d8b9630dc140601ff5e8562))
+
 ## [1.0.0-3](https://github.com/agrc/udot-parcel-ml/compare/v1.0.0-2...v1.0.0-3) (2023-01-31)
 
 
