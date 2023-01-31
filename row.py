@@ -113,6 +113,9 @@ def get_files_from_index(from_location, task_index, task_count, total_size):
         bucket = storage_client.bucket(from_location[5:])
         blob = bucket.blob("index.txt")
 
+        if not index.parent.exists():
+            index.parent.mkdir(parents=True)
+
         try:
             blob.download_to_filename(str(index))
         except Exception as ex:
