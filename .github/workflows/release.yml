@@ -1,0 +1,85 @@
+on:
+  release:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  create-artifact:
+    name: Create artifact
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: ⬇️ Checkout code
+        uses: actions/checkout@v3
+
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+
+      - name: 🖇️ Install dependencies
+        run: sudo apt-get update && sudo apt-get install libpoppler-dev poppler-utils tesseract-ocr libtesseract-dev -y
+
+      - name: 🗝️ Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v1
+        with:
+          access_token_scopes: "email, openid, https://www.googleapis.com/auth/cloud-platform, https://www.googleapis.com/auth/firebase"
+          workload_identity_provider: ${{ secrets.IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
+          token_format: "access_token"
+          create_credentials_file: true
+
+      - name: ☁️ Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          install_components: "beta"
+
+      - name: 🗝️ Authenticate Docker to Google Cloud
+        uses: docker/login-action@v2
+        with:
+          registry: us-central1-docker.pkg.dev
+          username: oauth2accesstoken
+          password: ${{ steps.auth.outputs.access_token }}
+
+      - name: 🏷️ Extract tags from GitHub
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job
+          tags: |
+            type=semver,pattern={{version}}
+
+      - name: 🔰 Setup pack
+        uses: buildpacks/github-actions/setup-pack@v5.0.1
+
+      - name: 📦 Build image
+        shell: bash
+        run: pack build job --builder gcr.io/buildpacks/builder -t ${{ steps.meta.outputs.tags }}
+
+      - name: 🏺 Push images to artifact registry
+        shell: bash
+        run: docker push ${{ steps.meta.outputs.tags }}
+
+      - name: 🚀 Deploy to Cloud Run
+        run: |
+          if [ ! "$(gcloud beta run jobs list | grep default)" ]; then
+            gcloud beta run jobs create default \
+              --region us-central1 \
+              --image us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job:latest \
+              --service-account cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
+              --set-env-vars INDEX_FILE_LOCATION=${{ secrets.INDEX_FILE_LOCATION }},INPUT_BUCKET=${{ secrets.INPUT_BUCKET }},OUTPUT_BUCKET=${{ secrets.OUTPUT_BUCKET }} \
+              --max-retries 3 \
+              --parallelism 0
+          else
+            gcloud beta run jobs update default \
+                --region us-central1 \
+                --image us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job:latest \
+                --service-account cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
+                --set-env-vars INDEX_FILE_LOCATION=${{ secrets.INDEX_FILE_LOCATION }},INPUT_BUCKET=${{ secrets.INPUT_BUCKET }},OUTPUT_BUCKET=${{ secrets.OUTPUT_BUCKET }} \
+                --max-retries 3 \
+                --parallelism 0
+          fi
