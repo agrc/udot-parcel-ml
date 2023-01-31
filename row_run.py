@@ -65,7 +65,7 @@ def main():
                 row.format_time(perf_counter() - conversion_start),
             )
 
-        elif extension in ["jpg", "jpeg", "tif", "tiff", "png"]:
+        elif extension in [".jpg", ".jpeg", ".tif", ".tiff", ".png"]:
             images = list(bucket.blob(object_name).download_as_bytes())
         else:
             logging.info('Not a valid document or image: "%s"', object_name)
