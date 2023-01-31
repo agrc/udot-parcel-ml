@@ -6,9 +6,6 @@ A module that contains tests for the project module.
 """
 
 from pathlib import Path
-from unittest.mock import Mock, PropertyMock, patch
-
-import numpy as np
 
 import row
 
@@ -113,9 +110,9 @@ def test_get_characters_finds_characters():
     for item_path in root.glob("crop_*"):
         file_name = item_path.name
 
-        image_array = np.frombuffer(item_path.read_bytes(), dtype=np.uint8)
+        image_array = row.convert_to_cv2_image(item_path.read_bytes())
 
-        characters = row.get_characters(image_array)
+        characters = row.get_characters_from_image(image_array)
 
         expected_characters = file_name.replace("crop_", "").replace("_", ":").replace(".jpg", "")
 

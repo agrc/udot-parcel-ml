@@ -112,7 +112,7 @@ def main():
 
             print("detecting circles in %s", item_path)
 
-            return row.get_characters(item_path.read_bytes())
+            return row.get_characters_from_image(row.convert_to_cv2_image(item_path.read_bytes()))
 
 
 if __name__ == "__main__":
