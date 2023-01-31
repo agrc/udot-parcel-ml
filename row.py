@@ -184,7 +184,7 @@ def get_circles_from_image_bytes(byte_img, output_path, file_name):
         output_path (Path): The output directory for cropped images of detected circles to be stored
         file_name (str): The name of the file to be stored
     Returns:
-        list: a list of images
+        list: a list of cv2 images
     """
 
     #: read in image from bytes
@@ -269,40 +269,23 @@ def get_circles_from_image_bytes(byte_img, output_path, file_name):
     )
 
 
-def get_characters(image):
-    """detect characters in an image (bytes)
+def convert_to_cv2_image(image):
+    """convert image (bytes) to a cv2 image object
 
     Args:
-        image (bytes): The image to detect characters in
+        image (bytes): The image (bytes) to convert
 
     Returns:
-        list: A list of detected characters
+        cv2.Image: A cv2 image object
     """
-    image_channels = cv2.imdecode(np.frombuffer(image, dtype=np.uint8), 1)  # 1 means flags=cv2.IMREAD_COLOR
-
-    #: convert image to grayscale
-    grayscale_image = cv2.cvtColor(image_channels, cv2.COLOR_BGR2GRAY)
-
-    structure = cv2.getStructuringElement(cv2.MORPH_RECT, (8, 8))
-    morph = cv2.morphologyEx(grayscale_image, cv2.MORPH_DILATE, structure)
-
-    final_image = cv2.divide(grayscale_image, morph, scale=255)
-
-    #: perform text detection
-    result = pytesseract.image_to_string(final_image, config=OCR_CONFIG)
-
-    result = clean_ocr_text(result)
-
-    logging.info('detected characters: "%s"', result)
-
-    return result
+    return cv2.imdecode(np.frombuffer(image, dtype=np.uint8), 1)  # 1 means flags=cv2.IMREAD_COLOR
 
 
 def get_characters_from_image(image):
-    """detect characters in an image object
+    """detect characters in a cv2 image object
 
     Args:
-        image: The image to detect characters in
+        image: The cv2 image to detect characters in
 
     Returns:
         list: A list of detected characters
@@ -351,7 +334,7 @@ def export_circles_from_image(circles, out_dir, file_name, cv2_image, height, wi
             inset_distance (number): The inset distance in pixels to aid image cropping
 
     Returns:
-        list: a list of images
+        list: a list of cv2 images
     """
     #: round the values to the nearest integer
     circles = np.uint16(np.around(circles))
