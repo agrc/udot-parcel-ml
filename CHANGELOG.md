@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.0-6](https://github.com/agrc/udot-parcel-ml/compare/v1.0.0-5...v1.0.0-6) (2023-02-01)
+
+
+### 🐛 Bug Fixes
+
+* guard against no circles found ([a4bb1ce](https://github.com/agrc/udot-parcel-ml/commit/a4bb1ce1d950651cc248935104d8dc777e38c2ff))
+
 ## [1.0.0-5](https://github.com/agrc/udot-parcel-ml/compare/v1.0.0-4...v1.0.0-5) (2023-02-01)
 
 
