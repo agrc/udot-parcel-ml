@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.0-5](https://github.com/agrc/udot-parcel-ml/compare/v1.0.0-4...v1.0.0-5) (2023-02-01)
+
+
+### 🐛 Bug Fixes
+
+* create a single item array of an images bytes ([ff1e06e](https://github.com/agrc/udot-parcel-ml/commit/ff1e06e96ddfc24d3dba436e11885350a9b0bc60))
+
 ## [1.0.0-4](https://github.com/agrc/udot-parcel-ml/compare/v1.0.0-3...v1.0.0-4) (2023-01-31)
 
 
