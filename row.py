@@ -338,6 +338,11 @@ def export_circles_from_image(circles, out_dir, file_name, cv2_image, height, wi
     Returns:
         list: a list of cv2 images
     """
+    if circles is None:
+        logging.warning("No circles detected for %s", file_name)
+
+        return []
+
     #: round the values to the nearest integer
     circles = np.uint16(np.around(circles))
 
