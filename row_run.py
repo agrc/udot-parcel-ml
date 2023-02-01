@@ -21,7 +21,7 @@ logging.basicConfig(
     stream=stdout,
     format="%(levelname)-7s %(asctime)s %(module)10s:%(lineno)5s %(message)s",
     datefmt="%m-%d %H:%M:%S",
-    level=logging.DEBUG,
+    level=logging.INFO,
 )
 
 #: Set up variables
@@ -57,7 +57,7 @@ def main():
         if extension == ".pdf":
             conversion_start = perf_counter()
             images, count, messages = row.convert_pdf_to_jpg_bytes(bucket.blob(object_name).download_as_bytes())
-            logging.debug("%s contained %i pages and converted with message %s", object_name, count, messages)
+            logging.info("%s contained %i pages and converted with message %s", object_name, count, messages)
             logging.info(
                 "job %i: conversion time taken for object %s: %s",
                 TASK_INDEX,
