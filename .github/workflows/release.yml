@@ -71,7 +71,7 @@ jobs:
               --image us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job:latest \
               --service-account cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
               --set-env-vars INDEX_FILE_LOCATION=${{ secrets.INDEX_FILE_LOCATION }},INPUT_BUCKET=${{ secrets.INPUT_BUCKET }},OUTPUT_BUCKET=${{ secrets.OUTPUT_BUCKET }} \
-              --memory=1Gi \
+              --memory=4Gi \
               --max-retries 3 \
               --parallelism 0
           else
@@ -80,7 +80,7 @@ jobs:
                 --image us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job:latest \
                 --service-account cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
                 --set-env-vars INDEX_FILE_LOCATION=${{ secrets.INDEX_FILE_LOCATION }},INPUT_BUCKET=${{ secrets.INPUT_BUCKET }},OUTPUT_BUCKET=${{ secrets.OUTPUT_BUCKET }} \
-                --memory=1Gi \
+                --memory=4Gi \
                 --max-retries 3 \
                 --parallelism 0
           fi
