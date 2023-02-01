@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.0-8](https://github.com/agrc/udot-parcel-ml/compare/v1.0.0-7...v1.0.0-8) (2023-02-01)
+
+
+### 🐛 Bug Fixes
+
+* convert pdf pages to bytes preserving image metadata ([18c6589](https://github.com/agrc/udot-parcel-ml/commit/18c6589464ee5d9e6d83ac46d8b4801ff629f142))
+
 ## [1.0.0-7](https://github.com/agrc/udot-parcel-ml/compare/v1.0.0-6...v1.0.0-7) (2023-02-01)
 
 
