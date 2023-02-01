@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.0-7](https://github.com/agrc/udot-parcel-ml/compare/v1.0.0-6...v1.0.0-7) (2023-02-01)
+
+
+### 🐛 Bug Fixes
+
+* try to protect from bad pdf image decoding ([2217310](https://github.com/agrc/udot-parcel-ml/commit/2217310384c4ada44b910eef6f81c766e1db9e37))
+
 ## [1.0.0-6](https://github.com/agrc/udot-parcel-ml/compare/v1.0.0-5...v1.0.0-6) (2023-02-01)
 
 
