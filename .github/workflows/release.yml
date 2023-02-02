@@ -70,7 +70,7 @@ jobs:
               --region us-central1 \
               --image us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job:latest \
               --service-account cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
-              --set-env-vars INDEX_FILE_LOCATION=${{ secrets.INDEX_FILE_LOCATION }},INPUT_BUCKET=${{ secrets.INPUT_BUCKET }},OUTPUT_BUCKET=${{ secrets.OUTPUT_BUCKET }},PY_ENV=production \
+              --set-env-vars INDEX_FILE_LOCATION=${{ secrets.INDEX_FILE_LOCATION }},INPUT_BUCKET=${{ secrets.INPUT_BUCKET }},OUTPUT_BUCKET=${{ secrets.OUTPUT_BUCKET }},PY_ENV=production,TOTAL_FILES=89537,JOB_NAME=alligator \
               --memory=8Gi \
               --cpu=2 \
               --max-retries 0 \
@@ -80,7 +80,7 @@ jobs:
                 --region us-central1 \
                 --image us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job:latest \
                 --service-account cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
-                --set-env-vars INDEX_FILE_LOCATION=${{ secrets.INDEX_FILE_LOCATION }},INPUT_BUCKET=${{ secrets.INPUT_BUCKET }},OUTPUT_BUCKET=${{ secrets.OUTPUT_BUCKET }},PY_ENV=production \
+                --set-env-vars INDEX_FILE_LOCATION=${{ secrets.INDEX_FILE_LOCATION }},INPUT_BUCKET=${{ secrets.INPUT_BUCKET }},OUTPUT_BUCKET=${{ secrets.OUTPUT_BUCKET }},PY_ENV=production,TOTAL_FILES=89537,JOB_NAME=alligator \
                 --memory=8Gi \
                 --cpu=2 \
                 --max-retries 0 \
