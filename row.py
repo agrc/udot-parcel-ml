@@ -213,6 +213,7 @@ def get_circles_from_image_bytes(byte_img, output_path, file_name):
 
     #: original multiplier of 0.01, bigger seems to work better (0.025)
     multipliers = [
+        [0.010, 12],
         [0.035, 12],
         [0.015, 12],
         [0.0325, 12],
@@ -221,7 +222,7 @@ def get_circles_from_image_bytes(byte_img, output_path, file_name):
     ]
 
     i = 0
-    count_down = 5
+    count_down = len(multipliers)
     circle_count = 0
     detected_circles = None
     inset = 0
