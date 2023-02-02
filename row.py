@@ -265,7 +265,7 @@ def get_circles_from_image_bytes(byte_img, output_path, file_name):
         logging.info("Circles: %4i", circle_count)
         logging.info("Multiplier: %5.4f", ratio_multiplier)
         logging.info("Fudge: %7i", fudge_value)
-        logging.info("Radius: %6d-%d", min_rad, max_rad)
+        logging.info("Diameter: %6d-%d", min_rad, max_rad)
         logging.info("Inset: %6i", inset)
 
         count_down -= 1
