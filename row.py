@@ -443,10 +443,13 @@ def upload_csv(frame, bucket_name, out_name):
     Returns:
         nothing
     """
-    logging.info("uploading %s to %s", out_name, bucket_name)
+    file_name = f"{environ['JOB_NAME']}/{out_name}"
+    logging.info("uploading %s to %s/%s", out_name, bucket_name, file_name)
+
     storage_client = google.cloud.storage.Client()
     bucket = storage_client.bucket(bucket_name)
-    new_blob = bucket.blob(out_name)
+    new_blob = bucket.blob(file_name)
+
     new_blob.upload_from_string(frame.to_csv(), content_type="text/csv")
 
 
