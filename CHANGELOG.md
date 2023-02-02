@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.0-9](https://github.com/agrc/udot-parcel-ml/compare/v1.0.0-8...v1.0.0-9) (2023-02-02)
+
+
+### 🐛 Bug Fixes
+
+* add another circle detection multipler ([bd4f04a](https://github.com/agrc/udot-parcel-ml/commit/bd4f04a055f747c4a331c618f684b4180e41e305))
+
 ## [1.0.0-8](https://github.com/agrc/udot-parcel-ml/compare/v1.0.0-7...v1.0.0-8) (2023-02-01)
 
 
