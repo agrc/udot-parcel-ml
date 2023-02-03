@@ -20,6 +20,7 @@ import pandas as pd
 import pytesseract
 from pdf2image import convert_from_bytes
 from pdf2image.exceptions import PDFInfoNotInstalledError, PDFPageCountError, PDFSyntaxError
+from PIL.Image import DecompressionBombError
 
 if "PY_ENV" in environ and environ["PY_ENV"] == "production":
     client = google.cloud.logging.Client()
@@ -167,8 +168,8 @@ def convert_pdf_to_jpg_bytes(pdf_as_bytes):
 
     try:
         images = convert_from_bytes(pdf_as_bytes, dpi)
-    except (TypeError, PDFInfoNotInstalledError, PDFPageCountError, PDFSyntaxError) as error:
         logging.error(error)
+    except (TypeError, PDFInfoNotInstalledError, PDFPageCountError, PDFSyntaxError, DecompressionBombError) as error:
         messages = error
 
     count = len(images)
