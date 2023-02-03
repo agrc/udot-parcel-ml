@@ -209,8 +209,6 @@ def get_circles_from_image_bytes(byte_img, output_path, file_name):
     #: to calculate circle radius, get input image size
     [height, width, _] = img.shape
 
-    logging.info("dimensions: %d x %d", height, width)
-
     #: original multiplier of 0.01, bigger seems to work better (0.025)
     multipliers = [
         [0.010, 12],
@@ -229,7 +227,6 @@ def get_circles_from_image_bytes(byte_img, output_path, file_name):
 
     while (circle_count > 100 or circle_count == 0) and count_down > 0:
         i += 1
-        logging.info("Run: %8d", i)
 
         [ratio_multiplier, fudge_value] = multipliers[count_down - 1]
 
@@ -262,11 +259,18 @@ def get_circles_from_image_bytes(byte_img, output_path, file_name):
         else:
             circle_count = len(detected_circles[0])
 
-        logging.info("Circles: %4i", circle_count)
-        logging.info("Multiplier: %5.4f", ratio_multiplier)
-        logging.info("Fudge: %7i", fudge_value)
-        logging.info("Diameter: %6d-%d", min_rad, max_rad)
-        logging.info("Inset: %6i", inset)
+        logging.info(
+            "Run: %i found %i circles %s",
+            i,
+            circle_count,
+            {
+                "multiplier": ratio_multiplier,
+                "fudge": fudge_value,
+                "diameter": f"{min_rad}-{max_rad}",
+                "inset": inset,
+                "dimensions": f"{height}x{width}",
+            },
+        )
 
         count_down -= 1
 
