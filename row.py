@@ -454,7 +454,10 @@ def upload_results(frame, bucket_name, out_name):
     bucket = storage_client.bucket(bucket_name)
     new_blob = bucket.blob(file_name)
 
-    new_blob.upload_from_string(frame.to_csv(), content_type="text/csv")
+    parquet = BytesIO()
+    frame.to_parquet(parquet, compression="gzip")
+
+    new_blob.upload_from_file(parquet, content_type="application/gzip")
 
 
 def format_time(seconds):
