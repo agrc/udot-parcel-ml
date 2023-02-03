@@ -56,7 +56,9 @@ def main():
 
         if extension == ".pdf":
             conversion_start = perf_counter()
-            images, count, messages = row.convert_pdf_to_jpg_bytes(bucket.blob(object_name).download_as_bytes())
+            images, count, messages = row.convert_pdf_to_jpg_bytes(
+                bucket.blob(object_name).download_as_bytes(), object_name
+            )
             logging.info("%s contained %i pages and converted with message %s", object_name, count, messages)
             logging.info(
                 "job %i: conversion time taken for object %s: %s",
