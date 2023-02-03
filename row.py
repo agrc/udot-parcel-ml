@@ -414,8 +414,8 @@ def export_circles_from_image(circles, out_dir, file_name, cv2_image, height, wi
     return masked_images
 
 
-def write_results(frame, obj_name, results):
-    """write detected results to a dataframe by concatenating them onto the end of
+def append_results(frame, obj_name, results):
+    """append detected results to a dataframe by concatenating them onto the end of
         the existing dataframe
 
     Args:
@@ -432,13 +432,13 @@ def write_results(frame, obj_name, results):
     return frame
 
 
-def upload_csv(frame, bucket_name, out_name):
-    """upload results dataframe to a GCP bucket as a CSV file
+def upload_results(frame, bucket_name, out_name):
+    """upload results dataframe to a GCP bucket as a gzip file
 
     Args:
         frame (dataframe): dataframe containing the final results
         bucket_name (str): the name of the destination bucket
-        out_name (str): the name of the CSV file
+        out_name (str): the name of the gzip file
 
     Returns:
         nothing

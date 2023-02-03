@@ -108,10 +108,10 @@ def main():
             "job %i: total time taken for entire task %s", TASK_INDEX, row.format_time(perf_counter() - object_start)
         )
 
-        result_dataframe = row.write_results(result_dataframe, object_name, all_results)
+        result_dataframe = row.append_results(result_dataframe, object_name, all_results)
 
     #: Upload results to GCP bucket as CSV file
-    row.upload_csv(result_dataframe, OUTPUT_BUCKET_NAME, f"ocr_results_{TASK_INDEX}.csv")
+    row.upload_results(result_dataframe, OUTPUT_BUCKET_NAME, f"ocr_results_{TASK_INDEX}.gzip")
 
     logging.info("job %i: time taken for entire job %s", TASK_INDEX, row.format_time(perf_counter() - job_start))
 
