@@ -10,17 +10,20 @@ Usage:
     row_cli.py image convert <file_name> (--save-to=location)
     row_cli.py detect circles <file_name> [--save-to=location]
     row_cli.py detect characters <file_name>
-    row_cli.py results write
+    row_cli.py results download <run_name> (--from=location)
+    row_cli.py results merge <run_name> (--from=location)
+    row_cli.py results summarize <run_name> (--from=location)
 
 Options:
     --from=location                 The bucket or directory to operate on
     --task-index=index              The index of the task running
     --instances=size                The number of containers running the job [default: 10]
-    --save-to=location    The location to output the stuff
+    --save-to=location              The location to output the stuff
 Examples:
     python row_cli.py storage generate-index --from=./test-data --save-to=./data
     python row_cli.py storage pick-range --from=.ephemeral --task-index=0 --instances=10 --file-count=100
     python row_cli.py image convert ./test-data/multiple_page.pdf --save-to=./test
+    python row_cli.py results download bobcat --from=bucket-name
 """
 
 import logging
@@ -122,6 +125,18 @@ def main():
             print("detecting circles in %s", item_path)
 
             return row.get_characters_from_image(row.convert_to_cv2_image(item_path.read_bytes()))
+
+    if args["results"]:
+        if args["download"]:
+            location = row.download_run(args["--from"], args["<run_name>"])
+
+            print(f"files downloaded to {location}")
+
+        if args["merge"]:
+            row.merge_run(args["--from"], args["<run_name>"])
+
+        if args["summarize"]:
+            row.summarize_run(args["--from"], args["<run_name>"])
 
 
 if __name__ == "__main__":
