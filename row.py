@@ -477,3 +477,83 @@ def format_time(seconds):
         return "{} minutes".format(round(seconds / minute, 2))
 
     return "{} hours".format(round(seconds / hour, 2))
+
+
+def download_run(bucket, run_name):
+    """download a runs worth of results from a GCP bucket
+
+    Args:
+        bucket (str): the name of the bucket
+        run_name (str): the name of the run
+
+    Returns:
+        str: the location of the files
+    """
+    storage_client = google.cloud.storage.Client()
+    bucket = storage_client.bucket(bucket)
+    blobs = bucket.list_blobs(prefix=run_name)
+    location = Path(__file__).parent / "data"
+
+    if not location.joinpath(run_name).exists():
+        location.joinpath(run_name).mkdir(parents=True)
+
+    for blob in blobs:
+        if blob.name.endswith(".gzip"):
+            blob.download_to_filename(location / blob.name)
+
+    return location.joinpath(run_name)
+
+
+def merge_run(folder, run_name):
+    """merge all result files in a folder into a single file
+
+    Args:
+        folder (str): the name of the folder containing the results
+        run_name (str): the name of the output file
+
+    Returns:
+        nothing
+    """
+    folder = Path(folder) / run_name
+    all_files = sorted(folder.glob("ocr_results_*.gzip"))
+
+    logging.info("found %i files to merge in %s", len(all_files), folder)
+
+    frames = []
+
+    for filename in all_files:
+        temp_frame = pd.read_parquet(filename, index_col=0, header=0)
+        frames.append(temp_frame)
+
+    frame = pd.concat(frames, ignore_index=True)
+
+    frame.to_parquet(folder / f"{run_name}.gzip", index=False, compression="gzip")
+
+
+def summarize_run(folder, run_name):
+    """summarize the results of a run
+
+    Args:
+        folder (str): the name of the folder containing the merged results
+        run_name (str): the name of the output file
+
+    Returns:
+        nothing
+    """
+    logging.info("summarizing %s", run_name)
+
+    folder = Path(folder) / run_name
+    frame = pd.read_parquet(folder / f"{run_name}.gzip", index_col=None, header=0)
+
+    frame["Parcel Count"] = frame["Parcels"].apply(len)
+    frame["Empty Text"] = frame["Parcels"].apply(lambda x: x.count(""))
+
+    logging.info(
+        "total files processed: %s, %s",
+        len(frame.index),
+        {
+            "extractions": frame["Parcel Count"].sum(),
+            "unmatchable": len(frame.loc[(frame["Parcel Count"] == 0), :].index),
+            "unrecognized characters": len(frame.loc[(frame["Empty Text"] > 0), :].index),
+        },
+    )
