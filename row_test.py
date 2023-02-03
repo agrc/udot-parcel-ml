@@ -15,7 +15,7 @@ root = Path(__file__).parent / "test-data"
 def test_convert_pdf_to_pil_single_page_pdf():
     pdf = root / "single_page.PDF"
 
-    images, count, _ = row.convert_pdf_to_jpg_bytes(pdf.read_bytes())
+    images, count, _ = row.convert_pdf_to_jpg_bytes(pdf.read_bytes(), "test_pdf")
 
     assert count == 1
     assert images is not None
@@ -24,7 +24,7 @@ def test_convert_pdf_to_pil_single_page_pdf():
 def test_convert_pdf_to_pil_multi_page_pdf():
     pdf = root / "multiple_page.pdf"
 
-    images, count, _ = row.convert_pdf_to_jpg_bytes(pdf.read_bytes())
+    images, count, _ = row.convert_pdf_to_jpg_bytes(pdf.read_bytes(), "test_pdf")
 
     assert count == 5
     assert images is not None
@@ -33,7 +33,7 @@ def test_convert_pdf_to_pil_multi_page_pdf():
 def test_convert_pdf_to_pil_handles_invalid_pdf():
     pdf = root / "invalid.pdf"
 
-    images, count, message = row.convert_pdf_to_jpg_bytes(pdf.read_bytes())
+    images, count, message = row.convert_pdf_to_jpg_bytes(pdf.read_bytes(), "test_pdf")
 
     assert count == 0
     assert images == []
@@ -41,7 +41,7 @@ def test_convert_pdf_to_pil_handles_invalid_pdf():
 
 
 def test_convert_pdf_to_pil_handles_empty_bytes():
-    images, count, message = row.convert_pdf_to_jpg_bytes(None)
+    images, count, message = row.convert_pdf_to_jpg_bytes(None, "test_pdf")
 
     assert count == 0
     assert images == []

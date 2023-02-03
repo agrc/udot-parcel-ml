@@ -153,7 +153,7 @@ def get_files_from_index(from_location, task_index, task_count, total_size):
     return file_list
 
 
-def convert_pdf_to_jpg_bytes(pdf_as_bytes):
+def convert_pdf_to_jpg_bytes(pdf_as_bytes, object_name):
     """convert pdf to jpg images
 
     Args:
@@ -168,8 +168,8 @@ def convert_pdf_to_jpg_bytes(pdf_as_bytes):
 
     try:
         images = convert_from_bytes(pdf_as_bytes, dpi)
-        logging.error(error)
     except (TypeError, PDFInfoNotInstalledError, PDFPageCountError, PDFSyntaxError, DecompressionBombError) as error:
+        logging.error("error in %s, %s", object_name, error, exc_info=True)
         messages = error
 
     count = len(images)
