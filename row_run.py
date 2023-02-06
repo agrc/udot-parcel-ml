@@ -113,6 +113,8 @@ def main():
 
             continue
 
+        row.upload_mosaic(mosaic, OUTPUT_BUCKET_NAME, object_name)
+
     logging.info("job %i: time taken for entire job %s", TASK_INDEX, row.format_time(perf_counter() - job_start))
 
 
