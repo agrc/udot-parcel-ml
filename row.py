@@ -608,7 +608,7 @@ def build_mosaic_image(images, object_name):
         #: Add buffered image into the mosaic
         row_start = (math.floor(i / number_columns)) * tile_width
         col_start = (i % number_columns) * tile_width
-        mosaic_image[row_start : row_start + tile_width, col_start : col_start + tile_width] = img
+        mosaic_image[row_start : row_start + tile_width, col_start : col_start + tile_width] = buffered_image
 
         i += 1
 
