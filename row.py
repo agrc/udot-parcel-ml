@@ -560,16 +560,18 @@ def summarize_run(folder, run_name):
     )
 
 
-def build_mosaic_image(images, object_name):
+def build_mosaic_image(images, object_name, out_dir):
     """build a mosaic image from a list of cv2 images
 
     Args:
         images (list): list of cv2 images to mosaic together
         object_name (str): the name of the image object (original filename)
+        out_dir (Path): location to save the result
 
     Returns:
         mosaic_image (np.ndarray): composite mosaic of smaller images
     """
+    object_path = Path(object_name)
     max_width = 0
     buffer = 5
 
@@ -612,7 +614,16 @@ def build_mosaic_image(images, object_name):
 
         i += 1
 
-    return mosaic_image
+    if out_dir:
+        if not out_dir.exists():
+            out_dir.mkdir(parents=True)
+
+        mosaic_outfile = out_dir / f"{object_path.stem}_mosaic.jpg"
+        print(f"Saving to {mosaic_outfile}")
+        cv2.imwrite(str(mosaic_outfile), mosaic_image)
+
+    else:
+        return mosaic_image
 
 
 def upload_mosaic(image, bucket_name, object_name):

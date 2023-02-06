@@ -94,7 +94,7 @@ def main():
         logging.info("mosaicking images in %s", object_name)
         mosaic_start = perf_counter()
 
-        mosaic = row.build_image_mosaic(all_detected_circles, object_name)
+        mosaic = row.build_image_mosaic(all_detected_circles, object_name, None)
 
         logging.info(
             "job %i: image mosaic time taken %s: %s",
