@@ -595,7 +595,7 @@ def build_mosaic_image(images, object_name, out_dir):
     mosaic_image[:, :] = (255, 255, 255)
 
     if total_height * total_width > 40_000_000:
-        logging.info('mosaic image size is too large: "%s"', object_name)
+        logging.error('mosaic image size is too large: "%s"', object_name)
 
         return None
 
