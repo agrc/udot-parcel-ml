@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.2.0-0](https://github.com/agrc/udot-parcel-ml/compare/v1.0.0-9...v1.2.0-0) (2023-02-06)
+
+
+### 🚀 Features
+
+* add mosaic option ([0cdcd63](https://github.com/agrc/udot-parcel-ml/commit/0cdcd636c78823605da8dbfd67dc7ed1290c645d))
+* create cli options to download, merge, and summarize results ([dc90eee](https://github.com/agrc/udot-parcel-ml/commit/dc90eeeac8ae6dfcf3743ae771894e2afc482cba))
+
+
+### 🐛 Bug Fixes
+
+* catch bomb errors ([e4c67b4](https://github.com/agrc/udot-parcel-ml/commit/e4c67b4c6325c8a0b7f8f708b99e6582420a1f07))
+* correct method name ([acf0c2b](https://github.com/agrc/udot-parcel-ml/commit/acf0c2b12a1d062c737a75ae107cc4999e63bd5b))
+* insert buffered image ([bf12509](https://github.com/agrc/udot-parcel-ml/commit/bf12509767069d456faa7ec116b5be6b6d3f54c8))
+
 ## [1.0.0-9](https://github.com/agrc/udot-parcel-ml/compare/v1.0.0-8...v1.0.0-9) (2023-02-02)
 
 
