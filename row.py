@@ -558,3 +558,58 @@ def summarize_run(folder, run_name):
             "unrecognized characters": len(frame.loc[(frame["Empty Text"] > 0), :].index),
         },
     )
+
+
+def build_mosaic_image(images, object_name):
+    """build a mosaic image from a list of cv2 images
+
+    Args:
+        images (list): list of cv2 images to mosaic together
+        object_name (str): the name of the image object (original filename)
+
+    Returns:
+        mosaic_image (np.ndarray): composite mosaic of smaller images
+    """
+    max_width = 0
+    buffer = 5
+
+    #: Loop through all images to get sizes, save largest
+    for img in images:
+        if img.shape[1] > max_width:
+            max_width = img.shape[1]
+
+    #: Set up parameters for mosaic, calculate number of cols/rows
+    number_images = len(images)
+    number_columns = math.floor(math.sqrt(number_images))
+    number_rows = math.ceil(number_images / number_columns)
+
+    logging.info("mosaicking %i images into %i column by %i row grid", number_images, number_columns, number_rows)
+
+    #: Build mosaic image with white background
+    tile_width = max_width + 2 * buffer
+    total_height = tile_width * number_rows
+    total_width = tile_width * number_columns
+    mosaic_image = np.zeros((total_height, total_width, 3), dtype=np.uint8)
+    mosaic_image[:, :] = (255, 255, 255)
+
+    if total_height * total_width > 40_000_000:
+        logging.info('mosaic image size is too large: "%s"', object_name)
+
+        return None
+
+    i = 0
+    for img in images:
+        #: Resize all images by inserting them into the same template tile size
+        [img_height, img_width, _] = img.shape
+        buffered_image = np.zeros((tile_width, tile_width, 3), np.uint8)
+        buffered_image[:, :] = (255, 255, 255)
+        buffered_image[buffer : buffer + img_height, buffer : buffer + img_width] = img.copy()
+
+        #: Add buffered image into the mosaic
+        row_start = (math.floor(i / number_columns)) * tile_width
+        col_start = (i % number_columns) * tile_width
+        mosaic_image[row_start : row_start + tile_width, col_start : col_start + tile_width] = img
+
+        i += 1
+
+    return mosaic_image
