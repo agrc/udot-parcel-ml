@@ -90,18 +90,28 @@ def main():
             row.format_time(perf_counter() - circle_start),
         )
 
+        #: Process detected circle images into a mosaic
+        logging.info("mosaicking images in %s", object_name)
+        mosaic_start = perf_counter()
 
+        mosaic = row.build_image_mosaic(all_detected_circles, object_name)
 
         logging.info(
+            "job %i: image mosaic time taken %s: %s",
             TASK_INDEX,
             object_name,
+            row.format_time(perf_counter() - mosaic_start),
         )
 
         logging.info(
             "job %i: total time taken for entire task %s", TASK_INDEX, row.format_time(perf_counter() - object_start)
         )
 
+        #: Upload mosaic image to GCP bucket
+        if not mosaic:
+            logging.info('no mosaic image created or uploaded: "%s"', object_name)
 
+            continue
 
     logging.info("job %i: time taken for entire job %s", TASK_INDEX, row.format_time(perf_counter() - job_start))
 
