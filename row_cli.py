@@ -9,6 +9,7 @@ Usage:
     row_cli.py images process <file_name>
     row_cli.py image convert <file_name> (--save-to=location)
     row_cli.py detect circles <file_name> [--save-to=location]
+    row_cli.py detect circles <file_name> (--save-to=location --mosaic)
     row_cli.py detect characters <file_name>
     row_cli.py results download <run_name> (--from=location)
     row_cli.py results merge <run_name> (--from=location)
@@ -24,6 +25,7 @@ Examples:
     python row_cli.py storage pick-range --from=.ephemeral --task-index=0 --instances=10 --file-count=100
     python row_cli.py image convert ./test-data/multiple_page.pdf --save-to=./test
     python row_cli.py results download bobcat --from=bucket-name
+    python row_cli.py detect dircles ./test-data/five_circles_with_text.png ---save-to=./test --mosaic
 """
 
 import logging
@@ -104,6 +106,12 @@ def main():
 
             if not item_path.name.casefold().endswith(("jpg", "jpeg", "tif", "tiff", "png")):
                 print("item is incorrect file type")
+
+                return
+
+            if args["--mosaic"]:
+                circles = row.get_circles_from_image_bytes(item_path.read_bytes(), output_directory, item_path.name)
+                row.build_mosaic_image(circles, item_path.name, output_directory)
 
                 return
 
