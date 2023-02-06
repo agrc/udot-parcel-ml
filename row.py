@@ -613,3 +613,28 @@ def build_mosaic_image(images, object_name):
         i += 1
 
     return mosaic_image
+
+
+def upload_mosaic(image, bucket_name, object_name):
+    """upload mosaic image to a GCP bucket as a jpeg mime type
+
+    Args:
+        image (byte-encoded image): the mosaic image to as a numpy array
+        bucket_name (str): the name of the destination bucket
+        object_name (str): the name of the image object (original filename)
+
+    Returns:
+        nothing
+    """
+    file_name = f"mosaics/{object_name}"
+    logging.info("uploading %s to %s/%s", object_name, bucket_name, file_name)
+
+    storage_client = google.cloud.storage.Client()
+    bucket = storage_client.bucket(bucket_name)
+    new_blob = bucket.blob(file_name)
+
+    #: Encode image
+    is_success, buffer = cv2.imencode(".jpg", image)
+    io_buffer = BytesIO(buffer)
+
+    new_blob.upload_from_file(io_buffer, content_type="image/jpeg")
