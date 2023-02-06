@@ -90,30 +90,18 @@ def main():
             row.format_time(perf_counter() - circle_start),
         )
 
-        #: Process detected circle images to get detected characters
-        logging.info("detecting characters in %s", object_name)
-        all_results = []
-        character_start = perf_counter()
 
-        for circle in all_detected_circles:
-            result_str = row.get_characters_from_image(circle)
-            all_results.append(result_str)  #: append because result_str will be a string
 
         logging.info(
-            "job %i: character detection time taken %s: %s",
             TASK_INDEX,
             object_name,
-            row.format_time(perf_counter() - character_start),
         )
 
         logging.info(
             "job %i: total time taken for entire task %s", TASK_INDEX, row.format_time(perf_counter() - object_start)
         )
 
-        result_dataframe = row.append_results(result_dataframe, object_name, all_results)
 
-    #: Upload results to GCP bucket as CSV file
-    row.upload_results(result_dataframe, OUTPUT_BUCKET_NAME, f"ocr_results_{TASK_INDEX}.gzip")
 
     logging.info("job %i: time taken for entire job %s", TASK_INDEX, row.format_time(perf_counter() - job_start))
 
