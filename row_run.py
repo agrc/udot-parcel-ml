@@ -108,7 +108,7 @@ def main():
         )
 
         #: Upload mosaic image to GCP bucket
-        if not mosaic:
+        if not mosaic.any():
             logging.info('no mosaic image created or uploaded: "%s"', object_name)
 
             continue
