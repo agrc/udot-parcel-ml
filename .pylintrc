@@ -2,4 +2,4 @@
 max-line-length=120
 disable=broad-except
 ignore-patterns=.*_test.py
-generated-members=arcpy.da.SearchCursor,arcpy.da.UpdateCursor,arcpy.da.InsertCursor,arcpy.da.Describe,arcpy.env.scratchFolder,arcpy.env.scratchGDB,cv2.imdecode,cv2.cvtColor,cv2.imwrite,cv2.blur,cv2.COLOR_BGR2GRAY,cv2.HoughCircles,cv2.HOUGH_GRADIENT,cv2.circle,cv2.getStructuringElement,cv2.morphologyEx,cv2.divide,cv2.MORPH_RECT,cv2.MORPH_DILATE
+generated-members=arcpy.da.SearchCursor,arcpy.da.UpdateCursor,arcpy.da.InsertCursor,arcpy.da.Describe,arcpy.env.scratchFolder,arcpy.env.scratchGDB,cv2.imdecode,cv2.cvtColor,cv2.imwrite,cv2.blur,cv2.COLOR_BGR2GRAY,cv2.HoughCircles,cv2.HOUGH_GRADIENT,cv2.circle,cv2.getStructuringElement,cv2.morphologyEx,cv2.divide,cv2.MORPH_RECT,cv2.MORPH_DILATE,cv2.imdecode
