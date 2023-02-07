@@ -9,7 +9,7 @@ Usage:
     row_cli.py images process <file_name>
     row_cli.py image convert <file_name> (--save-to=location)
     row_cli.py detect circles <file_name> [--save-to=location]
-    row_cli.py detect circles <file_name> (--save-to=location --mosaic)
+    row_cli.py detect circles <file_name> (--save-to=location) [--mosaic]
     row_cli.py detect characters <file_name>
     row_cli.py results download <run_name> (--from=location)
     row_cli.py results merge <run_name> (--from=location)
