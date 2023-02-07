@@ -107,12 +107,6 @@ def main():
             "job %i: total time taken for entire task %s", TASK_INDEX, row.format_time(perf_counter() - object_start)
         )
 
-        #: Upload mosaic image to GCP bucket
-        if not mosaic.any():
-            logging.info('no mosaic image created or uploaded: "%s"', object_name)
-
-            continue
-
         row.upload_mosaic(mosaic, OUTPUT_BUCKET_NAME, object_name)
 
     logging.info("job %i: time taken for entire job %s", TASK_INDEX, row.format_time(perf_counter() - job_start))
