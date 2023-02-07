@@ -618,8 +618,8 @@ def build_mosaic_image(images, object_name, out_dir):
         if not out_dir.exists():
             out_dir.mkdir(parents=True)
 
-        mosaic_outfile = out_dir / f"{object_path.stem}_mosaic.jpg"
-        logging.debug(f"Saving to {mosaic_outfile}")
+        mosaic_outfile = out_dir / f"{object_path.stem}.jpg"
+        logging.debug("Saving to %s", mosaic_outfile)
         cv2.imwrite(str(mosaic_outfile), mosaic_image)
 
     else:
