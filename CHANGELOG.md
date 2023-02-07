@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0-1](https://github.com/agrc/udot-parcel-ml/compare/v1.2.0-0...v1.2.0-1) (2023-02-07)
+
+
+### 🐛 Bug Fixes
+
+* check if the mosaic array has any value ([7326ac4](https://github.com/agrc/udot-parcel-ml/commit/7326ac4a24d65a13495d7149e33e1985f977d085))
+
 ## [1.2.0-0](https://github.com/agrc/udot-parcel-ml/compare/v1.0.0-9...v1.2.0-0) (2023-02-06)
 
 
