@@ -655,15 +655,11 @@ def upload_mosaic(image, bucket_name, object_name, job_name):
     bucket = storage_client.bucket(bucket_name)
     new_blob = bucket.blob(str(file_name))
 
-    #: Encode image
     is_success, buffer = cv2.imencode(".jpg", image)
 
     if not is_success:
         logging.error("unable to encode image: %s", object_name)
 
-        return False
-
-    with BytesIO(buffer) as data:
-        new_blob.upload_from_file(data.getvalue(), content_type="image/jpeg")
+    new_blob.upload_from_string(buffer.tobytes(), content_type="image/jpeg")
 
     return True
