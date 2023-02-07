@@ -647,8 +647,7 @@ def upload_mosaic(image, bucket_name, object_name, job_name):
 
         return False
 
-    object_name = Path(object_name)
-    file_name = job_name / "mosaics" / object_name
+    file_name = f"{job_name}/mosaics/{object_name}"
     logging.info("uploading %s to %s/%s", object_name, bucket_name, file_name)
 
     storage_client = google.cloud.storage.Client()
