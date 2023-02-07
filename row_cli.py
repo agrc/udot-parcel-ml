@@ -64,88 +64,84 @@ def main():
     if args["images"] and args["process"]:
         return
 
-    if args["image"]:
-        if args["convert"]:
-            pdf = Path(args["<file_name>"])
-            if not pdf.exists():
-                print("file does not exist")
-
-                return
-
-            images, count, messages = row.convert_pdf_to_jpg_bytes(pdf.read_bytes(), "cli")
-            print(f"{pdf.name} contained {count} pages and converted with message {messages}")
-
-            if args["--save-to"]:
-                print(f'saving {count} images to {args["--save-to"]}')
-
-                directory = Path(args["--save-to"])
-                if not directory.exists():
-                    print("directory does not exist")
-
-                    return
-
-                for index, image in enumerate(images):
-                    path = Path(directory / f"{pdf.stem}_{index+1}.jpg")
-                    path.write_bytes(image)
+    if args["image"] and args["convert"]:
+        pdf = Path(args["<file_name>"])
+        if not pdf.exists():
+            print("file does not exist")
 
             return
-        if args["rotate"]:
+
+        images, count, messages = row.convert_pdf_to_jpg_bytes(pdf.read_bytes(), "cli")
+        print(f"{pdf.name} contained {count} pages and converted with message {messages}")
+
+        if args["--save-to"]:
+            print(f'saving {count} images to {args["--save-to"]}')
+
+            directory = Path(args["--save-to"])
+            if not directory.exists():
+                print("directory does not exist")
+
+                return
+
+            for index, image in enumerate(images):
+                path = Path(directory / f"{pdf.stem}_{index+1}.jpg")
+                path.write_bytes(image)
+
+        return
+
+    if args["detect"] and args["circles"]:
+        output_directory = None
+        if args["--save-to"]:
+            output_directory = Path(args["--save-to"])
+
+        item_path = Path(args["<file_name>"])
+
+        if not item_path.exists():
+            print("file does not exist")
+
             return
 
-    if args["detect"]:
-        if args["circles"]:
-            output_directory = None
-            if args["--save-to"]:
-                output_directory = Path(args["--save-to"])
+        if not item_path.name.casefold().endswith(("jpg", "jpeg", "tif", "tiff", "png")):
+            print("item is incorrect file type")
 
-            item_path = Path(args["<file_name>"])
+            return
 
-            if not item_path.exists():
-                print("file does not exist")
+        circles = row.get_circles_from_image_bytes(item_path.read_bytes(), output_directory, item_path.name)
 
-                return
+        if args["--mosaic"]:
+            row.build_mosaic_image(circles, item_path.name, output_directory)
 
-            if not item_path.name.casefold().endswith(("jpg", "jpeg", "tif", "tiff", "png")):
-                print("item is incorrect file type")
+            return
 
-                return
+        return circles
 
-            if args["--mosaic"]:
-                circles = row.get_circles_from_image_bytes(item_path.read_bytes(), output_directory, item_path.name)
-                row.build_mosaic_image(circles, item_path.name, output_directory)
+    if args["detect"] and args["characters"]:
+        item_path = Path(args["<file_name>"])
 
-                return
+        if not item_path.exists():
+            print("file does not exist")
 
-            return row.get_circles_from_image_bytes(item_path.read_bytes(), output_directory, item_path.name)
+            return
 
-        if args["characters"]:
-            item_path = Path(args["<file_name>"])
+        if not item_path.name.casefold().endswith(("jpg", "jpeg", "tif", "tiff", "png")):
+            print("item is incorrect file type")
 
-            if not item_path.exists():
-                print("file does not exist")
+            return
 
-                return
+        print("detecting circles in %s", item_path)
 
-            if not item_path.name.casefold().endswith(("jpg", "jpeg", "tif", "tiff", "png")):
-                print("item is incorrect file type")
+        return row.get_characters_from_image(row.convert_to_cv2_image(item_path.read_bytes()))
 
-                return
+    if args["results"] and args["download"]:
+        location = row.download_run(args["--from"], args["<run_name>"])
 
-            print("detecting circles in %s", item_path)
+        print(f"files downloaded to {location}")
 
-            return row.get_characters_from_image(row.convert_to_cv2_image(item_path.read_bytes()))
+    if args["results"] and args["merge"]:
+        row.merge_run(args["--from"], args["<run_name>"])
 
-    if args["results"]:
-        if args["download"]:
-            location = row.download_run(args["--from"], args["<run_name>"])
-
-            print(f"files downloaded to {location}")
-
-        if args["merge"]:
-            row.merge_run(args["--from"], args["<run_name>"])
-
-        if args["summarize"]:
-            row.summarize_run(args["--from"], args["<run_name>"])
+    if args["results"] and args["summarize"]:
+        row.summarize_run(args["--from"], args["<run_name>"])
 
 
 if __name__ == "__main__":
