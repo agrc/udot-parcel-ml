@@ -85,7 +85,8 @@ def main():
                     return
 
                 for index, image in enumerate(images):
-                    image.save(directory / f"{pdf.stem}_{index+1}.jpg")
+                    path = Path(directory / f"{pdf.stem}_{index+1}.jpg")
+                    path.write_bytes(image)
 
             return
         if args["rotate"]:
