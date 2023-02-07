@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.2.0-2](https://github.com/agrc/udot-parcel-ml/compare/v1.2.0-1...v1.2.0-2) (2023-02-07)
+
+
+### 🐛 Bug Fixes
+
+* add missing object name to cli convert ([3105669](https://github.com/agrc/udot-parcel-ml/commit/310566969b873b6c1ad2d76b6c9c743c8b8b9f24))
+* call correct method to upload bytes ([3adf908](https://github.com/agrc/udot-parcel-ml/commit/3adf908b1308d3aa6416bce2b1f3532238da4873))
+* correct file saving after refactoring to bytes ([262874b](https://github.com/agrc/udot-parcel-ml/commit/262874be4a4c34b43b0a3dbde9411c86984bbb33))
+* dispose of bytesio and use value ([8f85446](https://github.com/agrc/udot-parcel-ml/commit/8f85446d91dbf23148f0f7f18e710cd04901690a))
+* guard against empty images list ([db7736f](https://github.com/agrc/udot-parcel-ml/commit/db7736f41dcccd04bd3de006af0af7c1982f996e))
+* make mosaic flag optional ([428b4ac](https://github.com/agrc/udot-parcel-ml/commit/428b4acc6f7f7d1573f5884c66cabe57b2f6931a))
+* pass string to constructor ([dcb45ff](https://github.com/agrc/udot-parcel-ml/commit/dcb45ff6b77a093789130a8ec6d27f926be5aaf3))
+* return correct type ([2816048](https://github.com/agrc/udot-parcel-ml/commit/281604831f3d7f53808d184b6720cc996d1770ad))
+
 ## [1.2.0-1](https://github.com/agrc/udot-parcel-ml/compare/v1.2.0-0...v1.2.0-1) (2023-02-07)
 
 
