@@ -640,8 +640,14 @@ def upload_mosaic(image, bucket_name, object_name):
         object_name (str): the name of the image object (original filename)
 
     Returns:
-        nothing
+        bool: True if successful, False otherwise
     """
+    #: Upload mosaic image to GCP bucket
+    if image is None or not image.any():
+        logging.info('no mosaic image created or uploaded: "%s"', object_name)
+
+        return False
+
     object_name = Path(object_name)
     file_name = "mosaics" / object_name
     logging.info("uploading %s to %s/%s", object_name, bucket_name, file_name)
@@ -656,7 +662,9 @@ def upload_mosaic(image, bucket_name, object_name):
     if not is_success:
         logging.error("unable to encode image: %s", object_name)
 
-        return
+        return False
 
     with BytesIO(buffer) as data:
         new_blob.upload_from_file(data.getvalue(), content_type="image/jpeg")
+
+    return True
