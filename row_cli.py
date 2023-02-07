@@ -6,7 +6,7 @@ UDOT Right of Way (ROW) Parcel Number Extraction
 Usage:
     row_cli.py storage generate-index (--from=location) [--save-to=location]
     row_cli.py storage pick-range (--from=location --task-index=index --file-count=count --instances=size)
-    row_cli.py images process <file_name>
+    row_cli.py images process --job=name --from=location --save-to=location --index=location --task-index=index --file-count=count --instances=size
     row_cli.py image convert <file_name> (--save-to=location)
     row_cli.py detect circles <file_name> (--save-to=location) [--mosaic]
     row_cli.py results download <run_name> (--from=location)
@@ -59,7 +59,15 @@ def main():
         return
 
     if args["images"] and args["process"]:
-        return
+        return row.process_all(
+            args["--job"],
+            args["--from"],
+            args["--save-to"],
+            args["--index"],
+            int(args["--task-index"]),
+            int(args["--instances"]),
+            int(args["--file-count"]),
+        )
 
     if args["image"] and args["convert"]:
         pdf = Path(args["<file_name>"])
