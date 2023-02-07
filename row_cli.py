@@ -25,7 +25,7 @@ Examples:
     python row_cli.py storage pick-range --from=.ephemeral --task-index=0 --instances=10 --file-count=100
     python row_cli.py image convert ./test-data/multiple_page.pdf --save-to=./test
     python row_cli.py results download bobcat --from=bucket-name
-    python row_cli.py detect dircles ./test-data/five_circles_with_text.png ---save-to=./test --mosaic
+    python row_cli.py detect circles ./test-data/five_circles_with_text.png ---save-to=./test --mosaic
 """
 
 import logging
