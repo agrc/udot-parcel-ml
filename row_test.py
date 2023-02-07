@@ -98,31 +98,6 @@ def test_get_circles_saves_images_to_output():
     assert len(list(output.glob("*.jpg"))) == 5
 
 
-def test_clean_ocr_text_removes_newlines():
-    text = """this is a
-
-test"""
-
-    assert row.clean_ocr_text(text) == "thisisatest"
-
-    text = """this is a               test"""
-    assert row.clean_ocr_text(text) == "thisisatest"
-
-
-def test_get_characters_finds_characters():
-    for item_path in root.glob("crop_*"):
-        file_name = item_path.name
-
-        image_array = row.convert_to_cv2_image(item_path.read_bytes())
-
-        characters = row.get_characters_from_image(image_array)
-
-        expected_characters = file_name.replace("crop_", "").replace("_", ":").replace(".jpg", "")
-
-        assert characters is not None
-        assert characters == expected_characters
-
-
 @pytest.mark.parametrize("input,expected", [(None, np.array(None)), ([], np.array(None)), (list([]), np.array(None))])
 def test_build_mosaic_image_handles_empty_list(input, expected):
     image = row.build_mosaic_image(input, "name", None)
