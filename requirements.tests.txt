@@ -1,7 +1,7 @@
 pytest-cov~=4.0
 pytest-instafail~=0.4
 pytest-isort~=3.0
-pytest-pylint~=0.18
+pytest-pylint~=0.19
 pytest-black~=0.3
 pytest-watch~=4.2
 pytest~=7.2
