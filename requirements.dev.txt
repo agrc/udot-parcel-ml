@@ -1,4 +1,4 @@
-pylint~=2.11
+pylint~=2.16
 black~=22.0
 docopt~=0.6
 -r requirements.tests.txt
