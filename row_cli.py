@@ -8,11 +8,8 @@ Usage:
     row_cli.py storage pick-range (--from=location --task-index=index --file-count=count --instances=size)
     row_cli.py images process <file_name>
     row_cli.py image convert <file_name> (--save-to=location)
-    row_cli.py detect circles <file_name> [--save-to=location]
     row_cli.py detect circles <file_name> (--save-to=location) [--mosaic]
-    row_cli.py detect characters <file_name>
     row_cli.py results download <run_name> (--from=location)
-    row_cli.py results merge <run_name> (--from=location)
     row_cli.py results summarize <run_name> (--from=location)
 
 Options:
@@ -24,8 +21,8 @@ Examples:
     python row_cli.py storage generate-index --from=./test-data --save-to=./data
     python row_cli.py storage pick-range --from=.ephemeral --task-index=0 --instances=10 --file-count=100
     python row_cli.py image convert ./test-data/multiple_page.pdf --save-to=./test
+    python row_cli.py detect circles ./test-data/five_circles_with_text.png --save-to=./test --mosaic
     python row_cli.py results download bobcat --from=bucket-name
-    python row_cli.py detect circles ./test-data/five_circles_with_text.png ---save-to=./test --mosaic
 """
 
 import logging
@@ -115,30 +112,10 @@ def main():
 
         return circles
 
-    if args["detect"] and args["characters"]:
-        item_path = Path(args["<file_name>"])
-
-        if not item_path.exists():
-            print("file does not exist")
-
-            return
-
-        if not item_path.name.casefold().endswith(("jpg", "jpeg", "tif", "tiff", "png")):
-            print("item is incorrect file type")
-
-            return
-
-        print("detecting circles in %s", item_path)
-
-        return row.get_characters_from_image(row.convert_to_cv2_image(item_path.read_bytes()))
-
     if args["results"] and args["download"]:
         location = row.download_run(args["--from"], args["<run_name>"])
 
         print(f"files downloaded to {location}")
-
-    if args["results"] and args["merge"]:
-        row.merge_run(args["--from"], args["<run_name>"])
 
     if args["results"] and args["summarize"]:
         row.summarize_run(args["--from"], args["<run_name>"])

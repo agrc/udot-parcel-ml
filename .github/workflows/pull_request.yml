@@ -22,7 +22,7 @@ jobs:
           python-version: 3.9
 
       - name: 🖇️ Install dependencies
-        run: sudo apt-get update && sudo apt-get install libpoppler-dev poppler-utils tesseract-ocr libtesseract-dev -y
+        run: sudo apt-get update && sudo apt-get install libpoppler-dev poppler-utils -y
       - name: 📥 Download dependencies
         run: pip install -r requirements.tests.txt
 

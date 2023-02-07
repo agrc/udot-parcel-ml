@@ -6,7 +6,6 @@ Right of way module containing methods
 """
 import logging
 import math
-import re
 from io import BytesIO
 from itertools import islice
 from os import environ
@@ -17,7 +16,6 @@ import google.cloud.logging
 import google.cloud.storage
 import numpy as np
 import pandas as pd
-import pytesseract
 from pdf2image import convert_from_bytes
 from pdf2image.exceptions import PDFInfoNotInstalledError, PDFPageCountError, PDFSyntaxError
 from PIL.Image import DecompressionBombError
@@ -25,13 +23,6 @@ from PIL.Image import DecompressionBombError
 if "PY_ENV" in environ and environ["PY_ENV"] == "production":
     client = google.cloud.logging.Client()
     client.setup_logging()
-
-ACCEPTABLE_CHARACTERS = "0123456789ABCDEFGHJKLMNPQRSTUVWXYZ:-"
-OCR_CONFIG = f"--oem 0 --psm 6 -c tessedit_char_whitelist={ACCEPTABLE_CHARACTERS}"
-EXPRESSION = re.compile(r"\s", flags=re.MULTILINE)
-URI_TEXTFILE = Path(__file__).parent / "bucket-info" / "udot_bucket_uris.txt"
-environ["TESSDATA_PREFIX"] = str(Path(__file__).parent / "training-data")
-pytesseract.pytesseract.tesseract_cmd = "tesseract"
 
 
 def generate_index(from_location, save_location):
@@ -300,46 +291,6 @@ def convert_to_cv2_image(image):
     return cv2.imdecode(np.frombuffer(image, dtype=np.uint8), 1)  # 1 means flags=cv2.IMREAD_COLOR
 
 
-def get_characters_from_image(image):
-    """detect characters in a cv2 image object
-
-    Args:
-        image: The cv2 image to detect characters in
-
-    Returns:
-        list: A list of detected characters
-    """
-
-    #: convert image to grayscale
-    grayscale_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-
-    structure = cv2.getStructuringElement(cv2.MORPH_RECT, (8, 8))
-    morph = cv2.morphologyEx(grayscale_image, cv2.MORPH_DILATE, structure)
-
-    final_image = cv2.divide(grayscale_image, morph, scale=255)
-
-    #: perform text detection
-    result = pytesseract.image_to_string(final_image, config=OCR_CONFIG)
-
-    result = clean_ocr_text(result)
-
-    logging.info('detected characters: "%s"', result)
-
-    return result
-
-
-def clean_ocr_text(text):
-    """clean up OCR text
-
-    Args:
-        text (str): The text to clean up
-
-    Returns:
-        str: The cleaned up text
-    """
-    return re.sub(pattern=EXPRESSION, repl="", string=text, count=0)
-
-
 def export_circles_from_image(circles, out_dir, file_name, cv2_image, height, width, inset_distance):
     """export detected circles from an image as jpegs to the out_dir
 
@@ -505,32 +456,6 @@ def download_run(bucket, run_name):
     return location.joinpath(run_name)
 
 
-def merge_run(folder, run_name):
-    """merge all result files in a folder into a single file
-
-    Args:
-        folder (str): the name of the folder containing the results
-        run_name (str): the name of the output file
-
-    Returns:
-        nothing
-    """
-    folder = Path(folder) / run_name
-    all_files = sorted(folder.glob("ocr_results_*.gzip"))
-
-    logging.info("found %i files to merge in %s", len(all_files), folder)
-
-    frames = []
-
-    for filename in all_files:
-        temp_frame = pd.read_parquet(filename, index_col=0, header=0)
-        frames.append(temp_frame)
-
-    frame = pd.concat(frames, ignore_index=True)
-
-    frame.to_parquet(folder / f"{run_name}.gzip", index=False, compression="gzip")
-
-
 def summarize_run(folder, run_name):
     """summarize the results of a run
 
@@ -544,20 +469,6 @@ def summarize_run(folder, run_name):
     logging.info("summarizing %s", run_name)
 
     folder = Path(folder) / run_name
-    frame = pd.read_parquet(folder / f"{run_name}.gzip", index_col=None, header=0)
-
-    frame["Parcel Count"] = frame["Parcels"].apply(len)
-    frame["Empty Text"] = frame["Parcels"].apply(lambda x: x.count(""))
-
-    logging.info(
-        "total files processed: %s, %s",
-        len(frame.index),
-        {
-            "extractions": frame["Parcel Count"].sum(),
-            "unmatchable": len(frame.loc[(frame["Parcel Count"] == 0), :].index),
-            "unrecognized characters": len(frame.loc[(frame["Empty Text"] > 0), :].index),
-        },
-    )
 
 
 def build_mosaic_image(images, object_name, out_dir):
@@ -624,7 +535,7 @@ def build_mosaic_image(images, object_name, out_dir):
             out_dir.mkdir(parents=True)
 
         mosaic_outfile = out_dir / f"{object_path.stem}.jpg"
-        logging.debug("Saving to %s", mosaic_outfile)
+        logging.info("Saving to %s", mosaic_outfile)
         cv2.imwrite(str(mosaic_outfile), mosaic_image)
 
     else:
