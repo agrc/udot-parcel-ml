@@ -653,7 +653,7 @@ def upload_mosaic(image, bucket_name, object_name, job_name):
 
     storage_client = google.cloud.storage.Client()
     bucket = storage_client.bucket(bucket_name)
-    new_blob = bucket.blob(file_name)
+    new_blob = bucket.blob(str(file_name))
 
     #: Encode image
     is_success, buffer = cv2.imencode(".jpg", image)
