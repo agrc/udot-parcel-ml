@@ -12,6 +12,7 @@
     "gcloud",
     "gserviceaccount",
     "imdecode",
+    "imencode",
     "IMREAD",
     "imwrite",
     "instafail",
