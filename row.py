@@ -340,7 +340,6 @@ def get_circles_from_image_bytes(byte_img, output_path, file_name):
             circle_count = len(detected_circles[0])
 
         logging.info(
-            "Run: %i found %i circles %s",
             "run: %i found %i circles %s",
             i,
             circle_count,
@@ -355,7 +354,7 @@ def get_circles_from_image_bytes(byte_img, output_path, file_name):
 
         count_down -= 1
 
-    logging.info("Circles: %4i", circle_count)
+    logging.info("final circles count: %i", circle_count)
 
     return export_circles_from_image(
         detected_circles,
@@ -396,7 +395,7 @@ def export_circles_from_image(circles, out_dir, file_name, cv2_image, height, wi
         list: a list of cv2 images
     """
     if circles is None:
-        logging.warning("No circles detected for %s", file_name)
+        logging.warning("no circles detected for %s", file_name)
 
         return []
 
@@ -624,7 +623,7 @@ def build_mosaic_image(images, object_name, out_dir):
             out_dir.mkdir(parents=True)
 
         mosaic_outfile = out_dir / f"{object_path.stem}.jpg"
-        logging.info("Saving to %s", mosaic_outfile)
+        logging.info("saving to %s", mosaic_outfile)
         cv2.imwrite(str(mosaic_outfile), mosaic_image)
 
     else:
