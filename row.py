@@ -175,10 +175,10 @@ def convert_pdf_to_jpg_bytes(pdf_as_bytes, object_name):
     count = len(images)
 
     def convert_to_bytes(image):
-        byte_array = BytesIO()
-        image.save(byte_array, format="JPEG")
+        with BytesIO() as byte_array:
+            image.save(byte_array, format="JPEG")
 
-        return byte_array.getvalue()
+            return byte_array.getvalue()
 
     images = [convert_to_bytes(image) for image in images if image is not None]
 
@@ -455,10 +455,10 @@ def upload_results(frame, bucket_name, out_name):
     bucket = storage_client.bucket(bucket_name)
     new_blob = bucket.blob(file_name)
 
-    parquet = BytesIO()
-    frame.to_parquet(parquet, compression="gzip")
+    with BytesIO() as parquet:
+        frame.to_parquet(parquet, compression="gzip")
 
-    new_blob.upload_from_file(parquet, content_type="application/gzip")
+        new_blob.upload_from_file(parquet, content_type="application/gzip")
 
 
 def format_time(seconds):
@@ -647,6 +647,6 @@ def upload_mosaic(image, bucket_name, object_name):
 
     #: Encode image
     is_success, buffer = cv2.imencode(".jpg", image)
-    io_buffer = BytesIO(buffer)
 
-    new_blob.upload_from_file(io_buffer, content_type="image/jpeg")
+    with BytesIO(buffer) as data:
+        new_blob.upload_from_file(data.getvalue(), content_type="image/jpeg")
