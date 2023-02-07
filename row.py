@@ -476,7 +476,7 @@ def append_results(frame, obj_name, results):
     return frame
 
 
-def upload_results(frame, bucket_name, out_name):
+def upload_results(frame, bucket_name, out_name, job_name):
     """upload results dataframe to a GCP bucket as a gzip file
 
     Args:
@@ -487,7 +487,7 @@ def upload_results(frame, bucket_name, out_name):
     Returns:
         nothing
     """
-    file_name = f"{environ['JOB_NAME']}/{out_name}"
+    file_name = f"{job_name}/{out_name}"
     logging.info("uploading %s to %s/%s", out_name, bucket_name, file_name)
 
     storage_client = google.cloud.storage.Client()
@@ -630,7 +630,7 @@ def build_mosaic_image(images, object_name, out_dir):
         return mosaic_image
 
 
-def upload_mosaic(image, bucket_name, object_name):
+def upload_mosaic(image, bucket_name, object_name, job_name):
     """upload mosaic image to a GCP bucket as a jpeg mime type
 
     Args:
@@ -648,7 +648,7 @@ def upload_mosaic(image, bucket_name, object_name):
         return False
 
     object_name = Path(object_name)
-    file_name = "mosaics" / object_name
+    file_name = job_name / "mosaics" / object_name
     logging.info("uploading %s to %s/%s", object_name, bucket_name, file_name)
 
     storage_client = google.cloud.storage.Client()
