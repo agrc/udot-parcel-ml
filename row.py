@@ -634,7 +634,7 @@ def upload_mosaic(image, bucket_name, object_name, job_name):
     """upload mosaic image to a GCP bucket as a jpeg mime type
 
     Args:
-        image (byte-encoded image): the mosaic image to as a numpy array
+        image (np.array): the mosaic image bytes
         bucket_name (str): the name of the destination bucket
         object_name (str): the name of the image object (original filename)
 
