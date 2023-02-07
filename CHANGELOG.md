@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0-3](https://github.com/agrc/udot-parcel-ml/compare/v1.2.0-2...v1.2.0-3) (2023-02-07)
+
+
+### 🐛 Bug Fixes
+
+* remove unnecessary path object ([04dd9a8](https://github.com/agrc/udot-parcel-ml/commit/04dd9a811f6e3b3f63df6f6e3f107960d03c81b0))
+
 ## [1.2.0-2](https://github.com/agrc/udot-parcel-ml/compare/v1.2.0-1...v1.2.0-2) (2023-02-07)
 
 
