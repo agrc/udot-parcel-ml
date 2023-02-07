@@ -7,6 +7,9 @@ A module that contains tests for the project module.
 
 from pathlib import Path
 
+import numpy as np
+import pytest
+
 import row
 
 root = Path(__file__).parent / "test-data"
@@ -118,3 +121,24 @@ def test_get_characters_finds_characters():
 
         assert characters is not None
         assert characters == expected_characters
+
+
+@pytest.mark.parametrize("input,expected", [(None, np.array(None)), ([], np.array(None)), (list([]), np.array(None))])
+def test_build_mosaic_image_handles_empty_list(input, expected):
+    image = row.build_mosaic_image(input, "name", None)
+    assert image == expected
+
+
+@pytest.mark.parametrize("input", [None, np.array(None)])
+def test_upload_mosaic_handles_empty_np_array(input):
+    assert row.upload_mosaic(input, "name", None) == False
+
+
+def test_build_mosaic_image_handles_builds_a_mosaic():
+    images = []
+    for item_path in root.glob("crop_*"):
+        images.append(row.convert_to_cv2_image(item_path.read_bytes()))
+
+    mosaic = row.build_mosaic_image(images, "test", None)
+
+    assert mosaic is not None
