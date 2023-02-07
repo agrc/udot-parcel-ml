@@ -10,6 +10,7 @@ from io import BytesIO
 from itertools import islice
 from os import environ
 from pathlib import Path
+from time import perf_counter
 
 import cv2
 import google.cloud.logging
@@ -18,11 +19,97 @@ import numpy as np
 import pandas as pd
 from pdf2image import convert_from_bytes
 from pdf2image.exceptions import PDFInfoNotInstalledError, PDFPageCountError, PDFSyntaxError
+from PIL import Image
 from PIL.Image import DecompressionBombError
 
 if "PY_ENV" in environ and environ["PY_ENV"] == "production":
     client = google.cloud.logging.Client()
     client.setup_logging()
+
+
+def process_all(job_name, input_bucket, output_location, file_index, task_index, task_count, total_size):
+    """the code to run in the cloud run job
+
+    Args:
+        job_name (str): the name of the run job. typically named after an animal in alphabetical order
+        input_bucket (str): the bucket to get files from using the format `gs://bucket-name`
+        output_location (str): the location to save the results to. omit the `gs://` prefix
+        file_index (str): the path to the folder containing an `index.txt` file listing all the images in a bucket.
+                          `gs://bucket-name`
+        task_index (int): the index of the task running
+        task_count (int): the number of containers running the job
+        total_size (int): the total number of files to process
+
+    Returns:
+        None
+    """
+    #: Get files to process for this job
+    files = get_files_from_index(file_index, task_index, task_count, total_size)
+
+    #: Initialize GCP storage client and bucket
+    storage_client = google.cloud.storage.Client()
+    bucket = storage_client.bucket(input_bucket[5:])
+
+    #: Iterate over objects to detect circles and perform OCR
+    for object_name in files:
+        object_start = perf_counter()
+        object_name = object_name.rstrip()
+        extension = Path(object_name).suffix.casefold()
+
+        if extension == ".pdf":
+            conversion_start = perf_counter()
+            images, count, messages = convert_pdf_to_jpg_bytes(
+                bucket.blob(object_name).download_as_bytes(), object_name
+            )
+            logging.info("%s contained %i pages and converted with message %s", object_name, count, messages)
+            logging.info(
+                "job %i: conversion time taken for object %s: %s",
+                task_index,
+                object_name,
+                format_time(perf_counter() - conversion_start),
+            )
+
+        elif extension in [".jpg", ".jpeg", ".tif", ".tiff", ".png"]:
+            images = list([bucket.blob(object_name).download_as_bytes()])
+        else:
+            logging.info('not a valid document or image: "%s"', object_name)
+
+            continue
+
+        #: Process images to get detected circles
+        logging.info("detecting circles in %s", object_name)
+        all_detected_circles = []
+        circle_start = perf_counter()
+
+        for image in images:
+            circle_images = get_circles_from_image_bytes(image, None, object_name)
+            all_detected_circles.extend(circle_images)  #: extend because circle_images will be a list
+
+        logging.info(
+            "job %i: circle detection time taken %s: %s",
+            task_index,
+            object_name,
+            format_time(perf_counter() - circle_start),
+        )
+
+        #: Process detected circle images into a mosaic
+        logging.info("mosaicking images in %s", object_name)
+        mosaic_start = perf_counter()
+
+        mosaic = build_mosaic_image(all_detected_circles, object_name, None)
+
+        logging.info(
+            "job %i: image mosaic time taken %s: %s",
+            task_index,
+            object_name,
+            format_time(perf_counter() - mosaic_start),
+        )
+
+        logging.info(
+            "job %i: total time taken for entire task %s", task_index, format_time(perf_counter() - object_start)
+        )
+
+        upload_mosaic(mosaic, output_location, object_name, job_name)
 
 
 def generate_index(from_location, save_location):
@@ -100,6 +187,7 @@ def get_files_from_index(from_location, task_index, task_count, total_size):
     total_size = int(total_size)
 
     index = Path(__file__).parent / ".ephemeral" / "index.txt"
+
     if from_location.startswith("gs://"):
         storage_client = google.cloud.storage.Client()
         bucket = storage_client.bucket(from_location[5:])
@@ -253,6 +341,7 @@ def get_circles_from_image_bytes(byte_img, output_path, file_name):
 
         logging.info(
             "Run: %i found %i circles %s",
+            "run: %i found %i circles %s",
             i,
             circle_count,
             {
