@@ -571,6 +571,11 @@ def build_mosaic_image(images, object_name, out_dir):
     Returns:
         mosaic_image (np.ndarray): composite mosaic of smaller images
     """
+    if images is None or len(images) == 0:
+        logging.warning("no images to mosaic")
+
+        return np.array(None)
+
     object_path = Path(object_name)
     max_width = 0
     buffer = 5
