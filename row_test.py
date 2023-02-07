@@ -106,7 +106,7 @@ def test_build_mosaic_image_handles_empty_list(input, expected):
 
 @pytest.mark.parametrize("input", [None, np.array(None)])
 def test_upload_mosaic_handles_empty_np_array(input):
-    assert row.upload_mosaic(input, "name", None) == False
+    assert row.upload_mosaic(input, "name", None, "tests") == False
 
 
 def test_build_mosaic_image_handles_builds_a_mosaic():
