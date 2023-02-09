@@ -232,6 +232,83 @@ def get_files_from_index(from_location, task_index, task_count, total_size):
     return file_list
 
 
+def generate_remaining_index(from_location, save_location, job_name):
+    """reads file names from the `from_location` and optionally saves the list to the `save_location` as an index.txt
+    file. Cloud storage buckets must start with `gs://`
+    Args:
+        from_location (str): the directory to read the files from. Prefix GSC buckets with gs://.
+        save_location (str): the directory to save the list of files to. An index.txt file will be created within this
+                             directory
+    Returns:
+        list(str): a list of file names
+    """
+
+    original_files = get_files_from_index(from_location, 0, 1, 89537)
+    original_files = [item.strip() for item in original_files]
+    logging.info("original number of files %i", len(original_files))
+    # print(original_files)
+
+    existing_files = list([])
+
+    logging.info('reading files from "%s"', from_location)
+    if from_location.startswith("gs://"):
+        job_prefix = f"{job_name}/mosaics/"
+        storage_client = google.cloud.storage.Client()
+        iterator = storage_client.list_blobs(from_location[5:], max_results=None, versions=False, prefix=job_prefix)
+
+        existing_files = [blob.name for blob in iterator]
+    else:
+        from_location = Path(from_location)
+
+        if not from_location.exists():
+            logging.warning("from location %s does not exists", from_location)
+
+            return existing_files
+
+        iterator = from_location.glob("**/*")
+        existing_files = [str(item) for item in iterator if item.is_file()]
+
+    existing_files = [item.strip() for item in existing_files]
+    logging.info("existing number of mosaic files %i", len(existing_files))
+    logging.info("number of remaining files to mosaic %i", len(original_files) - len(existing_files))
+
+    # remaining_files = list(set(original_files) - set(existing_files))
+    remaining_files = original_files
+
+    for file in remaining_files:
+        if file in (existing_files):
+            remaining_files.remove(file)
+
+    logging.info("remaining files found %i", len(remaining_files))
+
+    if save_location is None:
+        return remaining_files
+
+    if save_location.startswith("gs://"):
+        storage_client = google.cloud.storage.Client()
+        bucket = storage_client.bucket(save_location[5:])
+        blob = bucket.blob("remaining_index.txt")
+
+        with BytesIO() as data:
+            for item in remaining_files:
+                data.write(str(item).encode("utf-8") + b"\n")
+
+            blob.upload_from_string(data.getvalue())
+    else:
+        save_location = Path(save_location)
+
+        if not save_location.exists():
+            logging.warning("save location %s does not exists", save_location)
+
+            return remaining_files
+
+        with save_location.joinpath("remaining_index.txt").open("w", encoding="utf-8", newline="") as output:
+            for item in remaining_files:
+                output.write(str(item) + "\n")
+
+    return remaining_files
+
+
 def convert_pdf_to_jpg_bytes(pdf_as_bytes, object_name):
     """convert pdf to jpg images
 
