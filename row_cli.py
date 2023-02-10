@@ -4,8 +4,8 @@
 UDOT Right of Way (ROW) Parcel Number Extraction
 
 Usage:
-    row_cli.py storage generate-index (--from=location) [--save-to=location]
-    row_cli.py storage generate-remaining-index (--from=location --job=name) [--save-to=location]
+    row_cli.py storage generate-index (--from=location) [--prefix=prefix --save-to=location]
+    row_cli.py storage generate-remaining-index (--full-index=location --processed-index=location) [--save-to=location]
     row_cli.py storage pick-range (--from=location --task-index=index --file-count=count --instances=size)
     row_cli.py images process --job=name --from=location --save-to=location --index=location --task-index=index --file-count=count --instances=size
     row_cli.py image convert <file_name> (--save-to=location)
@@ -19,8 +19,8 @@ Options:
     --instances=size                The number of containers running the job [default: 10]
     --save-to=location              The location to output the stuff
 Examples:
-    python row_cli.py storage generate-index --from=./test-data --save-to=./data
-    python row_cli.py storage generate-remaining-index --from=./test-data --job=elephant --save-to=./data
+    python row_cli.py storage generate-index --from=./test-data --prefix=elephant/mosaics/ --save-to=./data
+    python row_cli.py storage generate-remaining-index --full-index=./test-data --processed-index=./test-data --save-to=./data
     python row_cli.py storage pick-range --from=.ephemeral --task-index=0 --instances=10 --file-count=100
     python row_cli.py image convert ./test-data/multiple_page.pdf --save-to=./test
     python row_cli.py detect circles ./test-data/five_circles_with_text.png --save-to=./test --mosaic
