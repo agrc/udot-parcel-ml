@@ -47,19 +47,25 @@ def main():
     """doc string"""
     args = docopt(__doc__, version="1.0")  # type: ignore
 
-    if args["storage"]:
-        if args["generate-index"]:
-            index = row.generate_index(args["--from"], args["--save-to"])
-            print(index)
-            print(f"total job size: {len(index)}")
+    if args["storage"] and args["generate-index"]:
+        if args["--prefix"]:
+            index = row.generate_index(args["--from"], args["--prefix"], args["--save-to"])
+        else:
+            index = row.generate_index(args["--from"], None, args["--save-to"])
 
-            return
+        print(index)
+        print(f"total job size: {len(index)}")
 
-        if args["generate-remaining-index"]:
-            remaining_index = row.generate_remaining_index(args["--from"], args["--save-to"], args["--job"])
-            print(f"total job size: {len(remaining_index)}")
+        return
 
-            return
+    if args["storage"] and args["generate-remaining-index"]:
+        remaining_index = row.generate_remaining_index(
+            args["--full-index"], args["--processed-index"], args["--save-to"]
+        )
+        # print(remaining_index)
+        print(f"remaining job size: {len(remaining_index)}")
+
+        return
 
     if args["storage"] and args["pick-range"]:
         jobs = row.get_files_from_index(args["--from"], args["--task-index"], args["--instances"], args["--file-count"])
