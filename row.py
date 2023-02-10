@@ -266,7 +266,7 @@ def get_files_from_index(from_location, task_index, task_count, total_size):
     return file_list
 
 
-def generate_remaining_index(from_location, save_location, job_name):
+def generate_remaining_index(full_index_location, processed_index_location, save_location):
     """reads file names from the `from_location` and optionally saves the list to the `save_location` as an index.txt
     file. Cloud storage buckets must start with `gs://`
     Args:
@@ -277,43 +277,25 @@ def generate_remaining_index(from_location, save_location, job_name):
         list(str): a list of file names
     """
 
-    original_files = get_files_from_index(from_location, 0, 1, 89537)
-    original_files = [item.strip() for item in original_files]
-    logging.info("original number of files %i", len(original_files))
-    # print(original_files)
+    #: Get all files from the full index
+    full_index = get_index(full_index_location)
 
-    existing_files = list([])
+    with full_index.open() as f:
+        all_files = set([l.strip() for l in f.readlines()])
 
-    logging.info('reading files from "%s"', from_location)
-    if from_location.startswith("gs://"):
-        job_prefix = f"{job_name}/mosaics/"
-        storage_client = google.cloud.storage.Client()
-        iterator = storage_client.list_blobs(from_location[5:], max_results=None, versions=False, prefix=job_prefix)
+    logging.info("total number of files %i", len(all_files))
 
-        existing_files = [blob.name for blob in iterator]
-    else:
-        from_location = Path(from_location)
+    #: Get already-processed files from processed index
+    processed_index = get_index(processed_index_location)
 
-        if not from_location.exists():
-            logging.warning("from location %s does not exists", from_location)
+    with processed_index.open() as f:
+        processed_files = set([l.strip() for l in f.readlines()])
 
-            return existing_files
+    logging.info("number of already-processed files %i", len(processed_files))
 
-        iterator = from_location.glob("**/*")
-        existing_files = [str(item) for item in iterator if item.is_file()]
-
-    existing_files = [item.strip() for item in existing_files]
-    logging.info("existing number of mosaic files %i", len(existing_files))
-    logging.info("number of remaining files to mosaic %i", len(original_files) - len(existing_files))
-
-    # remaining_files = list(set(original_files) - set(existing_files))
-    remaining_files = original_files
-
-    for file in remaining_files:
-        if file in (existing_files):
-            remaining_files.remove(file)
-
-    logging.info("remaining files found %i", len(remaining_files))
+    #: Get the difference to determine what remaining files need to be processed
+    remaining_files = all_files - processed_files
+    logging.info("number of remaining files to process %i", len(remaining_files))
 
     if save_location is None:
         return remaining_files
