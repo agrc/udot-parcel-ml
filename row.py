@@ -170,38 +170,36 @@ def generate_index(from_location, save_location):
     return files
 
 
-def get_files_from_index(from_location, task_index, task_count, total_size):
-    """reads the index.txt file from the `from_location`. Based on the task index and total task count a list of files
-    is returned. Cloud storage buckets must start with `gs://`
+def download_file_from(bucket_name, file_name):
+    """downloads `file_name` from `bucket_name`. Index path object is returned. Cloud storage buckets must start with `gs://`
     Args:
-        from_location (str): the directory to where the index.txt file resides. Prefix GSC buckets with gs://.
-        task_index (number): the index of the current cloud run task
-        task_count (number): the total number of cloud run tasks
-        total_size (number): the total number of files to process
-
+        bucket_name (str): the bucket where the file resides. Prefix GSC buckets with gs://.
+        file_name (number): the file name (with extension, i.e. index.txt) to download
     Returns:
-        list(str): a list of uris from the bucket based on index text file
+        index (Path): path object for the downloaded file
     """
-    task_index = int(task_index)
-    task_count = int(task_count)
-    total_size = int(total_size)
+    index = Path(__file__).parent / ".ephemeral" / file_name
 
-    index = Path(__file__).parent / ".ephemeral" / "index.txt"
+    storage_client = google.cloud.storage.Client()
+    if bucket_name.startswith("gs://"):
+        bucket = storage_client.bucket(bucket_name[5:])
+    else:
+        bucket = storage_client.bucket(bucket_name)
 
-    if from_location.startswith("gs://"):
-        storage_client = google.cloud.storage.Client()
-        bucket = storage_client.bucket(from_location[5:])
-        blob = bucket.blob("index.txt")
+    blob = bucket.blob(file_name)
 
-        if not index.parent.exists():
-            index.parent.mkdir(parents=True)
+    if not index.parent.exists():
+        index.parent.mkdir(parents=True)
 
-        try:
-            blob.download_to_filename(str(index))
-        except Exception as ex:
-            logging.error("job %i: error downloading file index %s. %s", task_index, index, ex, exc_info=True)
+    try:
+        blob.download_to_filename(str(index))
+    except Exception as ex:
+        logging.error("error downloading file index %s. %s", index, ex, exc_info=True)
 
-            raise ex
+        raise ex
+
+    return index
+
 
     else:
         folder = Path(from_location)
