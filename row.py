@@ -112,11 +112,12 @@ def process_all(job_name, input_bucket, output_location, file_index, task_index,
         upload_mosaic(mosaic, output_location, object_name, job_name)
 
 
-def generate_index(from_location, save_location):
+def generate_index(from_location, prefix, save_location):
     """reads file names from the `from_location` and optionally saves the list to the `save_location` as an index.txt
-    file. Cloud storage buckets must start with `gs://`
+    file. Prefix can optionally be included to narrow down index location. Cloud storage buckets must start with `gs://`
     Args:
         from_location (str): the directory to read the files from. Prefix GSC buckets with gs://.
+        prefix (str): subdirectory or GCS prefix. This prefix will also be stripped from the beginning of GCS paths.
         save_location (str): the directory to save the list of files to. An index.txt file will be created within this
                              directory
     Returns:
@@ -128,11 +129,14 @@ def generate_index(from_location, save_location):
     logging.info('reading files from "%s"', from_location)
     if from_location.startswith("gs://"):
         storage_client = google.cloud.storage.Client()
-        iterator = storage_client.list_blobs(from_location[5:], max_results=None, versions=False)
+        iterator = storage_client.list_blobs(from_location[5:], max_results=None, versions=False, prefix=prefix)
 
-        files = [blob.name for blob in iterator]
+        files = [blob.name.removeprefix(prefix).strip() for blob in iterator]
     else:
-        from_location = Path(from_location)
+        if prefix:
+            from_location = Path(from_location) / prefix
+        else:
+            from_location = Path(from_location)
 
         if not from_location.exists():
             logging.warning("from location %s does not exists", from_location)
