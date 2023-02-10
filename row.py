@@ -144,7 +144,8 @@ def generate_index(from_location, prefix, save_location):
             return files
 
         iterator = from_location.glob("**/*")
-        files = [str(item) for item in iterator if item.is_file()]
+
+        files = [str(item).strip() for item in iterator if item.is_file()]
 
     if save_location is None:
         return files
@@ -225,6 +226,9 @@ def get_index(from_location):
 
         if not index.exists():
             raise Exception("index.txt file does not exist")
+
+    return index
+
 
 def get_files_from_index(from_location, task_index, task_count, total_size):
     """reads the index.txt file from the `from_location`. Based on the task index and total task count a list of files
