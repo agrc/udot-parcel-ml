@@ -222,6 +222,24 @@ def get_index(from_location):
         if not index.exists():
             raise Exception("index.txt file does not exist")
 
+def get_files_from_index(from_location, task_index, task_count, total_size):
+    """reads the index.txt file from the `from_location`. Based on the task index and total task count a list of files
+    is returned. Cloud storage buckets must start with `gs://`
+    Args:
+        from_location (str): the directory to where the index.txt file resides. Prefix GSC buckets with gs://.
+        task_index (number): the index of the current cloud run task
+        task_count (number): the total number of cloud run tasks
+        total_size (number): the total number of files to process
+
+    Returns:
+        list(str): a list of uris from the bucket based on index text file
+    """
+    task_index = int(task_index)
+    task_count = int(task_count)
+    total_size = int(total_size)
+
+    index = get_index(from_location)
+
     job_size = math.ceil(total_size / task_count)
     first_index = task_index * job_size
     last_index = total_size - 1
