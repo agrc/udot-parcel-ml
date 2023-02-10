@@ -270,7 +270,8 @@ def generate_remaining_index(full_index_location, processed_index_location, save
     """reads file names from the `from_location` and optionally saves the list to the `save_location` as an index.txt
     file. Cloud storage buckets must start with `gs://`
     Args:
-        from_location (str): the directory to read the files from. Prefix GSC buckets with gs://.
+        full_index_location (str): the location from which to read the full index. Prefix GSC buckets with gs://.
+        processed_index_location (str): the location from which to read the already-processed index. Prefix GSC buckets with gs://.
         save_location (str): the directory to save the list of files to. An index.txt file will be created within this
                              directory
     Returns:
