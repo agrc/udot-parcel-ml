@@ -201,6 +201,16 @@ def download_file_from(bucket_name, file_name):
     return index
 
 
+def get_index(from_location):
+    """generic function to get index from cloud storage or local directory. Index path object is returned. Cloud storage buckets must start with `gs://`
+    Args:
+        from_location (str): the bucket or local directory where the index.txt file resides. Prefix GSC buckets with gs://.
+    Returns:
+        index (Path): path object for the index.txt file
+    """
+
+    if from_location.startswith("gs://"):
+        index = download_file_from(from_location, "index.txt")
     else:
         folder = Path(from_location)
 
