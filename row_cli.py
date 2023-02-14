@@ -6,6 +6,7 @@ UDOT Right of Way (ROW) Parcel Number Extraction
 Usage:
     row_cli.py storage generate-index (--from=location) [--prefix=prefix --save-to=location]
     row_cli.py storage generate-remaining-index (--full-index=location --processed-index=location) [--save-to=location]
+    row_cli.py index filter <file_name>
     row_cli.py storage pick-range (--from=location --task-index=index --file-count=count --instances=size)
     row_cli.py images process --job=name --from=location --save-to=location --index=location --task-index=index --file-count=count --instances=size
     row_cli.py image convert <file_name> (--save-to=location)
@@ -139,6 +140,25 @@ def main():
 
     if args["results"] and args["summarize"]:
         row.summarize_run(args["--from"], args["<run_name>"])
+
+    if args["index"] and args["filter"]:
+        index = Path(args["<file_name>"])
+        total_lines = 0
+        filtered_lines = 0
+        with index.open(mode="r", encoding="utf8", newline="") as index_file, index.with_name(
+            "filtered_index.txt"
+        ).open(mode="w", encoding="utf8", newline="") as filtered_index_file:
+            for line in index_file:
+                total_lines += 1
+
+                if "deed" in line.casefold():
+                    filtered_lines += 1
+
+                    continue
+
+                filtered_index_file.write(line)
+
+        print(f"total lines: {total_lines} filtered lines: {filtered_lines}")
 
 
 if __name__ == "__main__":
