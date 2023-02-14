@@ -186,10 +186,12 @@ def download_file_from(bucket_name, file_name):
     index = Path(__file__).parent / ".ephemeral" / file_name
 
     storage_client = google.cloud.storage.Client()
-    if bucket_name.startswith("gs://"):
-        bucket = storage_client.bucket(bucket_name[5:])
-    else:
-        bucket = storage_client.bucket(bucket_name)
+    if not bucket_name.startswith("gs://"):
+        logging.warning("bucket name %s does not start with gs://", bucket_name)
+
+        return None
+
+    bucket = storage_client.bucket(bucket_name[5:])
 
     blob = bucket.blob(file_name)
 
@@ -250,9 +252,13 @@ def get_files_from_index(from_location, task_index, task_count, total_size):
 
     index = get_index(from_location)
 
+    if index is None:
+        return []
+
     job_size = math.ceil(total_size / task_count)
     first_index = task_index * job_size
     last_index = total_size - 1
+
     if task_index != (task_count - 1):
         last_index = task_index * job_size + job_size
 
@@ -283,16 +289,22 @@ def generate_remaining_index(full_index_location, processed_index_location, save
     #: Get all files from the full index
     full_index = get_index(full_index_location)
 
-    with full_index.open() as f:
-        all_files = set([l.strip() for l in f.readlines()])
+    if full_index is None:
+        return []
+
+    with full_index.open() as data:
+        all_files = set([l.strip() for l in data.readlines()])
 
     logging.info("total number of files %i", len(all_files))
 
     #: Get already-processed files from processed index
     processed_index = get_index(processed_index_location)
 
-    with processed_index.open() as f:
-        processed_files = set([l.strip() for l in f.readlines()])
+    if processed_index is None:
+        return []
+
+    with processed_index.open() as data:
+        processed_files = set([l.strip() for l in data.readlines()])
 
     logging.info("number of already-processed files %i", len(processed_files))
 
