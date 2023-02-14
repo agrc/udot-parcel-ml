@@ -27,8 +27,11 @@ To work with the CLI,
 1. generate an index of all files
 1. filter the index (if necessary)
 1. put the index in storage
-1. run the job referencing the index location
+1. run the job referencing the index location (edit the job name, file size, and task count)
 1. generate another index from the resulting job
    `python row_cli.py storage generate-index --from=gs://ut-dts-agrc-udot-parcels-dev --prefix=elephant/mosaics/ --save-to=./data/elephant`
+1. use a logging sink to add files with 0 circles detected and query for the file names and add that to the index generated in the previous step to avoid double processing files.
 1. generate a remaining index between the original and the prior
+   `python row_cli.py storage generate-remaining-index --full-index=gs://ut-dts-agrc-udot-parcels-dev --processed-index=./data/elephant --save-to=./data/elephant`
+   _assuming the index in the bucket is the last remaining index for comparison_
 1. repeat 3-7
