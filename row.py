@@ -230,6 +230,24 @@ def get_index(from_location):
     return index
 
 
+def get_first_and_last_index(task_index, task_count, total_size):
+    """calculates a range of indexes based on the task index and total number of tasks. This is used to split up the
+    index file
+    Args:
+        task_index (number): the index of the current cloud run task
+        task_count (number): the total number of cloud run tasks
+        total_size (number): the total number of files to process
+
+    Returns:
+        tuple(number, number): the first index and last index
+    """
+    job_size = math.ceil(total_size / task_count)
+    first_index = task_index * job_size
+    last_index = task_index * job_size + job_size
+
+    return first_index, last_index
+
+
 def get_files_from_index(from_location, task_index, task_count, total_size):
     """reads the index.txt file from the `from_location`. Based on the task index and total task count a list of files
     is returned. Cloud storage buckets must start with `gs://`
@@ -242,21 +260,16 @@ def get_files_from_index(from_location, task_index, task_count, total_size):
     Returns:
         list(str): a list of uris from the bucket based on index text file
     """
-    task_index = int(task_index)
-    task_count = int(task_count)
-    total_size = int(total_size)
-
     index = get_index(from_location)
 
     if index is None:
         return []
 
-    job_size = math.ceil(total_size / task_count)
-    first_index = task_index * job_size
-    last_index = total_size - 1
+    task_index = int(task_index)
+    task_count = int(task_count)
+    total_size = int(total_size)
 
-    if task_index != (task_count - 1):
-        last_index = task_index * job_size + job_size
+    first_index, last_index = get_first_and_last_index(task_index, task_count, total_size)
 
     file_list = []
 
