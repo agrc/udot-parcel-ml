@@ -595,15 +595,15 @@ def format_time(seconds):
     hour = 60.00 * minute
 
     if seconds < 30:
-        return "{} ms".format(int(seconds * 1000))
+        return f"{int(seconds * 1000)} ms"
 
     if seconds < 90:
-        return "{} seconds".format(round(seconds, 2))
+        return f"{round(seconds, 2)} seconds"
 
     if seconds < 90 * minute:
-        return "{} minutes".format(round(seconds / minute, 2))
+        return f"{round(seconds / minute, 2)} minutes"
 
-    return "{} hours".format(round(seconds / hour, 2))
+    return f"{round(seconds / hour, 2)} hours"
 
 
 def download_run(bucket, run_name):
