@@ -163,9 +163,7 @@ def generate_index(from_location, prefix, save_location):
         save_location = Path(save_location)
 
         if not save_location.exists():
-            logging.warning("save location %s does not exists", save_location)
-
-            return files
+            save_location.mkdir(parents=True, exist_ok=True)
 
         with save_location.joinpath("index.txt").open("w", encoding="utf-8", newline="") as output:
             for item in files:
