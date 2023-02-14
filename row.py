@@ -132,10 +132,10 @@ def generate_index(from_location, prefix, save_location):
 
         files = [blob.name.removeprefix(prefix).strip() for blob in iterator]
     else:
+        from_location = Path(from_location)
+
         if prefix:
-            from_location = Path(from_location) / prefix
-        else:
-            from_location = Path(from_location)
+            from_location = from_location / prefix
 
         if not from_location.exists():
             logging.warning("from location %s does not exists", from_location)
