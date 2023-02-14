@@ -35,7 +35,12 @@ def main():
 
     row.process_all(JOB_NAME, BUCKET_NAME, OUTPUT_BUCKET_NAME, INDEX, TASK_INDEX, TASK_COUNT, TOTAL_FILES)
 
-    logging.info("job %i: time taken for entire job %s", TASK_INDEX, row.format_time(perf_counter() - job_start))
+    logging.info(
+        "job name: %s task %i: time taken for entire job %s",
+        JOB_NAME,
+        TASK_INDEX,
+        row.format_time(perf_counter() - job_start),
+    )
 
 
 if __name__ == "__main__":
