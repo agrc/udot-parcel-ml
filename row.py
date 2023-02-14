@@ -25,7 +25,7 @@ if "PY_ENV" in environ and environ["PY_ENV"] == "production":
     client = google.cloud.logging.Client()
     client.setup_logging()
 
-STORAGE_CLIENT = google.cloud.storage.Client()
+    STORAGE_CLIENT = google.cloud.storage.Client()
 
 
 def process_all(job_name, input_bucket, output_location, file_index, task_index, task_count, total_size):
