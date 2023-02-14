@@ -374,7 +374,7 @@ def convert_pdf_to_jpg_bytes(pdf_as_bytes, object_name):
 
             return byte_array.getvalue()
 
-    images = [convert_to_bytes(image) for image in images if image is not None]
+    images = (convert_to_bytes(image) for image in images if image is not None)
 
     return (images, count, messages)
 
