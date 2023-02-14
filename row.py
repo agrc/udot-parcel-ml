@@ -46,6 +46,7 @@ def process_all(job_name, input_bucket, output_location, file_index, task_index,
     """
     #: Get files to process for this job
     files = get_files_from_index(file_index, task_index, task_count, total_size)
+    logging.info("job name: %s task %i: processing %s files", job_name, task_index, files)
 
     #: Initialize GCP storage client and bucket
     bucket = STORAGE_CLIENT.bucket(input_bucket[5:])
@@ -61,23 +62,23 @@ def process_all(job_name, input_bucket, output_location, file_index, task_index,
             images, count, messages = convert_pdf_to_jpg_bytes(
                 bucket.blob(object_name).download_as_bytes(), object_name
             )
-            logging.info("%s contained %i pages and converted with message %s", object_name, count, messages)
             logging.info(
-                "job %i: conversion time taken for object %s: %s",
+                "job name: %s task %i: conversion time %s: %s",
+                job_name,
                 task_index,
-                object_name,
                 format_time(perf_counter() - conversion_start),
+                {"file": object_name, "pages": count, "message": messages},
             )
 
         elif extension in [".jpg", ".jpeg", ".tif", ".tiff", ".png"]:
             images = list([bucket.blob(object_name).download_as_bytes()])
         else:
-            logging.info('not a valid document or image: "%s"', object_name)
+            logging.info('job name: %s task %i: not a valid document or image: "%s"', job_name, task_index, object_name)
 
             continue
 
         #: Process images to get detected circles
-        logging.info("detecting circles in %s", object_name)
+        logging.info("job name: %s task %i: detecting circles in %s", job_name, task_index, object_name)
         all_detected_circles = []
         circle_start = perf_counter()
 
@@ -86,7 +87,8 @@ def process_all(job_name, input_bucket, output_location, file_index, task_index,
             all_detected_circles.extend(circle_images)  #: extend because circle_images will be a list
 
         logging.info(
-            "job %i: circle detection time taken %s: %s",
+            "job name: %s task %i: circle detection time taken %s: %s",
+            job_name,
             task_index,
             object_name,
             format_time(perf_counter() - circle_start),
@@ -94,23 +96,27 @@ def process_all(job_name, input_bucket, output_location, file_index, task_index,
 
         circle_count = len(all_detected_circles)
         if circle_count == 0:
-            logging.warning("0 circles detected in %s", object_name)
+            logging.warning("job name: %s task %i: 0 circles detected in %s", job_name, task_index, object_name)
 
         #: Process detected circle images into a mosaic
-        logging.info("mosaicking images in %s", object_name)
+        logging.info("job name: %s task %i: mosaicking images in %s", job_name, task_index, object_name)
         mosaic_start = perf_counter()
 
         mosaic = build_mosaic_image(all_detected_circles, object_name, None)
 
         logging.info(
-            "job %i: image mosaic time taken %s: %s",
+            "job name: %s task %i: image mosaic time taken %s: %s",
+            job_name,
             task_index,
             object_name,
             format_time(perf_counter() - mosaic_start),
         )
 
         logging.info(
-            "job %i: total time taken for entire task %s", task_index, format_time(perf_counter() - object_start)
+            "job name: %s task %i: total time taken for entire task %s",
+            job_name,
+            task_index,
+            format_time(perf_counter() - object_start),
         )
 
         upload_mosaic(mosaic, output_location, object_name, job_name)
@@ -674,7 +680,7 @@ def build_mosaic_image(images, object_name, out_dir):
         mosaic_image (np.ndarray): composite mosaic of smaller images
     """
     if images is None or len(images) == 0:
-        logging.warning("no images to mosaic")
+        logging.info("no images to mosaic for %s", object_name)
 
         return np.array(None)
 
