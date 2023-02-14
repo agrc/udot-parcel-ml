@@ -19,7 +19,6 @@ import numpy as np
 import pandas as pd
 from pdf2image import convert_from_bytes
 from pdf2image.exceptions import PDFInfoNotInstalledError, PDFPageCountError, PDFSyntaxError
-from PIL import Image
 from PIL.Image import DecompressionBombError
 
 if "PY_ENV" in environ and environ["PY_ENV"] == "production":
