@@ -277,7 +277,8 @@ def generate_remaining_index(full_index_location, processed_index_location, save
     file. Cloud storage buckets must start with `gs://`
     Args:
         full_index_location (str): the location from which to read the full index. Prefix GSC buckets with gs://.
-        processed_index_location (str): the location from which to read the already-processed index. Prefix GSC buckets with gs://.
+        processed_index_location (str): the location from which to read the already-processed index.
+                                        Prefix GSC buckets with gs://.
         save_location (str): the directory to save the list of files to. An index.txt file will be created within this
                              directory
     Returns:
@@ -291,7 +292,7 @@ def generate_remaining_index(full_index_location, processed_index_location, save
         return []
 
     with full_index.open() as data:
-        all_files = set([l.strip() for l in data.readlines()])
+        all_files = {l.strip() for l in data.readlines()}
 
     logging.info("total number of files %i", len(all_files))
 
@@ -302,7 +303,7 @@ def generate_remaining_index(full_index_location, processed_index_location, save
         return []
 
     with processed_index.open() as data:
-        processed_files = set([l.strip() for l in data.readlines()])
+        processed_files = {l.strip() for l in data.readlines()}
 
     logging.info("number of already-processed files %i", len(processed_files))
 
