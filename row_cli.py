@@ -59,7 +59,7 @@ def main():
         remaining_index = row.generate_remaining_index(
             args["--full-index"], args["--processed-index"], args["--save-to"]
         )
-        # print(remaining_index)
+        print(remaining_index)
         print(f"remaining job size: {len(remaining_index)}")
 
         return
