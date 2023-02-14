@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.2.1](https://github.com/agrc/udot-parcel-ml/compare/v1.2.0...v1.2.1) (2023-02-14)
+
+
+### 📖 Documentation Improvements
+
+* add the command for the workflow ([90ec950](https://github.com/agrc/udot-parcel-ml/commit/90ec950158f58a0b20568e5724a6c2c19dbab1dc))
+
+
+### 🐛 Bug Fixes
+
+* generate a new build ([dac5b78](https://github.com/agrc/udot-parcel-ml/commit/dac5b785f426bae81023a69fa38c432816a795a3))
+
 ## 1.2.0 (2023-02-14)
 
 
