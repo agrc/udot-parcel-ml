@@ -19,6 +19,7 @@
     "isort",
     "levelname",
     "libpoppler",
+    "mosaicking",
     "ndarray",
     "opencv",
     "poppler",
