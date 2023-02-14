@@ -417,14 +417,8 @@ def get_circles_from_image_bytes(byte_img, output_path, file_name):
 
         [ratio_multiplier, fudge_value] = multipliers[count_down - 1]
 
-        min_rad = math.ceil(ratio_multiplier * height) - fudge_value
-        max_rad = math.ceil(ratio_multiplier * height) + fudge_value
-
-        if min_rad < 15:
-            min_rad = 15
-
-        if max_rad < 30:
-            max_rad = 30
+        min_rad = max(math.ceil(ratio_multiplier * height) - fudge_value, 15)
+        max_rad = max(math.ceil(ratio_multiplier * height) + fudge_value, 30)
 
         #: original inset multiplier of 0.075, bigger seems to work better (0.1)
         inset = int(0.1 * max_rad)
@@ -534,24 +528,10 @@ def export_circles_from_image(circles, out_dir, file_name, cv2_image, height, wi
         image_copy[canvas == 0] = (255, 255, 255)
 
         #: crop image to the roi:
-        crop_x = center_x - radius - 20
-        crop_y = center_y - radius - 20
+        crop_x = min(max(center_x - radius - 20, 0), width)
+        crop_y = min(max(center_y - radius - 20, 0), height)
         crop_height = 2 * radius + 40
         crop_width = 2 * radius + 40
-
-        #: outside of original left edge of image
-        if crop_x < 0:
-            crop_x = 0
-        #: outside of original right edge of image
-        if crop_x > width:
-            crop_x = width
-
-        #: outside of original top edge of image
-        if crop_y < 0:
-            crop_y = 0
-        #: outside of original bottom edge of image
-        if crop_y > height:
-            crop_y = height
 
         masked_image = image_copy[crop_y : crop_y + crop_height, crop_x : crop_x + crop_width]
 
