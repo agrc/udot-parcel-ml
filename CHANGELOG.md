@@ -1,5 +1,74 @@
 # Changelog
 
+## 1.2.0 (2023-02-14)
+
+
+### 🎨 Design Improvements
+
+* add doc string ([02c8fa2](https://github.com/agrc/udot-parcel-ml/commit/02c8fa29623aae605c98ab30c0965d639fc2272d))
+
+
+### 🐛 Bug Fixes
+
+* add another circle detection multipler ([cb2a0e6](https://github.com/agrc/udot-parcel-ml/commit/cb2a0e6447110f6414f4dd723ed9b3f50cecc69e))
+* add missing object name to cli convert ([0221c8f](https://github.com/agrc/udot-parcel-ml/commit/0221c8f16616c64ee9d2ccc66bcd56826dd0f7ba))
+* add periods to suffix list ([dc748e2](https://github.com/agrc/udot-parcel-ml/commit/dc748e2d1dd8deb9690df61c284ac33768f91220))
+* bucket name has gs:// which needs to be removed ([7b63474](https://github.com/agrc/udot-parcel-ml/commit/7b63474eef680d6bb1bbabc9cc4deafa9fae2b4a))
+* call correct method to upload bytes ([b957991](https://github.com/agrc/udot-parcel-ml/commit/b95799104a71680b11ca8f6af540a072006dadbf))
+* catch bomb errors ([c27cfab](https://github.com/agrc/udot-parcel-ml/commit/c27cfabd418e7c4da1caaaef814c71fa80859aa8))
+* check if the mosaic array has any value ([50c771e](https://github.com/agrc/udot-parcel-ml/commit/50c771e73580dc5115e6f935384596be4befc8df))
+* convert pdf pages to bytes preserving image metadata ([d874a69](https://github.com/agrc/udot-parcel-ml/commit/d874a698be9dd83c1c3ddb35ea14da5cf1af2969))
+* correct docopt syntax ([8fdee21](https://github.com/agrc/udot-parcel-ml/commit/8fdee213852ca455bf5d764bddfd82c1b5fa86e0))
+* correct file saving after refactoring to bytes ([b0ff276](https://github.com/agrc/udot-parcel-ml/commit/b0ff276626d266320eca9fe758232e2650fe2ee0))
+* correct method name ([6827300](https://github.com/agrc/udot-parcel-ml/commit/68273001b7e8296c4abc7e3d1e50e8749f15cc27))
+* create a single item array of an images bytes ([cbb3dda](https://github.com/agrc/udot-parcel-ml/commit/cbb3dda9a57726f82590ba8ea961de5dd56343e8))
+* create bounds on circle mask ([f7e656e](https://github.com/agrc/udot-parcel-ml/commit/f7e656e42547a472bcf34563d625c21ca9c27ca0))
+* create parent folders for file index ([bcc7d29](https://github.com/agrc/udot-parcel-ml/commit/bcc7d2959b81f44bd5d3900949298d56fda33add))
+* dispose of bytesio and use value ([da55494](https://github.com/agrc/udot-parcel-ml/commit/da554949661237dc5b70b9b69d6b68f7946ee192))
+* fix logging issue where numbers were expected ([926032f](https://github.com/agrc/udot-parcel-ml/commit/926032f7b92f8b51e831d143822bb82d013d99e2))
+* guard against empty images list ([3f45a42](https://github.com/agrc/udot-parcel-ml/commit/3f45a42ad75f4bee5ed791dca6726e31a617a8b8))
+* guard against no circles found ([bf926e4](https://github.com/agrc/udot-parcel-ml/commit/bf926e49e86ea4347752348b25357056f1511362))
+* insert buffered image ([4fc42c0](https://github.com/agrc/udot-parcel-ml/commit/4fc42c06603d9d7693332059c3b5fd62056d7563))
+* make mosaic flag optional ([93bcdca](https://github.com/agrc/udot-parcel-ml/commit/93bcdca559af9a896f38b031df94338261c9bb07))
+* pass string to constructor ([19b9f2d](https://github.com/agrc/udot-parcel-ml/commit/19b9f2dd121353247dde9944c5956629be6570b6))
+* remove duplicate call to np.frombuffer ([18fbe21](https://github.com/agrc/udot-parcel-ml/commit/18fbe21f9fcebdbb7c6f7e98065e018a76c27c44))
+* remove unnecessary path object ([79d3f22](https://github.com/agrc/udot-parcel-ml/commit/79d3f2274a04ce9584d15cf2d26d974dea8dfea8))
+* return correct type ([92523e7](https://github.com/agrc/udot-parcel-ml/commit/92523e73c963225b138c4fd5484f05a5293cbd30))
+* rstrip any newlines or spaces in file name ([e178744](https://github.com/agrc/udot-parcel-ml/commit/e1787445790feea999047607b953774443e93841))
+* strip filenames ([34721c7](https://github.com/agrc/udot-parcel-ml/commit/34721c79ce2f1ff21f89002dda3a87a3ccf996fd))
+* try to protect from bad pdf image decoding ([7cfe321](https://github.com/agrc/udot-parcel-ml/commit/7cfe321306de5b45b06e5bb80716fc000f7f89d4))
+
+
+### 🚀 Features
+
+* add ability to convert pdf's to pils ([cfb4e25](https://github.com/agrc/udot-parcel-ml/commit/cfb4e25bb07532743918e8a64d66b694bee58545))
+* add function to get bucket file names ([7df81b8](https://github.com/agrc/udot-parcel-ml/commit/7df81b8a3435ce202a400a92f44cdcfe56741aab))
+* add logging to row_run.py ([b22162b](https://github.com/agrc/udot-parcel-ml/commit/b22162bc14960b71e4e399a990b8576c6d304e01))
+* add mosaic option ([0da4681](https://github.com/agrc/udot-parcel-ml/commit/0da46815a2ab9aebeeec454460409f329e4e7c4d))
+* add perf_counter ([6877cbe](https://github.com/agrc/udot-parcel-ml/commit/6877cbe64a927182f39c42fd6a6662852e29761d))
+* add upload_csv function ([b963218](https://github.com/agrc/udot-parcel-ml/commit/b9632185678eb5a9f70e65ecec65462b568f290e))
+* add write_results function ([cda3563](https://github.com/agrc/udot-parcel-ml/commit/cda3563f1a669798c99115bf59b809f3dceb785a))
+* build initial row_run.py ([c5712f8](https://github.com/agrc/udot-parcel-ml/commit/c5712f8aa8e7c384acab3ea3b2843e3a1cc28125))
+* calculate remaining index ([1c7922a](https://github.com/agrc/udot-parcel-ml/commit/1c7922a00e6dc9f4353e6cbf20aebe88a7de002f))
+* connect image convert cli command ([5174b8c](https://github.com/agrc/udot-parcel-ml/commit/5174b8c6af0aa6eb49c9434a7c7991ddc4cf1043))
+* create cli method to create a file index ([cdfd64a](https://github.com/agrc/udot-parcel-ml/commit/cdfd64a73de9b489705d1181314f1b17f2a4ba03))
+* create cli options to download, merge, and summarize results ([cf5055b](https://github.com/agrc/udot-parcel-ml/commit/cf5055b0cdce614eb6f2b725ab07b8598b4f382e))
+* filter out deed documents ([b5f6f5a](https://github.com/agrc/udot-parcel-ml/commit/b5f6f5a6d9a9acc328de74990259c22b8a1b3f7b))
+* implement ocr and circle detection methods ([2a3912b](https://github.com/agrc/udot-parcel-ml/commit/2a3912b4ee3867ac1f25666bac2e11993ebcbafd))
+
+
+### 📖 Documentation Improvements
+
+* add basic workflow steps ([12b3c45](https://github.com/agrc/udot-parcel-ml/commit/12b3c45e622704d4721b34403a76ead41d96c38f))
+* add example for storage cli ([260d359](https://github.com/agrc/udot-parcel-ml/commit/260d35932cd7032383a3f578244f980bd1f50cee))
+* add single image example ([4cae43a](https://github.com/agrc/udot-parcel-ml/commit/4cae43a089b85cb62511f0a657c73336959d027a))
+* add some words about the CLI ([9f7568a](https://github.com/agrc/udot-parcel-ml/commit/9f7568a244c253c766d43bed261d714d51d4ef84))
+* correct example file path ([ee032d6](https://github.com/agrc/udot-parcel-ml/commit/ee032d6558388681de794357dda5b5aab9ee356c))
+* udpate usage for circle and ocr options ([0ab3dc4](https://github.com/agrc/udot-parcel-ml/commit/0ab3dc41a6e6c8276455d474ff674ee609544ccf))
+* update function docstrings ([3edfa75](https://github.com/agrc/udot-parcel-ml/commit/3edfa75296520f3e9a8bcc38fde12de6b5241b6a))
+* update readme ([88b2eb5](https://github.com/agrc/udot-parcel-ml/commit/88b2eb58f18d8501ed21aeec8ca9b95dde14685e))
+* upload doc string style ([b419616](https://github.com/agrc/udot-parcel-ml/commit/b4196163c974ae4c2c2c545da97647cc04870e3f))
+
 ## [1.2.0-3](https://github.com/agrc/udot-parcel-ml/compare/v1.2.0-2...v1.2.0-3) (2023-02-07)
 
 
