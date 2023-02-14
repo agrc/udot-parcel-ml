@@ -29,5 +29,6 @@ To work with the CLI,
 1. put the index in storage
 1. run the job referencing the index location
 1. generate another index from the resulting job
+   `python row_cli.py storage generate-index --from=gs://ut-dts-agrc-udot-parcels-dev --prefix=elephant/mosaics/ --save-to=./data/elephant`
 1. generate a remaining index between the original and the prior
 1. repeat 3-7
