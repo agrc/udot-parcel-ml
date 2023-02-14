@@ -92,6 +92,10 @@ def process_all(job_name, input_bucket, output_location, file_index, task_index,
             format_time(perf_counter() - circle_start),
         )
 
+        circle_count = len(all_detected_circles)
+        if circle_count == 0:
+            logging.warning("0 circles detected in %s", object_name)
+
         #: Process detected circle images into a mosaic
         logging.info("mosaicking images in %s", object_name)
         mosaic_start = perf_counter()
@@ -504,7 +508,7 @@ def export_circles_from_image(circles, out_dir, file_name, cv2_image, height, wi
         list: a list of cv2 images
     """
     if circles is None:
-        logging.warning("no circles detected for %s", file_name)
+        logging.info("no circles detected for %s", file_name)
 
         return []
 
