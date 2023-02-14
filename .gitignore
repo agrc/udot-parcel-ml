@@ -128,3 +128,5 @@ dmypy.json
 data/
 
 cov.xml
+
+.ephemeral/
