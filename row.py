@@ -224,12 +224,12 @@ def get_index(from_location):
         folder = Path(from_location)
 
         if not folder.exists():
-            raise Exception("folder does not exist")
+            raise FileNotFoundError("folder does not exist")
 
         index = folder.joinpath("index.txt")
 
         if not index.exists():
-            raise Exception("index.txt file does not exist")
+            raise FileNotFoundError("index.txt file does not exist")
 
     return index
 
@@ -266,8 +266,6 @@ def get_files_from_index(from_location, task_index, task_count, total_size):
 
     with index.open("r", encoding="utf-8") as data:
         file_list = list(islice(data, first_index, last_index))
-
-    logging.info("calculating files to process for task %i", task_index)
 
     logging.info("task number %i will work on file indices from %i to %i", task_index, first_index, last_index)
 
