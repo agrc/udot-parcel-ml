@@ -25,6 +25,8 @@ if "PY_ENV" in environ and environ["PY_ENV"] == "production":
     client = google.cloud.logging.Client()
     client.setup_logging()
 
+STORAGE_CLIENT = google.cloud.storage.Client()
+
 
 def process_all(job_name, input_bucket, output_location, file_index, task_index, task_count, total_size):
     """the code to run in the cloud run job
@@ -46,8 +48,7 @@ def process_all(job_name, input_bucket, output_location, file_index, task_index,
     files = get_files_from_index(file_index, task_index, task_count, total_size)
 
     #: Initialize GCP storage client and bucket
-    storage_client = google.cloud.storage.Client()
-    bucket = storage_client.bucket(input_bucket[5:])
+    bucket = STORAGE_CLIENT.bucket(input_bucket[5:])
 
     #: Iterate over objects to detect circles and perform OCR
     for object_name in files:
@@ -127,8 +128,7 @@ def generate_index(from_location, prefix, save_location):
 
     logging.info('reading files from "%s"', from_location)
     if from_location.startswith("gs://"):
-        storage_client = google.cloud.storage.Client()
-        iterator = storage_client.list_blobs(from_location[5:], max_results=None, versions=False, prefix=prefix)
+        iterator = STORAGE_CLIENT.list_blobs(from_location[5:], max_results=None, versions=False, prefix=prefix)
 
         files = [blob.name.removeprefix(prefix).strip() for blob in iterator]
     else:
@@ -150,8 +150,7 @@ def generate_index(from_location, prefix, save_location):
         return files
 
     if save_location.startswith("gs://"):
-        storage_client = google.cloud.storage.Client()
-        bucket = storage_client.bucket(save_location[5:])
+        bucket = STORAGE_CLIENT.bucket(save_location[5:])
         blob = bucket.blob("index.txt")
 
         with BytesIO() as data:
@@ -183,13 +182,12 @@ def download_file_from(bucket_name, file_name):
     """
     index = Path(__file__).parent / ".ephemeral" / file_name
 
-    storage_client = google.cloud.storage.Client()
     if not bucket_name.startswith("gs://"):
         logging.warning("bucket name %s does not start with gs://", bucket_name)
 
         return None
 
-    bucket = storage_client.bucket(bucket_name[5:])
+    bucket = STORAGE_CLIENT.bucket(bucket_name[5:])
 
     blob = bucket.blob(file_name)
 
@@ -313,8 +311,7 @@ def generate_remaining_index(full_index_location, processed_index_location, save
         return remaining_files
 
     if save_location.startswith("gs://"):
-        storage_client = google.cloud.storage.Client()
-        bucket = storage_client.bucket(save_location[5:])
+        bucket = STORAGE_CLIENT.bucket(save_location[5:])
         blob = bucket.blob("remaining_index.txt")
 
         with BytesIO() as data:
@@ -575,8 +572,7 @@ def upload_results(frame, bucket_name, out_name, job_name):
     file_name = f"{job_name}/{out_name}"
     logging.info("uploading %s to %s/%s", out_name, bucket_name, file_name)
 
-    storage_client = google.cloud.storage.Client()
-    bucket = storage_client.bucket(bucket_name)
+    bucket = STORAGE_CLIENT.bucket(bucket_name)
     new_blob = bucket.blob(file_name)
 
     with BytesIO() as parquet:
@@ -614,8 +610,7 @@ def download_run(bucket, run_name):
     Returns:
         str: the location of the files
     """
-    storage_client = google.cloud.storage.Client()
-    bucket = storage_client.bucket(bucket)
+    bucket = STORAGE_CLIENT.bucket(bucket)
     blobs = bucket.list_blobs(prefix=run_name)
     location = Path(__file__).parent / "data"
 
@@ -735,8 +730,7 @@ def upload_mosaic(image, bucket_name, object_name, job_name):
     file_name = f"{job_name}/mosaics/{object_name}"
     logging.info("uploading %s to %s/%s", object_name, bucket_name, file_name)
 
-    storage_client = google.cloud.storage.Client()
-    bucket = storage_client.bucket(bucket_name)
+    bucket = STORAGE_CLIENT.bucket(bucket_name)
     new_blob = bucket.blob(str(file_name))
 
     is_success, buffer = cv2.imencode(".jpg", image)
