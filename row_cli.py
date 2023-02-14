@@ -48,10 +48,7 @@ def main():
     args = docopt(__doc__, version="1.0")  # type: ignore
 
     if args["storage"] and args["generate-index"]:
-        if args["--prefix"]:
-            index = row.generate_index(args["--from"], args["--prefix"], args["--save-to"])
-        else:
-            index = row.generate_index(args["--from"], None, args["--save-to"])
+        index = row.generate_index(args["--from"], args["--prefix"], args["--save-to"])
 
         print(index)
         print(f"total job size: {len(index)}")
