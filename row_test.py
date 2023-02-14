@@ -36,18 +36,16 @@ def test_convert_pdf_to_pil_multi_page_pdf():
 def test_convert_pdf_to_pil_handles_invalid_pdf():
     pdf = root / "invalid.pdf"
 
-    images, count, message = row.convert_pdf_to_jpg_bytes(pdf.read_bytes(), "test_pdf")
+    _, count, message = row.convert_pdf_to_jpg_bytes(pdf.read_bytes(), "test_pdf")
 
     assert count == 0
-    assert images == []
     assert message != ""
 
 
 def test_convert_pdf_to_pil_handles_empty_bytes():
-    images, count, message = row.convert_pdf_to_jpg_bytes(None, "test_pdf")
+    _, count, message = row.convert_pdf_to_jpg_bytes(None, "test_pdf")
 
     assert count == 0
-    assert images == []
     assert message != ""
 
 
@@ -117,3 +115,17 @@ def test_build_mosaic_image_handles_builds_a_mosaic():
     mosaic = row.build_mosaic_image(images, "test", None)
 
     assert mosaic is not None
+
+
+@pytest.mark.parametrize(
+    "task_index,task_count,total_size,expected",
+    [
+        (0, 1, 1, (0, 1)),
+        (9, 10, 95, (90, 100)),
+        (0, 10, 100, (0, 10)),
+        (1, 10, 100, (10, 20)),
+        (9, 10, 100, (90, 100)),
+    ],
+)
+def test_get_first_and_last_index(task_index, task_count, total_size, expected):
+    assert row.get_first_and_last_index(task_index, task_count, total_size) == expected
