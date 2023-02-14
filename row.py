@@ -395,7 +395,13 @@ def get_circles_from_image_bytes(byte_img, output_path, file_name):
     """
 
     #: read in image from bytes
-    img = cv2.imdecode(np.frombuffer(byte_img, dtype=np.uint8), 1)  # 1 means flags=cv2.IMREAD_COLOR
+    img = None
+    try:
+        img = cv2.imdecode(np.frombuffer(byte_img, dtype=np.uint8), 1)  # 1 means flags=cv2.IMREAD_COLOR
+    except Exception as ex:
+        logging.error("unable to read image from bytes: %s, %s", file_name, ex)
+
+        return []
 
     if img is None:
         logging.error("unable to read image from bytes: %s", file_name)
