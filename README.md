@@ -21,3 +21,13 @@ To work with the CLI,
 1. Create a python environment and install the `requirements.dev.txt` into that environment
 1. Execute the CLI to see the commands and options available
    - `python row_cli.py`
+
+## Workflow steps
+
+1. generate an index of all files
+1. filter the index (if necessary)
+1. put the index in storage
+1. run the job referencing the index location
+1. generate another index from the resulting job
+1. generate a remaining index between the original and the prior
+1. repeat 3-7
