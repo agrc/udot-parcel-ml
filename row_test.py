@@ -129,3 +129,14 @@ def test_build_mosaic_image_handles_builds_a_mosaic():
 )
 def test_get_first_and_last_index(task_index, task_count, total_size, expected):
     assert row.get_first_and_last_index(task_index, task_count, total_size) == expected
+
+
+def test_can_mosaic_non_square_crops():
+    image = root / "edge_crop.jpg"
+
+    cv2_image = row.convert_to_cv2_image(image.read_bytes())
+
+    mosaic = row.build_mosaic_image([cv2_image], "edge_crop.jpg", None)
+
+    assert mosaic is not None
+    assert mosaic.shape == (112, 112, 3)
