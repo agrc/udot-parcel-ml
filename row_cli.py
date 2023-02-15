@@ -145,13 +145,23 @@ def main():
         index = Path(args["<file_name>"])
         total_lines = 0
         filtered_lines = 0
+
         with index.open(mode="r", encoding="utf8", newline="") as index_file, index.with_name(
             "filtered_index.txt"
         ).open(mode="w", encoding="utf8", newline="") as filtered_index_file:
             for line in index_file:
                 total_lines += 1
 
-                if "deed" in line.casefold():
+                item = Path(line.strip())
+
+                if "deed" in line.casefold() or item.suffix.casefold().casefold() not in (
+                    ".pdf",
+                    ".jpg",
+                    ".jpeg",
+                    ".tif",
+                    ".tiff",
+                    ".png",
+                ):
                     filtered_lines += 1
 
                     continue
