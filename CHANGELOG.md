@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.3.0](https://github.com/agrc/udot-parcel-ml/compare/v1.2.2...v1.3.0) (2023-02-15)
+
+
+### 📖 Documentation Improvements
+
+* update docs for filtering instructions ([a4b53c6](https://github.com/agrc/udot-parcel-ml/commit/a4b53c6ee95c73896d5804ebf4426f97002aeebc))
+
+
+### 🚀 Features
+
+* update filtering to remove invalid file types ([35ef246](https://github.com/agrc/udot-parcel-ml/commit/35ef2464b5c259b6bd3f91161718a84617b1fe98))
+
 ## [1.2.2](https://github.com/agrc/udot-parcel-ml/compare/v1.2.1...v1.2.2) (2023-02-15)
 
 
