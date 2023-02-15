@@ -702,12 +702,19 @@ def build_mosaic_image(images, object_name, out_dir):
     number_columns = math.floor(math.sqrt(number_images))
     number_rows = math.ceil(number_images / number_columns)
 
-    logging.info("mosaicking %i images into %i column by %i row grid", number_images, number_columns, number_rows)
-
     #: Build mosaic image with white background
     tile_width = max_dim + 2 * buffer
     total_height = tile_width * number_rows
     total_width = tile_width * number_columns
+
+    logging.info(
+        "mosaicking %i images into %i column by %i row grid, tile is a %i pixel square",
+        number_images,
+        number_columns,
+        number_rows,
+        tile_width,
+    )
+
     mosaic_image = np.zeros((total_height, total_width, 3), dtype=np.uint8)
     mosaic_image[:, :] = (255, 255, 255)
 
@@ -720,6 +727,7 @@ def build_mosaic_image(images, object_name, out_dir):
     for img in images:
         #: Resize all images by inserting them into the same template tile size
         [img_height, img_width, _] = img.shape
+
         buffered_image = np.zeros((tile_width, tile_width, 3), np.uint8)
         buffered_image[:, :] = (255, 255, 255)
         buffered_image[buffer : buffer + img_height, buffer : buffer + img_width] = img.copy()
