@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.1](https://github.com/agrc/udot-parcel-ml/compare/v1.3.0...v1.3.1) (2023-02-15)
+
+
+### 🐛 Bug Fixes
+
+* use max dimension instead of max width ([87c31c7](https://github.com/agrc/udot-parcel-ml/commit/87c31c72ccc2bec4af619ae733fe6379d0c4328c))
+
 ## [1.3.0](https://github.com/agrc/udot-parcel-ml/compare/v1.2.2...v1.3.0) (2023-02-15)
 
 
