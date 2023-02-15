@@ -708,11 +708,11 @@ def build_mosaic_image(images, object_name, out_dir):
     total_width = tile_width * number_columns
 
     logging.info(
-        "mosaicking %i images into %i column by %i row grid, tile is a %i pixel square",
+        "mosaicking %i images into %i column by %i row grid, %s",
         number_images,
         number_columns,
         number_rows,
-        tile_width,
+        {"square pixels": tile_width, "file name": object_name},
     )
 
     mosaic_image = np.zeros((total_height, total_width, 3), dtype=np.uint8)
