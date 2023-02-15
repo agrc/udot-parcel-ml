@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.2.2](https://github.com/agrc/udot-parcel-ml/compare/v1.2.1...v1.2.2) (2023-02-15)
+
+
+### 🐛 Bug Fixes
+
+* handle code that throws ([d70bedd](https://github.com/agrc/udot-parcel-ml/commit/d70bedd347ee2816cc98edf338b0dc516c326c2e))
+
+
+### 📖 Documentation Improvements
+
+* add a missing step ([0233096](https://github.com/agrc/udot-parcel-ml/commit/0233096eadfc0a0adcdb580069fff4729e2f5052))
+* add more information about the workflow ([157446d](https://github.com/agrc/udot-parcel-ml/commit/157446d25440286de061702195de3e67adcdb7d1))
+
 ## [1.2.1](https://github.com/agrc/udot-parcel-ml/compare/v1.2.0...v1.2.1) (2023-02-14)
 
 
