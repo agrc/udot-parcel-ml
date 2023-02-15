@@ -685,13 +685,17 @@ def build_mosaic_image(images, object_name, out_dir):
         return np.array(None)
 
     object_path = Path(object_name)
-    max_width = 0
+    max_dim = 0
     buffer = 5
 
-    #: Loop through all images to get sizes, save largest
+    #: Loop through all images to get dimensions, save largest dimension
+    all_widths = []
+    all_heights = []
     for img in images:
-        if img.shape[1] > max_width:
-            max_width = img.shape[1]
+        all_widths.append(img.shape[1])
+        all_heights.append(img.shape[0])
+
+    max_dim = max([max(all_widths), max(all_heights)])
 
     #: Set up parameters for mosaic, calculate number of cols/rows
     number_images = len(images)
@@ -701,7 +705,7 @@ def build_mosaic_image(images, object_name, out_dir):
     logging.info("mosaicking %i images into %i column by %i row grid", number_images, number_columns, number_rows)
 
     #: Build mosaic image with white background
-    tile_width = max_width + 2 * buffer
+    tile_width = max_dim + 2 * buffer
     total_height = tile_width * number_rows
     total_width = tile_width * number_columns
     mosaic_image = np.zeros((total_height, total_width, 3), dtype=np.uint8)
