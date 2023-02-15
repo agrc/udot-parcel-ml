@@ -11,6 +11,7 @@ Usage:
     row_cli.py images process --job=name --from=location --save-to=location --index=location --task-index=index --file-count=count --instances=size
     row_cli.py image convert <file_name> (--save-to=location)
     row_cli.py detect circles <file_name> (--save-to=location) [--mosaic]
+    row_cli.py detect characters --from=location
     row_cli.py results download <run_name> (--from=location)
     row_cli.py results summarize <run_name> (--from=location)
 
@@ -25,6 +26,7 @@ Examples:
     python row_cli.py storage pick-range --from=.ephemeral --task-index=0 --instances=10 --file-count=100
     python row_cli.py image convert ./test-data/multiple_page.pdf --save-to=./test
     python row_cli.py detect circles ./test-data/five_circles_with_text.png --save-to=./test --mosaic
+    python row_cli.py detect characters --from=gs://bucket/job/mosaics/
     python row_cli.py results download bobcat --from=bucket-name
 """
 
@@ -132,6 +134,9 @@ def main():
             return
 
         return circles
+
+    if args["detect"] and args["characters"]:
+        row.create_batch_character_detection_job(args["--from"])
 
     if args["results"] and args["download"]:
         location = row.download_run(args["--from"], args["<run_name>"])
