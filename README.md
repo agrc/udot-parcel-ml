@@ -34,4 +34,5 @@ To work with the CLI,
 1. generate a remaining index between the original and the prior
    `python row_cli.py storage generate-remaining-index --full-index=gs://ut-dts-agrc-udot-parcels-dev --processed-index=./data/elephant --save-to=./data/elephant`
    _assuming the index in the bucket is the last remaining index for comparison_
-1. repeat 3-7
+1. move the current index into the job and replace with the remaining index renamed as index.txt
+1. repeat 4-8 until there are no more files left to process
