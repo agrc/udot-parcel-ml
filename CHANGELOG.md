@@ -1,5 +1,30 @@
 # Changelog
 
+## [1.4.0](https://github.com/agrc/udot-parcel-ml/compare/v1.3.1...v1.4.0) (2023-02-16)
+
+
+### 🚀 Features
+
+* create cli command to create documentai batch jobs ([2afd0ea](https://github.com/agrc/udot-parcel-ml/commit/2afd0eaf5657dab833958d540e85861192918e00))
+* ocr images one by one ([2577b6a](https://github.com/agrc/udot-parcel-ml/commit/2577b6ac618745280f5f5af73aabdbc171609152))
+
+
+### 🎨 Design Improvements
+
+* fix formatting ([cd90e34](https://github.com/agrc/udot-parcel-ml/commit/cd90e344467adb156138a39d78bc13fd11b0f33e))
+
+
+### 🐛 Bug Fixes
+
+* processor id is a string ([1a2d96b](https://github.com/agrc/udot-parcel-ml/commit/1a2d96b81ee6417f1100b5749bc81cab6f8d6c75))
+* strip the file name ([d97365a](https://github.com/agrc/udot-parcel-ml/commit/d97365a392d4b09f2f92d8f23a3fc573c1c65776))
+
+
+### 📖 Documentation Improvements
+
+* add workflow step ([562ce8c](https://github.com/agrc/udot-parcel-ml/commit/562ce8cfedc03baebb70a578aa0a93f930e76ca1))
+* update return type ([065603a](https://github.com/agrc/udot-parcel-ml/commit/065603a59d55de7fca908e0f7a4f03156bfc772a))
+
 ## [1.3.1](https://github.com/agrc/udot-parcel-ml/compare/v1.3.0...v1.3.1) (2023-02-15)
 
 
