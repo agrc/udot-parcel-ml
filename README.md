@@ -26,16 +26,32 @@ To work with the CLI,
 
 1. generate an index of all files
 1. filter the index to remove non image files and deeds
+
    `python row_cli.py index filter ./data/elephant/remaining_index.txt`
+
 1. put the index in storage
 1. run the job referencing the index location (edit the job name, file size, and task count)
 1. generate another index from the resulting job
+
    `python row_cli.py storage generate-index --from=gs://ut-dts-agrc-udot-parcels-dev --prefix=elephant/mosaics/ --save-to=./data/elephant`
+
 1. use a logging sink to add files with 0 circles detected and query for the file names and add that to the index generated in the previous step to avoid double processing files.
 1. generate a remaining index between the original and the prior
+
    `python row_cli.py storage generate-remaining-index --full-index=gs://ut-dts-agrc-udot-parcels-dev --processed-index=./data/elephant --save-to=./data/elephant`
+
    _assuming the index in the bucket is the last remaining index for comparison_
+
 1. filter out the deeds which have no circles
+
    `python row_cli.py index filter ./data/elephant/remaining_index.txt`
+
 1. move the current index into the job and replace with the remaining index renamed as index.txt
-1. repeat 4-8 until there are no more files left to process
+1. repeat 4-9 until there are no more files left to process
+1. Authentication for document ai job
+
+   - activate your terminal as a service account
+
+     `gcloud auth activate-service-account email@address --key-file=/path/to/sa.json`
+
+1. start the job
