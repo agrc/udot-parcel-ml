@@ -28,7 +28,7 @@ if "PY_ENV" in environ and environ["PY_ENV"] == "production":
     STORAGE_CLIENT = google.cloud.storage.Client()
 
 
-def process_all(job_name, input_bucket, output_location, file_index, task_index, task_count, total_size):
+def mosaic_all_circles(job_name, input_bucket, output_location, file_index, task_index, task_count, total_size):
     """the code to run in the cloud run job
 
     Args:
