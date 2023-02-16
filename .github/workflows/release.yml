@@ -63,14 +63,14 @@ jobs:
         shell: bash
         run: docker push ${{ steps.meta.outputs.tags }}
 
-      - name: 🚀 Deploy to Cloud Run
+      - name: 🚀 Deploy Mosaic to Cloud Run
         run: |
           if [ ! "$(gcloud beta run jobs list | grep default)" ]; then
             gcloud beta run jobs create default \
               --region us-central1 \
               --image us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job:latest \
               --service-account cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
-              --set-env-vars INDEX_FILE_LOCATION=${{ secrets.INDEX_FILE_LOCATION }},INPUT_BUCKET=${{ secrets.INPUT_BUCKET }},OUTPUT_BUCKET=${{ secrets.OUTPUT_BUCKET }},PY_ENV=production,TOTAL_FILES=89537,JOB_NAME=alligator \
+              --set-env-vars INDEX_FILE_LOCATION=${{ secrets.INDEX_FILE_LOCATION }},INPUT_BUCKET=${{ secrets.INPUT_BUCKET }},OUTPUT_BUCKET=${{ secrets.OUTPUT_BUCKET }},PY_ENV=production,TOTAL_FILES=89537,JOB_NAME=alligator,JOB_TYPE=mosaic \
               --memory=8Gi \
               --cpu=2 \
               --max-retries 0 \
@@ -80,7 +80,31 @@ jobs:
                 --region us-central1 \
                 --image us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job:latest \
                 --service-account cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
-                --set-env-vars INDEX_FILE_LOCATION=${{ secrets.INDEX_FILE_LOCATION }},INPUT_BUCKET=${{ secrets.INPUT_BUCKET }},OUTPUT_BUCKET=${{ secrets.OUTPUT_BUCKET }},PY_ENV=production,TOTAL_FILES=89537,JOB_NAME=alligator \
+                --set-env-vars INDEX_FILE_LOCATION=${{ secrets.INDEX_FILE_LOCATION }},INPUT_BUCKET=${{ secrets.INPUT_BUCKET }},OUTPUT_BUCKET=${{ secrets.OUTPUT_BUCKET }},PY_ENV=production,TOTAL_FILES=89537,JOB_NAME=alligator,JOB_TYPE=mosaic \
+                --memory=8Gi \
+                --cpu=2 \
+                --max-retries 0 \
+                --parallelism 0
+          fi
+
+      - name: 🚀 Deploy OCR to Cloud Run
+        run: |
+          if [ ! "$(gcloud beta run jobs list | grep ocr)" ]; then
+            gcloud beta run jobs create ocr \
+              --region us-central1 \
+              --image us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job:latest \
+              --service-account cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
+              --set-env-vars INDEX_FILE_LOCATION=${{ secrets.INDEX_FILE_LOCATION }},INPUT_BUCKET=${{ secrets.INPUT_BUCKET }},OUTPUT_BUCKET=${{ secrets.OUTPUT_BUCKET }},PY_ENV=production,TOTAL_FILES=89537,JOB_NAME=alligator,PROJECT_NUMBER=${{ secrets.PROJECT_NUMBER }},PROCESSOR_ID=${{ secrets.PROCESSOR_ID }},JOB_TYPE=ocr \
+              --memory=8Gi \
+              --cpu=2 \
+              --max-retries 0 \
+              --parallelism 0
+          else
+            gcloud beta run jobs update ocr \
+                --region us-central1 \
+                --image us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job:latest \
+                --service-account cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
+                --set-env-vars INDEX_FILE_LOCATION=${{ secrets.INDEX_FILE_LOCATION }},INPUT_BUCKET=${{ secrets.INPUT_BUCKET }},OUTPUT_BUCKET=${{ secrets.OUTPUT_BUCKET }},PY_ENV=production,TOTAL_FILES=89537,JOB_NAME=alligator,PROJECT_NUMBER=${{ secrets.PROJECT_NUMBER }},PROCESSOR_ID=${{ secrets.PROCESSOR_ID }},JOB_TYPE=ocr \
                 --memory=8Gi \
                 --cpu=2 \
                 --max-retries 0 \
