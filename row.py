@@ -144,7 +144,7 @@ def ocr_all_mosaics(inputs):
             processor_id (str): the id of the documentai processor
 
     Returns:
-        A pandas dataframe with the results of the OCR
+        A list of lists with the results of the OCR
     """
     #: Get files to process for this job
     files = get_files_from_index(inputs.file_index, inputs.task_index, inputs.task_count, inputs.total_size)
