@@ -30,8 +30,7 @@ if "PY_ENV" in environ and environ["PY_ENV"] == "production":
 
     LOGGING_CLIENT.setup_logging()
 
-TASK_RESULTS = pd.DataFrame({"name": "", "text": ""})
-TASK_RESULTS = TASK_RESULTS.astype({"name": "string", "text": "string"})
+TASK_RESULTS = []
 
 
 def mosaic_all_circles(job_name, input_bucket, output_location, file_index, task_index, task_count, total_size):
@@ -206,7 +205,7 @@ def ocr_all_mosaics(inputs):
 
             continue
 
-        append_results(object_name, result.document.text)
+        TASK_RESULTS.append([object_name, result.document.text])
 
     upload_results(TASK_RESULTS, inputs.output_location, f"task-{inputs.task_index}", inputs.job_name)
 
@@ -660,28 +659,12 @@ def export_circles_from_image(circles, out_dir, file_name, cv2_image, height, wi
     return masked_images
 
 
-def append_results(file_name, text_found):
-    """append detected results to a dataframe by concatenating them onto the end of
-        the existing dataframe
-
-    Args:
-        filename (str): the name of the object (example.pdf, example.jpg, etc.) being processes
-        text_found (str): list of strings containing OCR results from the current file
-
-    Returns:
-        dataframe: an updated version of the input dataframe
-    """
-    global TASK_RESULTS  #: pylint: disable=global-statement
-
-    df_new = pd.DataFrame({"name": file_name, "text": text_found})
-    TASK_RESULTS = pd.concat([TASK_RESULTS, df_new], axis=0, ignore_index=True, sort=False)
-
-
-def upload_results(frame, bucket_name, out_name, job_name):
+def upload_results(data, bucket_name, out_name, job_name):
     """upload results dataframe to a GCP bucket as a gzip file
 
     Args:
-        frame (dataframe): dataframe containing the final results
+        data (list): a list containing the results for the task (a list of lists. the first index being the file name
+                     and the second being the text found)
         bucket_name (str): the name of the destination bucket
         out_name (str): the name of the gzip file
 
@@ -693,6 +676,8 @@ def upload_results(frame, bucket_name, out_name, job_name):
 
     bucket = STORAGE_CLIENT.bucket(bucket_name)
     new_blob = bucket.blob(file_name)
+
+    frame = pd.DataFrame(data, columns=["file_name", "text"])
 
     with BytesIO() as parquet:
         frame.to_parquet(parquet, compression="gzip")
