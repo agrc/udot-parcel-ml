@@ -13,10 +13,13 @@ from pathlib import Path
 from time import perf_counter
 
 import cv2
+import google.cloud.documentai
 import google.cloud.logging
 import google.cloud.storage
 import numpy as np
 import pandas as pd
+from google.api_core.client_options import ClientOptions
+from google.api_core.exceptions import InternalServerError, InvalidArgument, RetryError
 from pdf2image import convert_from_bytes
 from pdf2image.exceptions import PDFInfoNotInstalledError, PDFPageCountError, PDFSyntaxError
 from PIL.Image import DecompressionBombError
@@ -123,6 +126,91 @@ def mosaic_all_circles(job_name, input_bucket, output_location, file_index, task
         )
 
         upload_mosaic(mosaic, output_location, object_name, job_name)
+
+
+def ocr_all_mosaics(inputs):
+    """the code to run in the cloud run job
+
+    Args:
+        inputs (class): the inputs to the function
+            job_name (str): the name of the run job. typically named after an animal in alphabetical order
+            input_bucket (str): the bucket to get files from using the format `gs://bucket-name`
+            output_location (str): the location to save the results to. omit the `gs://` prefix
+            file_index (str): the path to the folder containing an `index.txt` file listing all the images in a bucket.
+                            `gs://bucket-name`
+            task_index (int): the index of the task running
+            task_count (int): the number of containers running the job
+            total_size (int): the total number of files to process
+            project_number (int): the number of the gcp project
+            processor_id (int): the id of the documentai processor
+
+    Returns:
+        A pandas dataframe with the results of the OCR
+    """
+    #: Get files to process for this job
+    files = get_files_from_index(inputs.file_index, inputs.task_index, inputs.task_count, inputs.total_size)
+    logging.info("job name: %s task: %i processing %s files", inputs.job_name, inputs.task_index, files)
+
+    #: Initialize GCP storage client and bucket
+    bucket = STORAGE_CLIENT.bucket(inputs.input_bucket[5:])
+
+    options = ClientOptions(api_endpoint="us-documentai.googleapis.com")
+    ai_client = google.cloud.documentai.DocumentProcessorServiceClient(client_options=options)
+
+    processor_name = ai_client.processor_path(inputs.project_number, "us", inputs.processor_id)
+
+    #: Iterate over objects to detect circles and perform OCR
+    for object_name in files:
+        object_start = perf_counter()
+        image_content = bucket.blob(object_name).download_as_bytes()
+        logging.info(
+            "job name: %s task: %i download finished %s: %s",
+            inputs.job_name,
+            inputs.task_index,
+            format_time(perf_counter() - object_start),
+            {"file": object_name},
+        )
+
+        raw_document = google.cloud.documentai.RawDocument(content=image_content, mime_type="image/jpeg")
+        request = google.cloud.documentai.ProcessRequest(name=processor_name, raw_document=raw_document)
+
+        result = None
+        try:
+            result = ai_client.process_document(request=request)
+            logging.info(
+                "job name: %s task: %i ocr finished %s: %s",
+                inputs.job_name,
+                inputs.task_index,
+                format_time(perf_counter() - object_start),
+                {"file": object_name},
+            )
+        except (RetryError, InternalServerError) as error:
+            logging.warning(
+                "job name: %s task %i: ocr failed on %s. %s",
+                inputs.job_name,
+                inputs.task_index,
+                object_name,
+                error.message,
+            )
+
+            continue
+        except (InvalidArgument) as error:
+            logging.warning(
+                "job name: %s task %i: ocr failed on %s. %s\n%s",
+                inputs.job_name,
+                inputs.task_index,
+                object_name,
+                error.message,
+                error.details,
+            )
+
+            continue
+
+        append_results(object_name, result.document.text)
+
+    upload_results(TASK_RESULTS, inputs.output_location, f"task-{inputs.task_index}", inputs.job_name)
+
+    return TASK_RESULTS
 
 
 def generate_index(from_location, prefix, save_location):

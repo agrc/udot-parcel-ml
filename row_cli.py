@@ -8,10 +8,10 @@ Usage:
     row_cli.py storage generate-remaining-index (--full-index=location --processed-index=location) [--save-to=location]
     row_cli.py index filter <file_name>
     row_cli.py storage pick-range (--from=location --task-index=index --file-count=count --instances=size)
-    row_cli.py images process --job=name --from=location --save-to=location --index=location --task-index=index --file-count=count --instances=size
+    row_cli.py process images --job=name --from=location --save-to=location --index=location --task-index=index --file-count=count --instances=size
+    row_cli.py process circles --job=name --from=location --save-to=location --index=location --task-index=index --file-count=count --instances=size --project=number --processor=id
     row_cli.py image convert <file_name> (--save-to=location)
     row_cli.py detect circles <file_name> (--save-to=location) [--mosaic]
-    row_cli.py detect characters --from=location
     row_cli.py results download <run_name> (--from=location)
     row_cli.py results summarize <run_name> (--from=location)
 
@@ -26,13 +26,15 @@ Examples:
     python row_cli.py storage pick-range --from=.ephemeral --task-index=0 --instances=10 --file-count=100
     python row_cli.py image convert ./test-data/multiple_page.pdf --save-to=./test
     python row_cli.py detect circles ./test-data/five_circles_with_text.png --save-to=./test --mosaic
-    python row_cli.py detect characters --from=gs://bucket/job/mosaics/
+    python row_cli.py process images --job=test --from=./test-data --save-to=./.ephemeral --index=./test-data --task-index=0 --file-count=1 --instances=1
+    python row_cli.py process circles ---job=test --from=./test-data --save-to=./.ephemeral --index=./test-data --task-index=0 --file-count=1 --instances=1 --project=123456789 --processor=123456789
     python row_cli.py results download bobcat --from=bucket-name
 """
 
 import logging
 from pathlib import Path
 from sys import stdout
+from types import SimpleNamespace
 
 from docopt import docopt
 
@@ -72,17 +74,6 @@ def main():
         print(jobs)
 
         return
-
-    if args["images"] and args["process"]:
-        return row.mosaic_all_circles(
-            args["--job"],
-            args["--from"],
-            args["--save-to"],
-            args["--index"],
-            int(args["--task-index"]),
-            int(args["--instances"]),
-            int(args["--file-count"]),
-        )
 
     if args["image"] and args["convert"]:
         pdf = Path(args["<file_name>"])
@@ -135,8 +126,35 @@ def main():
 
         return circles
 
-    if args["detect"] and args["characters"]:
-        row.create_batch_character_detection_job(args["--from"])
+    if args["process"] and args["images"]:
+        return row.mosaic_all_circles(
+            args["--job"],
+            args["--from"],
+            args["--save-to"],
+            args["--index"],
+            int(args["--task-index"]),
+            int(args["--instances"]),
+            int(args["--file-count"]),
+        )
+
+    if args["process"] and args["circles"]:
+        inputs = SimpleNamespace(
+            job_name=args["--job"],
+            input_bucket=args["--from"],
+            output_location=args["--save-to"],
+            file_index=args["--index"],
+            task_index=int(args["--task-index"]),
+            task_count=int(args["--instances"]),
+            total_size=int(args["--file-count"]),
+            project_number=int(args["--project"]),
+            processor_id=int(args["--processor"]),
+        )
+
+        results = row.ocr_all_mosaics(inputs)
+
+        print(f"operation finished with status {results}")
+
+        return
 
     if args["results"] and args["download"]:
         location = row.download_run(args["--from"], args["<run_name>"])
