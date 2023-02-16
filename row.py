@@ -161,7 +161,10 @@ def ocr_all_mosaics(inputs):
     #: Iterate over objects to detect circles and perform OCR
     for object_name in files:
         object_start = perf_counter()
+        object_name = object_name.rstrip()
+
         image_content = bucket.blob(object_name).download_as_bytes()
+
         logging.info(
             "job name: %s task: %i download finished %s: %s",
             inputs.job_name,
