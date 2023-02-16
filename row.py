@@ -141,7 +141,7 @@ def ocr_all_mosaics(inputs):
             task_count (int): the number of containers running the job
             total_size (int): the total number of files to process
             project_number (int): the number of the gcp project
-            processor_id (int): the id of the documentai processor
+            processor_id (str): the id of the documentai processor
 
     Returns:
         A pandas dataframe with the results of the OCR
