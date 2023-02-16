@@ -74,7 +74,7 @@ def main():
         return
 
     if args["images"] and args["process"]:
-        return row.process_all(
+        return row.mosaic_all_circles(
             args["--job"],
             args["--from"],
             args["--save-to"],
