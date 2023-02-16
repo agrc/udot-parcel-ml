@@ -55,3 +55,5 @@ To work with the CLI,
      `gcloud auth activate-service-account email@address --key-file=/path/to/sa.json`
 
 1. start the job
+
+   `python row_cli.py process circles --job=elephant --from=gs://bucket--save-to=bucket --index=gs://bucket --task-index=0 --file-count=1 --instances=1 --project=1234 --processor=123abc`
