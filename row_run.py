@@ -59,7 +59,7 @@ def ocr_all_mosaics():
         task_count=TASK_COUNT,
         total_size=TOTAL_FILES,
         project_number=int(environ["PROJECT_NUMBER"]),
-        processor_id=int(environ["PROCESSOR_ID"]),
+        processor_id=environ["PROCESSOR_ID"],
     )
 
     row.ocr_all_mosaics(inputs)

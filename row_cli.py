@@ -147,7 +147,7 @@ def main():
             task_count=int(args["--instances"]),
             total_size=int(args["--file-count"]),
             project_number=int(args["--project"]),
-            processor_id=int(args["--processor"]),
+            processor_id=args["--processor"],
         )
 
         results = row.ocr_all_mosaics(inputs)
