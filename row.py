@@ -22,10 +22,13 @@ from pdf2image.exceptions import PDFInfoNotInstalledError, PDFPageCountError, PD
 from PIL.Image import DecompressionBombError
 
 if "PY_ENV" in environ and environ["PY_ENV"] == "production":
-    client = google.cloud.logging.Client()
-    client.setup_logging()
-
+    LOGGING_CLIENT = google.cloud.logging.Client()
     STORAGE_CLIENT = google.cloud.storage.Client()
+
+    LOGGING_CLIENT.setup_logging()
+
+TASK_RESULTS = pd.DataFrame({"name": "", "text": ""})
+TASK_RESULTS = TASK_RESULTS.astype({"name": "string", "text": "string"})
 
 
 def mosaic_all_circles(job_name, input_bucket, output_location, file_index, task_index, task_count, total_size):
@@ -569,22 +572,21 @@ def export_circles_from_image(circles, out_dir, file_name, cv2_image, height, wi
     return masked_images
 
 
-def append_results(frame, obj_name, results):
+def append_results(file_name, text_found):
     """append detected results to a dataframe by concatenating them onto the end of
         the existing dataframe
 
     Args:
-        frame (dataframe): dataframe containing the existing results
-        obj_name (str): the name of the object (example.pdf, example.jpg, etc.) being processes
-        results (list): list of strings containing OCR results from the current file
+        filename (str): the name of the object (example.pdf, example.jpg, etc.) being processes
+        text_found (str): list of strings containing OCR results from the current file
 
     Returns:
         dataframe: an updated version of the input dataframe
     """
-    df_new = pd.DataFrame({"Filename": [obj_name], "Parcels": [results]})
-    frame = pd.concat([frame, df_new], ignore_index=True, sort=False)
+    global TASK_RESULTS  #: pylint: disable=global-statement
 
-    return frame
+    df_new = pd.DataFrame({"name": file_name, "text": text_found})
+    TASK_RESULTS = pd.concat([TASK_RESULTS, df_new], axis=0, ignore_index=True, sort=False)
 
 
 def upload_results(frame, bucket_name, out_name, job_name):
