@@ -674,7 +674,7 @@ def upload_results(data, bucket_name, out_name, job_name):
     Returns:
         nothing
     """
-    file_name = f"{job_name}/{out_name}"
+    file_name = f"{job_name}/{out_name}.gz"
     logging.info("uploading %s to %s/%s", out_name, bucket_name, file_name)
 
     bucket = STORAGE_CLIENT.bucket(bucket_name)
@@ -685,7 +685,7 @@ def upload_results(data, bucket_name, out_name, job_name):
     with BytesIO() as parquet:
         frame.to_parquet(parquet, compression="gzip")
 
-        new_blob.upload_from_file(parquet, content_type="application/gzip")
+        new_blob.upload_from_string(parquet.getvalue(), content_type="application/gzip")
 
 
 def format_time(seconds):
@@ -725,7 +725,7 @@ def download_run(bucket, run_name):
         location.joinpath(run_name).mkdir(parents=True)
 
     for blob in blobs:
-        if blob.name.endswith(".gzip"):
+        if blob.name.endswith(".gz"):
             blob.download_to_filename(location / blob.name)
 
     return location.joinpath(run_name)
