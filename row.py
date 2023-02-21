@@ -6,6 +6,7 @@ Right of way module containing methods
 """
 import logging
 import math
+from datetime import datetime
 from io import BytesIO
 from itertools import islice
 from os import environ
@@ -137,9 +138,6 @@ def ocr_all_mosaics(inputs):
             output_location (str): the location to save the results to. omit the `gs://` prefix
             file_index (str): the path to the folder containing an `index.txt` file listing all the images in a bucket.
                             `gs://bucket-name`
-            task_index (int): the index of the task running
-            task_count (int): the number of containers running the job
-            total_size (int): the total number of files to process
             project_number (int): the number of the gcp project
             processor_id (str): the id of the documentai processor
 
@@ -147,8 +145,29 @@ def ocr_all_mosaics(inputs):
         A list of lists with the results of the OCR
     """
     #: Get files to process for this job
-    files = get_files_from_index(inputs.file_index, inputs.task_index, inputs.task_count, inputs.total_size)
-    logging.info("job name: %s task: %i processing %s files", inputs.job_name, inputs.task_index, files)
+    index = get_index(inputs.file_index)
+
+    if index is None:
+        logging.error("job name: %s failed to get index", inputs.job_name)
+
+        return
+
+    files_to_process = []
+    failed_to_process = []
+
+    quota = 120
+    i = 0
+    with index.open(mode="r", encoding="utf-8") as data:
+        while i < quota:
+            line = data.readline()
+
+            if line:
+                files_to_process.append(line)
+                i += 1
+            else:
+                break
+
+    logging.info("job name: %s processing %i files %s", inputs.job_name, len(files_to_process), files_to_process)
 
     #: Initialize GCP storage client and bucket
     bucket = STORAGE_CLIENT.bucket(inputs.input_bucket[5:])
@@ -159,16 +178,15 @@ def ocr_all_mosaics(inputs):
     processor_name = ai_client.processor_path(inputs.project_number, "us", inputs.processor_id)
 
     #: Iterate over objects to detect circles and perform OCR
-    for object_name in files:
+    for object_name in files_to_process:
         object_start = perf_counter()
         object_name = object_name.rstrip()
 
         image_content = bucket.blob(object_name).download_as_bytes()
 
         logging.info(
-            "job name: %s task: %i download finished %s: %s",
+            "job name: %s download finished %s: %s",
             inputs.job_name,
-            inputs.task_index,
             format_time(perf_counter() - object_start),
             {"file": object_name},
         )
@@ -180,31 +198,32 @@ def ocr_all_mosaics(inputs):
         try:
             result = ai_client.process_document(request=request)
             logging.info(
-                "job name: %s task: %i ocr finished %s: %s",
+                "job name: %s ocr finished %s: %s",
                 inputs.job_name,
-                inputs.task_index,
                 format_time(perf_counter() - object_start),
                 {"file": object_name},
             )
         except (RetryError, InternalServerError) as error:
             logging.warning(
-                "job name: %s task %i: ocr failed on %s. %s",
+                "job name: %s ocr failed on %s. %s",
                 inputs.job_name,
-                inputs.task_index,
                 object_name,
                 error.message,
             )
 
+            failed_to_process.append(object_name)
+
             continue
         except (InvalidArgument) as error:
             logging.warning(
-                "job name: %s task %i: ocr failed on %s. %s\n%s",
+                "job name: %s ocr failed on %s. %s\n%s",
                 inputs.job_name,
-                inputs.task_index,
                 object_name,
                 error.message,
                 error.details,
             )
+
+            failed_to_process.append(object_name)
 
             continue
 
@@ -212,7 +231,34 @@ def ocr_all_mosaics(inputs):
 
     upload_results(TASK_RESULTS, inputs.output_location, f"task-{inputs.task_index}", inputs.job_name)
 
+    i = 0
+    with index.open(mode="r+", encoding="utf-8") as data:
+        while i < quota:
+            data.readline()
+            i += 1
+
+        remaining_files = data.read()
+        data.seek(0)
+        data.write(remaining_files)
+        data.writelines(failed_to_process)
+        data.truncate()
+
+    update_index(bucket, index)
+
     return TASK_RESULTS
+
+
+def update_index(bucket, path_object):
+    """renames the current index and uploads the index file to the bucket
+
+    Args:
+        bucket (Bucket): the bucket to upload the index file to
+        path_object (Path): the index file to upload
+    """
+    bucket.rename_blob(bucket.blob("index.txt"), f"index-{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}.txt")
+
+    with path_object.open(mode="r+b", encoding="utf-8", newline=None) as data:
+        bucket.blob("index.txt").upload_from_file(data, content_type="text/plain")
 
 
 def generate_index(from_location, prefix, save_location):
