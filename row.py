@@ -167,6 +167,11 @@ def ocr_all_mosaics(inputs):
             else:
                 break
 
+    if len(files_to_process) == 0:
+        logging.warning("job is completed")
+
+        return
+
     logging.info("job name: %s processing %i files %s", inputs.job_name, len(files_to_process), files_to_process)
 
     #: Initialize GCP storage client and bucket
