@@ -169,9 +169,9 @@ def main():
         total_lines = 0
         filtered_lines = 0
 
-        with index.open(mode="r", encoding="utf8", newline="") as index_file, index.with_name(
+        with index.open(mode="r", encoding="utf-8", newline="") as index_file, index.with_name(
             "filtered_index.txt"
-        ).open(mode="w", encoding="utf8", newline="") as filtered_index_file:
+        ).open(mode="w", encoding="utf-8", newline="") as filtered_index_file:
             for line in index_file:
                 total_lines += 1
 
