@@ -21,9 +21,6 @@ logging.basicConfig(
 )
 
 #: Set up variables
-TASK_INDEX = int(environ["CLOUD_RUN_TASK_INDEX"])
-TASK_COUNT = int(environ["CLOUD_RUN_TASK_COUNT"])
-TOTAL_FILES = int(environ["TOTAL_FILES"])
 INDEX = environ["INDEX_FILE_LOCATION"]
 BUCKET_NAME = environ["INPUT_BUCKET"]
 OUTPUT_BUCKET_NAME = environ["OUTPUT_BUCKET"]
@@ -34,14 +31,18 @@ JOB_NAME = environ["JOB_NAME"]
 def mosaic_all_circles():
     """the main function to execute when cloud run starts the circle detection job"""
 
+    task_index = int(environ["CLOUD_RUN_TASK_INDEX"])
+    task_count = int(environ["CLOUD_RUN_TASK_COUNT"])
+    total_files = int(environ["TOTAL_FILES"])
+
     job_start = perf_counter()
 
-    row.mosaic_all_circles(JOB_NAME, BUCKET_NAME, OUTPUT_BUCKET_NAME, INDEX, TASK_INDEX, TASK_COUNT, TOTAL_FILES)
+    row.mosaic_all_circles(JOB_NAME, BUCKET_NAME, OUTPUT_BUCKET_NAME, INDEX, task_index, task_count, total_files)
 
     logging.info(
         "job name: %s task %i: entire job %s",
         JOB_NAME,
-        TASK_INDEX,
+        task_index,
         row.format_time(perf_counter() - job_start),
     )
 
@@ -55,9 +56,6 @@ def ocr_all_mosaics():
         input_bucket=BUCKET_NAME,
         output_location=OUTPUT_BUCKET_NAME,
         file_index=INDEX,
-        task_index=TASK_INDEX,
-        task_count=TASK_COUNT,
-        total_size=TOTAL_FILES,
         project_number=int(environ["PROJECT_NUMBER"]),
         processor_id=environ["PROCESSOR_ID"],
     )
@@ -65,9 +63,8 @@ def ocr_all_mosaics():
     row.ocr_all_mosaics(inputs)
 
     logging.info(
-        "job name: %s task %i: entire job %s",
+        "job name: %s entire job %s",
         JOB_NAME,
-        TASK_INDEX,
         row.format_time(perf_counter() - job_start),
     )
 
