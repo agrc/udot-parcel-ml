@@ -56,6 +56,7 @@ def ocr_all_mosaics():
         input_bucket=BUCKET_NAME,
         output_location=OUTPUT_BUCKET_NAME,
         file_index=INDEX,
+        quota=int(environ["QUOTA"]),
         project_number=int(environ["PROJECT_NUMBER"]),
         processor_id=environ["PROCESSOR_ID"],
     )

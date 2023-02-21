@@ -97,6 +97,7 @@ jobs:
           region: us-central1
           env_vars: |
             JOB_NAME=alligator
+            QUOTA=100
             INDEX_FILE_LOCATION=${{ secrets.INDEX_FILE_LOCATION }}
             INPUT_BUCKET=${{ secrets.INPUT_BUCKET }}
             OUTPUT_BUCKET=${{ secrets.OUTPUT_BUCKET }}
