@@ -116,7 +116,7 @@ jobs:
           if [ ! "$(gcloud scheduler jobs list | grep every-minute)" ]; then
             gcloud scheduler jobs create http every-minute \
               --description="Trigger the cloud run once per minute until completion" \
-              --schedule="* * * * *" \
+              --schedule="* 9-17 * * *" \
               --time-zone=America/Denver \
               --uri=${{ steps.deploy.outputs.url }} \
               --http-method=POST \
@@ -128,7 +128,7 @@ jobs:
           else
             gcloud scheduler jobs update http every-minute \
               --description="Trigger the cloud run once per every-minute until completion" \
-              --schedule="* * * * *" \
+              --schedule="* 9-17 * * *" \
               --time-zone=America/Denver \
               --uri=${{ steps.deploy.outputs.url }} \
               --http-method=POST \
