@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.4.1](https://github.com/agrc/udot-parcel-ml/compare/v1.4.0...v1.4.1) (2023-02-21)
+
+
+### 🐛 Bug Fixes
+
+* don't do anything if there are no files ([e84f72c](https://github.com/agrc/udot-parcel-ml/commit/e84f72c3540fb6a9769dda93d12fdf12704f7334))
+* modify method to operate on 120 files and update the index ([0e9f738](https://github.com/agrc/udot-parcel-ml/commit/0e9f738907253904054562f33bfbcb4fdf8f7f00))
+
 ## [1.4.0](https://github.com/agrc/udot-parcel-ml/compare/v1.3.1...v1.4.0) (2023-02-16)
 
 
