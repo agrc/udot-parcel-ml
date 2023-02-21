@@ -45,6 +45,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           images: us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job
           tags: |
             type=raw,value=latest
@@ -63,7 +64,7 @@ jobs:
         shell: bash
         run: docker push ${{ steps.meta.outputs.tags }}
 
-      - name: 🚀 Deploy Mosaic to Cloud Run
+      - name: 🚀 Deploy to Cloud Run Job
         run: |
           if [ ! "$(gcloud beta run jobs list | grep default)" ]; then
             gcloud beta run jobs create default \
@@ -87,26 +88,56 @@ jobs:
                 --parallelism 0
           fi
 
-      - name: 🚀 Deploy OCR to Cloud Run
+      - name: 🚀 Deploy to Cloud Run
+        id: deploy
+        uses: google-github-actions/deploy-cloudrun@v1
+        with:
+          service: ocr
+          image: us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job:latest
+          region: us-central1
+          env_vars: |
+            JOB_NAME=alligator
+            INDEX_FILE_LOCATION=${{ secrets.INDEX_FILE_LOCATION }}
+            INPUT_BUCKET=${{ secrets.INPUT_BUCKET }}
+            OUTPUT_BUCKET=${{ secrets.OUTPUT_BUCKET }}
+            PROJECT_NUMBER=${{ secrets.PROJECT_NUMBER }}
+            PROCESSOR_ID=${{ secrets.PROCESSOR_ID }}
+            JOB_TYPE=ocr
+            PY_ENV=production
+          flags: |
+            --service-account=cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com
+            --max-instances=1
+            --cpu=1000m
+            --memory=512Mi
+            --timeout=1m
+
+      - name: 🕰️ Create Cloud Scheduler
         run: |
-          if [ ! "$(gcloud beta run jobs list | grep ocr)" ]; then
-            gcloud beta run jobs create ocr \
-              --region us-central1 \
-              --image us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job:latest \
-              --service-account cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
-              --set-env-vars INDEX_FILE_LOCATION=${{ secrets.INDEX_FILE_LOCATION }},INPUT_BUCKET=${{ secrets.INPUT_BUCKET }},OUTPUT_BUCKET=${{ secrets.OUTPUT_BUCKET }},PY_ENV=production,TOTAL_FILES=89537,JOB_NAME=alligator,PROJECT_NUMBER=${{ secrets.PROJECT_NUMBER }},PROCESSOR_ID=${{ secrets.PROCESSOR_ID }},JOB_TYPE=ocr \
-              --memory=8Gi \
-              --cpu=2 \
-              --max-retries 0 \
-              --parallelism 0
+          if [ ! "$(gcloud scheduler jobs list | grep every-minute)" ]; then
+            gcloud scheduler jobs create http every-minute \
+              --description="Trigger the cloud run once per minute until completion" \
+              --schedule="* * * * *" \
+              --time-zone=America/Denver \
+              --uri=${{ steps.deploy.outputs.url }} \
+              --http-method=POST \
+              --max-retry-attempts=0 \
+              --min-backoff=1m \
+              --max-backoff=10m \
+              --oidc-service-account-email=cloud-scheduler-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
+              --quiet
           else
-            gcloud beta run jobs update ocr \
-                --region us-central1 \
-                --image us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job:latest \
-                --service-account cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
-                --set-env-vars INDEX_FILE_LOCATION=${{ secrets.INDEX_FILE_LOCATION }},INPUT_BUCKET=${{ secrets.INPUT_BUCKET }},OUTPUT_BUCKET=${{ secrets.OUTPUT_BUCKET }},PY_ENV=production,TOTAL_FILES=89537,JOB_NAME=alligator,PROJECT_NUMBER=${{ secrets.PROJECT_NUMBER }},PROCESSOR_ID=${{ secrets.PROCESSOR_ID }},JOB_TYPE=ocr \
-                --memory=8Gi \
-                --cpu=2 \
-                --max-retries 0 \
-                --parallelism 0
+            gcloud scheduler jobs update http every-minute \
+              --description="Trigger the cloud run once per every-minute until completion" \
+              --schedule="* * * * *" \
+              --time-zone=America/Denver \
+              --uri=${{ steps.deploy.outputs.url }} \
+              --http-method=POST \
+              --max-retry-attempts=0 \
+              --min-backoff=1m \
+              --max-backoff=10m \
+              --oidc-service-account-email=cloud-scheduler-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
+              --quiet
           fi
+
+      - name: Pause Schedule
+        run: gcloud scheduler jobs pause every-minute
