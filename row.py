@@ -136,6 +136,7 @@ def ocr_all_mosaics(inputs):
             job_name (str): the name of the run job. typically named after an animal in alphabetical order
             input_bucket (str): the bucket to get files from using the format `gs://bucket-name`
             output_location (str): the location to save the results to. omit the `gs://` prefix
+            quota (int): the number of files to process
             file_index (str): the path to the folder containing an `index.txt` file listing all the images in a bucket.
                             `gs://bucket-name`
             project_number (int): the number of the gcp project
@@ -155,10 +156,9 @@ def ocr_all_mosaics(inputs):
     files_to_process = []
     failed_to_process = []
 
-    quota = 120
     i = 0
     with index.open(mode="r", encoding="utf-8") as data:
-        while i < quota:
+        while i < inputs.quota:
             line = data.readline()
 
             if line:
@@ -238,7 +238,7 @@ def ocr_all_mosaics(inputs):
 
     i = 0
     with index.open(mode="r+", encoding="utf-8") as data:
-        while i < quota:
+        while i < inputs.quota:
             data.readline()
             i += 1
 
