@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.4](https://github.com/agrc/udot-parcel-ml/compare/v1.5.3...v1.5.4) (2023-02-22)
+
+
+### 🐛 Bug Fixes
+
+* remove encoding on binary file ([085f5ed](https://github.com/agrc/udot-parcel-ml/commit/085f5eddbdabc66733e69e9f6f6b354169c8ab24))
+
 ## [1.5.3](https://github.com/agrc/udot-parcel-ml/compare/v1.5.2...v1.5.3) (2023-02-22)
 
 
