@@ -1,8 +1,10 @@
 opencv-python==4.7.*
-pdf2image==1.16.*
 pandas==1.5.*
-google-cloud-storage==2.7.*
-google-cloud-logging==3.5.*
-google-cloud-documentai==2.12.*
-pyarrow==11.*
+pdf2image==1.16.*
 fastparquet==2023.1.0
+flask==2.2.*
+google-cloud-documentai==2.12.*
+google-cloud-logging==3.5.*
+google-cloud-storage==2.7.*
+gunicorn==20.1.*
+pyarrow==11.*

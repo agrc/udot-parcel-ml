@@ -15,6 +15,7 @@
     "gcloud",
     "googleapis",
     "gserviceaccount",
+    "Gunicorn",
     "imdecode",
     "imencode",
     "IMREAD",
