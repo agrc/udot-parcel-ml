@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.3](https://github.com/agrc/udot-parcel-ml/compare/v1.5.2...v1.5.3) (2023-02-22)
+
+
+### 🐛 Bug Fixes
+
+* binary mode does not take an encoding ([d8dfb82](https://github.com/agrc/udot-parcel-ml/commit/d8dfb826386a2d24eb47214dea7da07c56257f0f))
+
 ## [1.5.2](https://github.com/agrc/udot-parcel-ml/compare/v1.5.1...v1.5.2) (2023-02-22)
 
 
