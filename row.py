@@ -239,7 +239,7 @@ def ocr_all_mosaics(inputs):
     )
 
     i = 0
-    with index.open(mode="r+", encoding="utf-8") as data:
+    with index.open(mode="r+") as data:
         while i < inputs.quota:
             data.readline()
             i += 1
