@@ -114,7 +114,7 @@ jobs:
 
       - name: 🕰️ Create Cloud Scheduler
         run: |
-          if [ ! "$(gcloud scheduler jobs list | grep every-minute)" ]; then
+          if [ ! "$(gcloud scheduler jobs list --location=us-central1 | grep every-minute)" ]; then
             gcloud scheduler jobs create http every-minute \
               --description="Trigger the cloud run once per minute until completion" \
               --schedule="* 9-17 * * *" \
@@ -125,6 +125,7 @@ jobs:
               --min-backoff=1m \
               --max-backoff=10m \
               --oidc-service-account-email=cloud-scheduler-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
+              --location=us-central1 \
               --quiet
           else
             gcloud scheduler jobs update http every-minute \
@@ -137,6 +138,7 @@ jobs:
               --min-backoff=1m \
               --max-backoff=10m \
               --oidc-service-account-email=cloud-scheduler-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
+              --location=us-central1 \
               --quiet
           fi
 
