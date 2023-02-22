@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.1](https://github.com/agrc/udot-parcel-ml/compare/v1.5.0...v1.5.1) (2023-02-22)
+
+
+### 🐛 Bug Fixes
+
+* add missing ci location ([c41d171](https://github.com/agrc/udot-parcel-ml/commit/c41d171c959d73c2deb0b33838dbe917248eee2a))
+
 ## [1.5.0](https://github.com/agrc/udot-parcel-ml/compare/v1.4.1...v1.5.0) (2023-02-22)
 
 
