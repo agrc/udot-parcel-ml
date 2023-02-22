@@ -157,7 +157,7 @@ def ocr_all_mosaics(inputs):
     failed_to_process = []
 
     i = 0
-    with index.open(mode="r", encoding="utf-8") as data:
+    with index.open(mode="r", encoding="utf-8", newline=None) as data:
         while i < inputs.quota:
             line = data.readline()
 
@@ -320,7 +320,7 @@ def generate_index(from_location, prefix, save_location):
         if not save_location.exists():
             save_location.mkdir(parents=True, exist_ok=True)
 
-        with save_location.joinpath("index.txt").open("w", encoding="utf-8", newline="") as output:
+        with save_location.joinpath("index.txt").open("w", encoding="utf-8", newline=None) as output:
             for item in files:
                 output.write(str(item) + "\n")
 
@@ -429,7 +429,7 @@ def get_files_from_index(from_location, task_index, task_count, total_size):
 
     file_list = []
 
-    with index.open("r", encoding="utf-8") as data:
+    with index.open("r", encoding="utf-8", newline=None) as data:
         file_list = list(islice(data, first_index, last_index))
 
     logging.info("task number %i will work on file indices from %i to %i", task_index, first_index, last_index)
@@ -456,7 +456,7 @@ def generate_remaining_index(full_index_location, processed_index_location, save
     if full_index is None:
         return []
 
-    with full_index.open() as data:
+    with full_index.open(mode="r", encoding="utf-8", newline=None) as data:
         all_files = {l.strip() for l in data.readlines()}
 
     logging.info("total number of files %i", len(all_files))
@@ -467,7 +467,7 @@ def generate_remaining_index(full_index_location, processed_index_location, save
     if processed_index is None:
         return []
 
-    with processed_index.open() as data:
+    with processed_index.open(mode="r", encoding="utf-8", newline=None) as data:
         processed_files = {l.strip() for l in data.readlines()}
 
     logging.info("number of already-processed files %i", len(processed_files))
@@ -496,7 +496,7 @@ def generate_remaining_index(full_index_location, processed_index_location, save
 
             return remaining_files
 
-        with save_location.joinpath("remaining_index.txt").open("w", encoding="utf-8", newline="") as output:
+        with save_location.joinpath("remaining_index.txt").open("w", encoding="utf-8", newline=None) as output:
             for item in remaining_files:
                 output.write(str(item) + "\n")
 
