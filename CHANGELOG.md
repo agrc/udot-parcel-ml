@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.5.0](https://github.com/agrc/udot-parcel-ml/compare/v1.4.1...v1.5.0) (2023-02-22)
+
+
+### 🚀 Features
+
+* create a server for cloud run ([0e1469a](https://github.com/agrc/udot-parcel-ml/commit/0e1469a44aaae232a9b36d16030831f070d41d19))
+
+
+### 🐛 Bug Fixes
+
+* convert build to gunicorn ([0029ebe](https://github.com/agrc/udot-parcel-ml/commit/0029ebe8d4fff3de1397dabaadcf816834baa8ae))
+
 ## [1.4.1](https://github.com/agrc/udot-parcel-ml/compare/v1.4.0...v1.4.1) (2023-02-21)
 
 
