@@ -99,7 +99,7 @@ jobs:
             JOB_NAME=alligator
             QUOTA=100
             INDEX_FILE_LOCATION=${{ secrets.INDEX_FILE_LOCATION }}
-            INPUT_BUCKET=${{ secrets.OUTPUT_BUCKET }}
+            INPUT_BUCKET=${{ secrets.INDEX_FILE_LOCATION }}
             OUTPUT_BUCKET=${{ secrets.OUTPUT_BUCKET }}
             PROJECT_NUMBER=${{ secrets.PROJECT_NUMBER }}
             PROCESSOR_ID=${{ secrets.PROCESSOR_ID }}
