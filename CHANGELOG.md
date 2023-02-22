@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.2](https://github.com/agrc/udot-parcel-ml/compare/v1.5.1...v1.5.2) (2023-02-22)
+
+
+### 🐛 Bug Fixes
+
+* replace task index with time ([e5440f9](https://github.com/agrc/udot-parcel-ml/commit/e5440f905e9ec46181f07c9b92dc0bd304f3e34c))
+
 ## [1.5.1](https://github.com/agrc/udot-parcel-ml/compare/v1.5.0...v1.5.1) (2023-02-22)
 
 
