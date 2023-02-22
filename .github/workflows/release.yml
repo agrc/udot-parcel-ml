@@ -143,4 +143,4 @@ jobs:
           fi
 
       - name: Pause Schedule
-        run: gcloud scheduler jobs pause every-minute
+        run: gcloud scheduler jobs pause every-minute --location=us-central1
