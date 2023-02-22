@@ -234,7 +234,9 @@ def ocr_all_mosaics(inputs):
 
         TASK_RESULTS.append([object_name, result.document.text])
 
-    upload_results(TASK_RESULTS, inputs.output_location, f"task-{inputs.task_index}", inputs.job_name)
+    upload_results(
+        TASK_RESULTS, inputs.output_location, f"ocr-{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}", inputs.job_name
+    )
 
     i = 0
     with index.open(mode="r+", encoding="utf-8") as data:
