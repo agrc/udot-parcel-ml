@@ -239,7 +239,7 @@ def ocr_all_mosaics(inputs):
     )
 
     i = 0
-    with index.open(mode="r+") as data:
+    with index.open(mode="r+", encoding="utf-8", newline=None) as data:
         while i < inputs.quota:
             data.readline()
             i += 1
@@ -264,7 +264,7 @@ def update_index(bucket, path_object):
     """
     bucket.rename_blob(bucket.blob("index.txt"), f"index-{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}.txt")
 
-    with path_object.open(mode="r+b", encoding="utf-8", newline=None) as data:
+    with path_object.open(mode="r+b", newline=None) as data:
         bucket.blob("index.txt").upload_from_file(data, content_type="text/plain")
 
 
