@@ -1,1 +1,1 @@
-web: python3 row_run.py
+web: gunicorn row_run_server:app
