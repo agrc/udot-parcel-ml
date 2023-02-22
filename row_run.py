@@ -11,6 +11,7 @@ from time import perf_counter
 from types import SimpleNamespace
 
 import row
+import row_run_server
 
 #: Set up logging
 logging.basicConfig(
@@ -72,10 +73,15 @@ def ocr_all_mosaics():
     )
 
 
-if __name__ == "__main__":
+def run():
+    """run: the entry point for the project"""
     if JOB_TYPE == "mosaic":
         mosaic_all_circles()
     elif JOB_TYPE == "ocr":
-        ocr_all_mosaics()
+        row_run_server.start()
     else:
         logging.error("JOB_TYPE environment variable not set")
+
+
+if __name__ == "__main__":
+    run()
