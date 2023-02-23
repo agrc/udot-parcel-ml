@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.5.5](https://github.com/agrc/udot-parcel-ml/compare/v1.5.4...v1.5.5) (2023-02-23)
+
+
+### 🐛 Bug Fixes
+
+* add newline character for writeline ([8ccede5](https://github.com/agrc/udot-parcel-ml/commit/8ccede588bf133f906ae14495f3f6b2e95b5366d))
+* handle not found cloud storage objects ([8d2c661](https://github.com/agrc/udot-parcel-ml/commit/8d2c66175ea46562a6b745e972cc8a097d9557f5))
+* skip files that should not be in the index ([9197531](https://github.com/agrc/udot-parcel-ml/commit/9197531a2eba19f3f3e594a7c6c883cc48ca7dfe))
+
 ## [1.5.4](https://github.com/agrc/udot-parcel-ml/compare/v1.5.3...v1.5.4) (2023-02-22)
 
 
