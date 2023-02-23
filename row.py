@@ -188,6 +188,10 @@ def ocr_all_mosaics(inputs):
         object_name = object_name.rstrip()
 
         image_content = bucket.blob(object_name).download_as_bytes()
+        if not Path(object_name).name.casefold().endswith(("jpg", "jpeg", "tif", "tiff", "png")):
+            logging.info("job name: %s item is incorrect file type: %s", inputs.job_name, object_name)
+
+            continue
 
         logging.info(
             "job name: %s download finished %s: %s",
