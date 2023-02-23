@@ -227,7 +227,7 @@ def ocr_all_mosaics(inputs):
                 error.message,
             )
 
-            failed_to_process.append(object_name)
+            failed_to_process.append(object_name + "\n")
 
             continue
         except (InvalidArgument) as error:
@@ -239,7 +239,7 @@ def ocr_all_mosaics(inputs):
                 error.details,
             )
 
-            failed_to_process.append(object_name)
+            failed_to_process.append(object_name + "\n")
 
             continue
 
