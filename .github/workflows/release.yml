@@ -97,7 +97,7 @@ jobs:
           region: us-central1
           env_vars: |
             JOB_NAME=alligator
-            QUOTA=100
+            QUOTA=50
             INDEX_FILE_LOCATION=${{ secrets.INDEX_FILE_LOCATION }}
             INPUT_BUCKET=${{ secrets.INDEX_FILE_LOCATION }}
             OUTPUT_BUCKET=${{ secrets.OUTPUT_BUCKET }}
@@ -108,9 +108,9 @@ jobs:
           flags: |
             --service-account=cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com
             --max-instances=1
-            --cpu=1000m
-            --memory=512Mi
-            --timeout=1m
+            --cpu=125m
+            --memory=256Mi
+            --timeout=70s
 
       - name: 🕰️ Create Cloud Scheduler
         run: |
