@@ -6,6 +6,7 @@ Right of way module containing methods
 """
 import logging
 import math
+import re
 from datetime import datetime
 from io import BytesIO
 from itertools import islice
@@ -857,6 +858,77 @@ def download_ocr_results(bucket_name, run_name, out_dir):
     logging.info("deleting individual ocr files")
     for ocr_file in ocr_files:
         Path(ocr_file).unlink()
+
+    return out_dir
+
+
+def filter_ocr_results(original_results_file, out_dir):
+    """download ocr results from a GCP bucket
+
+    Args:
+        original_results (str): path to the parquet file with original combined results (path_to_file.gz)
+        out_dir (str): where to save the CSV file results
+
+    Returns:
+        str: the location of the output CSV file
+    """
+    #: silence pandas SettingWithCopyWarning
+    pd.options.mode.chained_assignment = None
+
+    out_dir = Path(out_dir)
+
+    if not out_dir.exists():
+        out_dir.mkdir(parents=True)
+
+    results_df = pd.read_parquet(original_results_file)
+
+    orig_length = len(results_df.index)
+    logging.info("rumber of rows before cleanup: %i", orig_length)
+
+    #: Add column for the original UDOT filename
+    results_df["udot_file_name"] = results_df.apply(lambda r: r["file_name"].split("/mosaics/", 1)[1].strip(), axis=1)
+
+    #: Remove spaces and newline characters adjacent to colons
+    results_df["text"] = results_df.apply(lambda r: r["text"].replace(":\n", ":").strip(), axis=1)
+    results_df["text"] = results_df.apply(lambda r: r["text"].replace("\n:", ":").strip(), axis=1)
+    results_df["text"] = results_df.apply(lambda r: r["text"].replace(": ", ":").strip(), axis=1)
+    results_df["text"] = results_df.apply(lambda r: r["text"].replace(" :", ":").strip(), axis=1)
+    #: Then remove newline characters and replace with spaces
+    results_df["text"] = results_df.apply(lambda r: r["text"].replace("\n", " ").strip(), axis=1)
+
+    #: Remove special characters except for colons with a regular expression
+    regex = r"[^a-zA-Z0-9 ](?<!:)"
+    results_df["text"] = results_df.apply(lambda r: re.sub(regex, "", r["text"]), axis=1)
+
+    #: Convert string to list
+    results_df["text"] = results_df.apply(lambda r: r["text"].split(), axis=1)
+
+    #: Remove alpha-only items - not relevant, should start with a number
+    results_df["text"] = results_df.apply(lambda r: [item for item in r["text"] if not item.isalpha()], axis=1)
+
+    #: Remove rows that start with a letter, should start with a number
+    results_df["text"] = results_df.apply(
+        lambda r: [item for item in r["text"] if item and not item[0].isalpha()], axis=1
+    )
+
+    #: Remove rows where length of text list is zero
+    results_df = results_df[results_df["text"].apply(lambda r: len(r)) > 0]
+
+    #: Convert list column to string
+    results_df["text"] = results_df.apply(lambda r: " ".join(r["text"]), axis=1)
+
+    intermediate_length = len(results_df.index)
+    logging.info("rumber of rows before de-duplicating: %i", intermediate_length)
+    results_df.drop_duplicates(inplace=True, ignore_index=True)
+
+    final_length = len(results_df.index)
+    diff = intermediate_length - final_length
+    logging.info("rumber of rows after removing duplicates: %i", final_length)
+    logging.info("removed %i duplicate rows", diff)
+
+    out_file = out_dir / "filtered_ocr_results.csv"
+    results_df.to_csv(out_file)
+    logging.info("saved filtered ocr results to %s", out_file)
 
     return out_dir
 def summarize_run(folder, run_name):
