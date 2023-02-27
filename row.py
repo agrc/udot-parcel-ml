@@ -928,7 +928,7 @@ def filter_ocr_results(original_results_file, out_dir):
     logging.info("removed %i duplicate rows", diff)
 
     #: Save output locally
-    out_file = out_dir / "filtered_ocr_results.csv"
+    out_file = out_dir / f"filtered-ocr-results-{datetime.now().strftime('%Y-%m-%d-%H-%M')}.csv"
     results_df.to_csv(out_file)
     logging.info("saved filtered ocr results to %s", out_file)
 
