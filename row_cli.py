@@ -14,6 +14,7 @@ Usage:
     row_cli.py detect circles <file_name> (--save-to=location) [--mosaic]
     row_cli.py results download <run_name> (--from=location)
     row_cli.py results summarize <run_name> (--from=location)
+    row_cli.py ocr-results download <run_name> (--from=location --save-to=location)
 
 Options:
     --from=location                 The bucket or directory to operate on
@@ -29,6 +30,7 @@ Examples:
     python row_cli.py process images --job=test --from=./test-data --save-to=./.ephemeral --index=./test-data --task-index=0 --file-count=1 --instances=1
     python row_cli.py process circles ---job=test --from=./test-data --save-to=./.ephemeral --index=./test-data --task-index=0 --file-count=1 --instances=1 --project=123456789 --processor=123456789
     python row_cli.py results download bobcat --from=bucket-name
+    python row_cli.py ocr-results download alligator --from=bucket-name --save-to=./data
 """
 
 import logging
@@ -163,6 +165,11 @@ def main():
 
     if args["results"] and args["summarize"]:
         row.summarize_run(args["--from"], args["<run_name>"])
+
+    if args["ocr-results"] and args["download"]:
+        location = row.download_ocr_results(args["--from"], args["<run_name>"], args["--save-to"])
+
+        print(f"files downloaded to {location}")
 
     if args["index"] and args["filter"]:
         index = Path(args["<file_name>"])
