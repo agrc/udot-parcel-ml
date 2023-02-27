@@ -795,6 +795,70 @@ def download_run(bucket, run_name):
     return location.joinpath(run_name)
 
 
+def download_ocr_results(bucket_name, run_name, out_dir):
+    """download ocr results from a GCP bucket
+
+    Args:
+        bucket (str): the name of the bucket
+        run_name (str): the name of the run to get files from
+        out_dir (str): where to save the results
+
+    Returns:
+        str: the location of the files
+    """
+    if bucket_name.startswith("gs://"):
+        bucket_name = bucket_name[5:]
+
+    if "STORAGE_CLIENT" not in globals():
+        STORAGE_CLIENT = google.cloud.storage.Client()
+    bucket = STORAGE_CLIENT.bucket(bucket_name)
+    blobs = bucket.list_blobs(prefix=run_name)
+    location = Path(__file__).parent / "data"
+
+    if not location.joinpath(f"ocr_results/{run_name}").exists():
+        location.joinpath(f"ocr_results/{run_name}").mkdir(parents=True)
+
+    ocr_dir = location.joinpath(f"ocr_results/{run_name}")
+
+    #: download .gz files
+    logging.info("downloading .gz files from cloud storage")
+    for blob in blobs:
+        if blob.name.endswith(".gz"):
+            print(blob.name)
+            blob.download_to_filename(ocr_dir / blob.name)
+
+    iterator = ocr_dir.glob("*.gz")
+
+    ocr_files = [item for item in iterator if item.is_file()]
+
+    logging.info("combining %i files into a single dataframe", len(ocr_files))
+
+    #: combine results into a single dataframe
+    dfs = []
+    for ocr_file in ocr_files:
+        temp_df = pd.read_parquet(ocr_file)
+        dfs.append(temp_df)
+
+    combined_df = pd.concat(dfs)
+    orig_length = len(combined_df.index)
+    logging.info("rumber of rows before de-duplicating: %i", orig_length)
+    combined_df.drop_duplicates(inplace=True, ignore_index=True)
+
+    final_length = len(combined_df.index)
+    diff = orig_length - final_length
+    logging.info("rumber of rows after removing duplicates: %i", final_length)
+    logging.info("removed %i duplicate rows", diff)
+
+    out_file = Path(out_dir) / "ocr_results" / "combined_ocr_results.gz"
+    combined_df.to_parquet(out_file, compression="gzip")
+    logging.info("saved combined ocr results to %s", out_file)
+
+    #: delete downloaded files
+    logging.info("deleting individual ocr files")
+    for ocr_file in ocr_files:
+        Path(ocr_file).unlink()
+
+    return out_dir
 def summarize_run(folder, run_name):
     """summarize the results of a run
 
