@@ -917,6 +917,7 @@ def filter_ocr_results(original_results_file, out_dir):
     #: Convert list column to string
     results_df["text"] = results_df.apply(lambda r: " ".join(r["text"]), axis=1)
 
+    #: Check number of rows before/after removing duplicates
     intermediate_length = len(results_df.index)
     logging.info("rumber of rows before de-duplicating: %i", intermediate_length)
     results_df.drop_duplicates(inplace=True, ignore_index=True)
@@ -926,6 +927,7 @@ def filter_ocr_results(original_results_file, out_dir):
     logging.info("rumber of rows after removing duplicates: %i", final_length)
     logging.info("removed %i duplicate rows", diff)
 
+    #: Save output locally
     out_file = out_dir / "filtered_ocr_results.csv"
     results_df.to_csv(out_file)
     logging.info("saved filtered ocr results to %s", out_file)
