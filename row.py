@@ -810,8 +810,6 @@ def download_ocr_results(bucket_name, run_name, out_dir):
     if bucket_name.startswith("gs://"):
         bucket_name = bucket_name[5:]
 
-    if "STORAGE_CLIENT" not in globals():
-        STORAGE_CLIENT = google.cloud.storage.Client()
     bucket = STORAGE_CLIENT.bucket(bucket_name)
     blobs = bucket.list_blobs(prefix=run_name)
     location = Path(__file__).parent / "data"
