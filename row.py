@@ -819,10 +819,7 @@ def download_ocr_results(bucket_name, run_name, out_dir):
 
     #: download .gz files
     logging.info("downloading .gz files from cloud storage")
-    for blob in blobs:
-        if blob.name.endswith(".gz"):
-            print(blob.name)
-            blob.download_to_filename(ocr_dir / blob.name)
+    [blob.download_to_filename(ocr_dir / blob.name) for blob in blobs if blob.name.endswith(".gz")]
 
     iterator = ocr_dir.glob("*.gz")
 
@@ -852,8 +849,7 @@ def download_ocr_results(bucket_name, run_name, out_dir):
 
     #: delete downloaded files
     logging.info("deleting individual ocr files")
-    for ocr_file in ocr_files:
-        Path(ocr_file).unlink()
+    [Path(ocr_file).unlink() for ocr_file in ocr_files]
 
     return out_dir
 
