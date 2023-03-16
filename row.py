@@ -821,9 +821,7 @@ def download_ocr_results(bucket_name, run_name, out_dir):
     logging.info("downloading .gz files from cloud storage")
     [blob.download_to_filename(ocr_dir / blob.name) for blob in blobs if blob.name.endswith(".gz")]
 
-    iterator = ocr_dir.glob("*.gz")
-
-    ocr_files = [item for item in iterator if item.is_file()]
+    ocr_files = ocr_dir.glob("*.gz")
 
     logging.info("combining %i files into a single dataframe", len(ocr_files))
 
