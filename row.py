@@ -922,6 +922,8 @@ def filter_ocr_results(original_results_file, out_dir):
     logging.info("saved filtered ocr results to %s", out_file)
 
     return out_dir
+
+
 def summarize_run(folder, run_name):
     """summarize the results of a run
 
