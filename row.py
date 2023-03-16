@@ -867,6 +867,7 @@ def filter_ocr_results(original_results_file, out_dir):
 
     out_dir = Path(out_dir)
 
+    out_dir.mkdir(parents=True, exist_ok=True)
 
     results_df = pd.read_parquet(original_results_file)
 
