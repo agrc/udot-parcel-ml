@@ -814,10 +814,8 @@ def download_ocr_results(bucket_name, run_name, out_dir):
     blobs = bucket.list_blobs(prefix=run_name)
     location = Path(__file__).parent / "data"
 
-    if not location.joinpath(f"ocr_results/{run_name}").exists():
-        location.joinpath(f"ocr_results/{run_name}").mkdir(parents=True)
-
     ocr_dir = location.joinpath(f"ocr_results/{run_name}")
+    ocr_dir.mkdir(parents=True, exist_ok=True)
 
     #: download .gz files
     logging.info("downloading .gz files from cloud storage")
@@ -875,8 +873,6 @@ def filter_ocr_results(original_results_file, out_dir):
 
     out_dir = Path(out_dir)
 
-    if not out_dir.exists():
-        out_dir.mkdir(parents=True)
 
     results_df = pd.read_parquet(original_results_file)
 
