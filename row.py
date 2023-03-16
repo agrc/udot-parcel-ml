@@ -853,14 +853,14 @@ def download_ocr_results(bucket_name, run_name, out_dir):
 
 
 def filter_ocr_results(original_results_file, out_dir):
-    """download ocr results from a GCP bucket
+    """filter ocr results down to quality results by filtering out irrelevant patterns
 
     Args:
-        original_results (str): path to the parquet file with original combined results (path_to_file.gz)
+        original_results_file (str): path to the parquet file with original combined results (path_to_file.gz)
         out_dir (str): where to save the CSV file results
 
     Returns:
-        str: the location of the output CSV file
+        str: the location of the output CSV file with filtered results
     """
     #: silence pandas SettingWithCopyWarning
     pd.options.mode.chained_assignment = None
