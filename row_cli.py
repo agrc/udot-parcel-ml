@@ -176,7 +176,7 @@ def main():
     if args["ocr-results"] and args["filter"]:
         location = row.filter_ocr_results(args["<file_name>"], args["--save-to"])
 
-        print(f"files downloaded to {location}")
+        print(f"filtered results saved to {location}")
 
     if args["index"] and args["filter"]:
         index = Path(args["<file_name>"])
