@@ -938,7 +938,7 @@ def join_spreadsheet_info(filtered_results_file, out_dir):
     pd.options.mode.chained_assignment = None
 
     #: set up variables
-    spreadsheet_dir = location = Path(__file__).parent / "spreadsheets"
+    spreadsheet_dir = Path(__file__).parent / "spreadsheets"
     out_dir = Path(out_dir)
 
     #: combine spreadsheets into a single df for joining
