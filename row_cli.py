@@ -16,6 +16,7 @@ Usage:
     row_cli.py results summarize <run_name> (--from=location)
     row_cli.py ocr-results download <run_name> (--from=location --save-to=location)
     row_cli.py ocr-results filter <file_name> (--save-to=location)
+    row_cli.py ocr-results join <file_name> (--save-to=location)
 
 Options:
     --from=location                 The bucket or directory to operate on
@@ -33,6 +34,7 @@ Examples:
     python row_cli.py results download bobcat --from=bucket-name
     python row_cli.py ocr-results download alligator --from=bucket-name --save-to=./data
     python row_cli.py ocr-results filter ./data/alligator/combined_ocr_results --save-to=./data
+    python row_cli.py ocr-results join ./data/filtered_ocr_results.csv --save-to=./data
 """
 
 import logging
@@ -177,6 +179,11 @@ def main():
         location = row.filter_ocr_results(args["<file_name>"], args["--save-to"])
 
         print(f"filtered results saved to {location}")
+
+    if args["ocr-results"] and args["join"]:
+        location = row.join_spreadsheet_info(args["<file_name>"], args["--save-to"])
+
+        print(f"filtered and joined results saved to {location}")
 
     if args["index"] and args["filter"]:
         index = Path(args["<file_name>"])
