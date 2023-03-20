@@ -924,6 +924,80 @@ def filter_ocr_results(original_results_file, out_dir):
     return out_dir
 
 
+def join_spreadsheet_info(filtered_results_file, out_dir):
+    """join additional information from the udot spreadsheets to the filtered ocr results
+
+    Args:
+        filtered_results_file (str): path to the csv file with filtered ocr results (path_to_file.csv)
+        out_dir (str): where to save the CSV file with filtered and joined results
+
+    Returns:
+        str: the location of the output CSV file with filtered and joined results
+    """
+    #: silence pandas SettingWithCopyWarning
+    pd.options.mode.chained_assignment = None
+
+    #: set up variables
+    spreadsheet_dir = location = Path(__file__).parent / "spreadsheets"
+    out_dir = Path(out_dir)
+
+    #: combine spreadsheets into a single df for joining
+    spreadsheets = list(spreadsheet_dir.glob("*.xlsx"))
+
+    dfs = []
+
+    for sheet in spreadsheets:
+        prefix = sheet.stem
+        temp_df = pd.read_excel(sheet)
+        #: add udot_file_name field for joining later
+        temp_df["udot_file_name"] = temp_df.apply(lambda r: f"{prefix}/{r['name']}", axis=1)
+        dfs.append(temp_df)
+
+    combined_df = pd.concat(dfs)
+
+    #: join the spreadsheet info to the results
+    results_df = pd.read_csv(filtered_results_file)
+    joined_df = pd.merge(results_df, combined_df, left_on="udot_file_name", right_on="udot_file_name", how="inner")
+
+    #: calculate the URLs (file in udot projectwise, file in udot cloud storage, mosaic in ugrc cloud storage)
+    joined_df["projectwise_url"] = joined_df.apply(
+        lambda r: f"https://connect-projectwisewac.bentley.com/pwlink?datasource=Bentley.PW--udot-pw.bentley.com~3Audot-pw-02&objectId={r['guid']}&objectType=doc&app=pwe",
+        axis=1,
+    )
+    joined_df["udot_url"] = joined_df.apply(
+        lambda r: f"https://storage.cloud.google.com/ut-udot-row-county-parcels/{r['udot_file_name']}", axis=1
+    )
+    joined_df["mosaic_url"] = joined_df.apply(
+        lambda r: f"https://storage.cloud.google.com/ut-dts-agrc-udot-parcels-dev/{r['file_name']}", axis=1
+    )
+
+    #: compare length before and after removing duplicates
+    initial_length = len(joined_df.index)
+    logging.info("rumber of rows before de-duplicating: %i", initial_length)
+    joined_df.drop_duplicates(["udot_file_name"], inplace=True, ignore_index=True)
+
+    final_length = len(joined_df.index)
+    diff = initial_length - final_length
+    logging.info("rumber of rows after removing duplicates: %i", final_length)
+    logging.info("removed %i duplicate rows", diff)
+
+    #: parse text column into multiple rows (this is how UDOT wants it)
+    exploded_df = joined_df.copy()
+    new_col = exploded_df["text"].str.split(" ").apply(pd.Series, 1).stack()
+    new_col.index = new_col.index.droplevel(-1)  # to line up with main df's index
+    new_col.name = "text"  # needs a name to join
+    del exploded_df["text"]  # remove the original column
+    final_exploded_df = exploded_df.join(new_col)
+    logging.info("rumber of rows after exploding ocr results: %i", len(final_exploded_df.index))
+
+    #: save results to CSV
+    out_file = out_dir / f"final-ocr-results-{datetime.now().strftime('%Y-%m-%d-%H-%M')}.csv"
+    final_exploded_df.to_csv(out_file)
+    logging.info("saved filtered and joined ocr results to %s", out_file)
+
+    return out_dir
+
+
 def summarize_run(folder, run_name):
     """summarize the results of a run
 
