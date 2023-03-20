@@ -942,11 +942,8 @@ def join_spreadsheet_info(filtered_results_file, out_dir):
     out_dir = Path(out_dir)
 
     #: combine spreadsheets into a single df for joining
-    spreadsheets = list(spreadsheet_dir.glob("*.xlsx"))
-
     dfs = []
-
-    for sheet in spreadsheets:
+    for sheet in spreadsheet_dir.glob("*.xlsx"):
         prefix = sheet.stem
         temp_df = pd.read_excel(sheet)
         #: add udot_file_name field for joining later
