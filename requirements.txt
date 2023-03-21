@@ -8,3 +8,4 @@ google-cloud-logging==3.5.*
 google-cloud-storage==2.7.*
 gunicorn==20.1.*
 pyarrow==11.*
+openpyxl==3.*
