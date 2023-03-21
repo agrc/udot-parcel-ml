@@ -965,7 +965,7 @@ def join_spreadsheet_info(filtered_results_file, out_dir):
         lambda r: f"https://storage.cloud.google.com/ut-udot-row-county-parcels/{r['udot_file_name']}", axis=1
     )
     joined_df["mosaic_url"] = joined_df.apply(
-        lambda r: f"https://storage.cloud.google.com/ut-dts-agrc-udot-parcels-dev/{r['file_name']}", axis=1
+        lambda r: f"https://storage.cloud.google.com/ut-dts-ugrc-udot-parcel-mosaics/{r['udot_file_name']}", axis=1
     )
 
     #: compare length before and after removing duplicates
