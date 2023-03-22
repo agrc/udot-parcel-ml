@@ -231,7 +231,7 @@ def ocr_all_mosaics(inputs):
             failed_to_process.append(object_name + "\n")
 
             continue
-        except (InvalidArgument) as error:
+        except InvalidArgument as error:
             logging.warning(
                 "job name: %s ocr failed on %s. %s\n%s",
                 inputs.job_name,
