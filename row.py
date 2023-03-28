@@ -979,9 +979,12 @@ def join_spreadsheet_info(cleaned_results_file, out_dir):
     logging.info("rumber of rows after exploding ocr results: %i", len(final_exploded_df.index))
 
     #: save results to CSV
-    out_file = out_dir / f"final-ocr-results-{datetime.now().strftime('%Y-%m-%d-%H-%M')}.csv"
+    out_file = out_dir / f"joined-ocr-results-{datetime.now().strftime('%Y-%m-%d-%H-%M')}.csv"
     final_exploded_df.to_csv(out_file)
-    logging.info("saved filtered and joined ocr results to %s", out_file)
+    logging.info("saved cleaned and joined ocr results to %s", out_file)
+
+    return out_dir
+
 
     return out_dir
 
