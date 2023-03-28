@@ -885,20 +885,11 @@ def clean_ocr_results(original_results_file, out_dir):
     #: Then remove newline characters and replace with spaces
     results_df["text"] = results_df.apply(lambda r: r["text"].replace("\n", " ").strip(), axis=1)
 
-    #: Remove special characters except for colons with a regular expression
-    regex = r"[^a-zA-Z0-9 ](?<!:)"
-    results_df["text"] = results_df.apply(lambda r: re.sub(regex, "", r["text"]), axis=1)
-
     #: Convert string to list
     results_df["text"] = results_df.apply(lambda r: r["text"].split(), axis=1)
 
     #: Remove alpha-only items - not relevant, should start with a number
     results_df["text"] = results_df.apply(lambda r: [item for item in r["text"] if not item.isalpha()], axis=1)
-
-    #: Remove rows that start with a letter, should start with a number
-    results_df["text"] = results_df.apply(
-        lambda r: [item for item in r["text"] if item and not item[0].isalpha()], axis=1
-    )
 
     #: Remove rows where length of text list is zero
     results_df = results_df[results_df["text"].apply(lambda r: len(r)) > 0]
