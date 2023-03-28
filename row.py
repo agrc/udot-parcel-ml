@@ -7,6 +7,7 @@ Right of way module containing methods
 import logging
 import math
 import re
+import unicodedata
 from datetime import datetime
 from io import BytesIO
 from itertools import islice
@@ -985,6 +986,125 @@ def join_spreadsheet_info(cleaned_results_file, out_dir):
 
     return out_dir
 
+
+def filter_results(previous_results_file, out_dir):
+    """filter ocr results down further by filtering out additional irrelevant patterns
+
+    Args:
+        previous_results_file (str): path to the CSV file with cleaned and joined results (path_to_file.csv)
+        out_dir (str): where to save the CSV file results
+
+    Returns:
+        str: the location of the output CSV file with filtered results
+    """
+
+    #: silence pandas SettingWithCopyWarning
+    pd.options.mode.chained_assignment = None
+
+    #: set up variables
+    out_dir = Path(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    working_df = pd.read_csv(previous_results_file)
+
+    #: ensure the 'text' field is read as a string
+    working_df["text"] = working_df["text"].astype(str)
+
+    #: add a 'keep' field, initialized as 'yes', but be used to mark rows to remove with 'no'
+    working_df["keep"] = "yes"
+
+    #: upper-case all letters
+    working_df["text"] = working_df["text"].str.upper()
+
+    #: remove periods, parenthesis, double colons, and slashes
+    logging.info("Removing periods, parenthesis, double colons, and slashes")
+    working_df["text"] = working_df.apply(lambda r: r["text"].replace(".", "").strip(), axis=1)
+    working_df["text"] = working_df.apply(lambda r: r["text"].replace("(", "").replace("(", "").strip(), axis=1)
+    working_df["text"] = working_df.apply(lambda r: r["text"].replace(")", "").replace(")", "").strip(), axis=1)
+    working_df["text"] = working_df.apply(lambda r: r["text"].replace("/", "").strip(), axis=1)
+    working_df["text"] = working_df.apply(lambda r: r["text"].replace("\\", "").strip(), axis=1)
+    working_df["text"] = working_df.apply(lambda r: r["text"].replace("::", ":").strip(), axis=1)
+
+    #: remove leading colons
+    logging.info("Removing leading colons")
+    working_df["text"] = working_df["text"].apply(lambda x: x.lstrip(":"))
+
+    #: replace euro symbol with 'E'
+    logging.info("Replacing euro symbol with 'E'")
+    working_df["text"] = working_df.apply(lambda r: r["text"].replace("€", "E").strip(), axis=1)
+
+    #: replaced accented characters with non-accented characters
+    logging.info("Replacing accented characters with non-accented characters")
+    working_df["text"] = working_df.apply(
+        lambda r: "".join(c for c in unicodedata.normalize("NFD", r["text"]) if unicodedata.category(c) != "Mn"), axis=1
+    )
+
+    #: flag parcels that contains special characters
+    working_df["special_char"] = "pass"
+    mask = working_df["text"].str.contains(r"[^\w:]") == True
+    working_df.loc[mask, "keep"] = "no"
+    working_df.loc[mask, "special_char"] = "fail"
+    logging.info("Number parcels with special characters flagged: %i", mask.value_counts()[1])
+
+    #: flag parcels that start with a letter or non-digit, should start with a number
+    working_df["nondigit_start"] = "pass"
+    mask = ~working_df["text"].str.contains(r"^\d") == True
+    working_df.loc[mask, "keep"] = "no"
+    working_df.loc[mask, "nondigit_start"] = "fail"
+    logging.info("Number parcels starting with a non-digit flagged: %i", mask.value_counts()[1])
+
+    #: flag parcels with a ':P' pattern; permits, not relevant - but PUE is okay!
+    working_df["permit"] = "pass"
+    mask = working_df["text"].str.contains(r"(?!:PUE):P") == True
+    working_df.loc[mask, "keep"] = "no"
+    working_df.loc[mask, "permit"] = "fail"
+    logging.info("Number of permits (:P pattern, but not :PUE) flagged: %i", mask.value_counts()[1])
+
+    #: flag parcels with a colon, that do not have a number before the colon
+    working_df["no_number_before_colon"] = "pass"
+    mask = working_df["text"].str.contains(r"^[^0-9]*:") == True
+    working_df.loc[mask, "keep"] = "no"
+    working_df.loc[mask, "no_number_before_colon"] = "fail"
+    logging.info("Number of colons not preceeded by a number flagged: %i", mask.value_counts()[1])
+
+    #: flag parcels longer than 13 characters
+    working_df["too_long"] = "pass"
+    mask = working_df["text"].str.len() > 13
+    working_df.loc[mask, "keep"] = "no"
+    working_df.loc[mask, "too_long"] = "fail"
+    logging.info("Number of parcels exceeding 13 characters flagged: %i", mask.value_counts()[1])
+
+    #: flag parcels with 4 or more letters given that no colon exists (or 1 or 8)
+    working_df["too_many_letters"] = "pass"
+    mask = (working_df["text"].str.contains("^[^:18]*$")) & (working_df["text"].str.contains("(?:[A-Z][^A-Z]*){4,}"))
+    working_df.loc[mask, "keep"] = "no"
+    working_df.loc[mask, "too_many_letters"] = "fail"
+    logging.info("Number of parcels with 4+ letters and no colon, 1, or 8 flagged: %i", mask.value_counts()[1])
+
+    #: remove parcels with 5 or more numbers in a row (and not a 1 or a 8)
+    working_df["five_number_run"] = "pass"
+    mask = (working_df["text"].str.contains("^[^:18]*$")) & (working_df["text"].str.contains("[0-9]{5,}"))
+    working_df.loc[mask, "keep"] = "no"
+    working_df.loc[mask, "five_number_run"] = "fail"
+    logging.info("Number of parcels with 5+ numbers and no colon, 1, or 8 flagged: %i", mask.value_counts()[1])
+
+    #: save all results
+    #: save results to CSV
+    out_file_all = out_dir / f"final-all-ocr-results-{datetime.now().strftime('%Y-%m-%d-%H-%M')}.csv"
+    working_df.to_csv(out_file_all)
+    logging.info("saved final all ocr results to %s", out_file_all)
+
+    #: save only good results to CSV
+    keeps = working_df[working_df["keep"] == "yes"]
+    out_file_keeps = out_dir / f"final-good-ocr-results-{datetime.now().strftime('%Y-%m-%d-%H-%M')}.csv"
+    keeps.to_csv(out_file_keeps)
+    logging.info("saved final all ocr results to %s", out_file_keeps)
+
+    #: save only bad results to CSV
+    discards = working_df[working_df["keep"] == "no"]
+    out_file_discards = out_dir / f"final-bad-ocr-results-{datetime.now().strftime('%Y-%m-%d-%H-%M')}.csv"
+    discards.to_csv(out_file_discards)
+    logging.info("saved final all ocr results to %s", out_file_discards)
 
     return out_dir
 
