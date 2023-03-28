@@ -888,7 +888,7 @@ def clean_ocr_results(original_results_file, out_dir):
     #: Convert string to list
     results_df["text"] = results_df.apply(lambda r: r["text"].split(), axis=1)
 
-    #: Remove alpha-only items - not relevant, should start with a number
+    #: Remove alpha-only items - not relevant, should contain a number
     results_df["text"] = results_df.apply(lambda r: [item for item in r["text"] if not item.isalpha()], axis=1)
 
     #: Remove rows where length of text list is zero
