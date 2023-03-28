@@ -15,7 +15,7 @@ Usage:
     row_cli.py results download <run_name> (--from=location)
     row_cli.py results summarize <run_name> (--from=location)
     row_cli.py ocr-results download <run_name> (--from=location --save-to=location)
-    row_cli.py ocr-results filter <file_name> (--save-to=location)
+    row_cli.py ocr-results clean <file_name> (--save-to=location)
     row_cli.py ocr-results join <file_name> (--save-to=location)
 
 Options:
@@ -33,8 +33,8 @@ Examples:
     python row_cli.py process circles ---job=test --from=./test-data --save-to=./.ephemeral --index=./test-data --task-index=0 --file-count=1 --instances=1 --project=123456789 --processor=123456789
     python row_cli.py results download bobcat --from=bucket-name
     python row_cli.py ocr-results download alligator --from=bucket-name --save-to=./data
-    python row_cli.py ocr-results filter ./data/alligator/combined_ocr_results --save-to=./data
-    python row_cli.py ocr-results join ./data/filtered_ocr_results.csv --save-to=./data
+    python row_cli.py ocr-results clean ./data/alligator/combined_ocr_results --save-to=./data
+    python row_cli.py ocr-results join ./data/cleaned_ocr_results.csv --save-to=./data
 """
 
 import logging
@@ -175,15 +175,15 @@ def main():
 
         print(f"files downloaded to {location}")
 
-    if args["ocr-results"] and args["filter"]:
-        location = row.filter_ocr_results(args["<file_name>"], args["--save-to"])
+    if args["ocr-results"] and args["clean"]:
+        location = row.clean_ocr_results(args["<file_name>"], args["--save-to"])
 
-        print(f"filtered results saved to {location}")
+        print(f"cleaned results saved to {location}")
 
     if args["ocr-results"] and args["join"]:
         location = row.join_spreadsheet_info(args["<file_name>"], args["--save-to"])
 
-        print(f"filtered and joined results saved to {location}")
+        print(f"cleaned and joined results saved to {location}")
 
     if args["index"] and args["filter"]:
         index = Path(args["<file_name>"])
