@@ -852,15 +852,15 @@ def download_ocr_results(bucket_name, run_name, out_dir):
     return out_dir
 
 
-def filter_ocr_results(original_results_file, out_dir):
-    """filter ocr results down to quality results by filtering out irrelevant patterns
+def clean_ocr_results(original_results_file, out_dir):
+    """clean ocr results down to quality results by cleaning up the initial results
 
     Args:
         original_results_file (str): path to the parquet file with original combined results (path_to_file.gz)
         out_dir (str): where to save the CSV file results
 
     Returns:
-        str: the location of the output CSV file with filtered results
+        str: the location of the output CSV file with cleaned results
     """
     #: silence pandas SettingWithCopyWarning
     pd.options.mode.chained_assignment = None
@@ -917,22 +917,22 @@ def filter_ocr_results(original_results_file, out_dir):
     logging.info("removed %i duplicate rows", diff)
 
     #: Save output locally
-    out_file = out_dir / f"filtered-ocr-results-{datetime.now().strftime('%Y-%m-%d-%H-%M')}.csv"
+    out_file = out_dir / f"cleaned-ocr-results-{datetime.now().strftime('%Y-%m-%d-%H-%M')}.csv"
     results_df.to_csv(out_file)
-    logging.info("saved filtered ocr results to %s", out_file)
+    logging.info("saved cleaned ocr results to %s", out_file)
 
     return out_dir
 
 
-def join_spreadsheet_info(filtered_results_file, out_dir):
-    """join additional information from the udot spreadsheets to the filtered ocr results
+def join_spreadsheet_info(cleaned_results_file, out_dir):
+    """join additional information from the udot spreadsheets to the cleaned ocr results
 
     Args:
-        filtered_results_file (str): path to the csv file with filtered ocr results (path_to_file.csv)
-        out_dir (str): where to save the CSV file with filtered and joined results
+        cleaned_results_file (str): path to the csv file with cleaned ocr results (path_to_file.csv)
+        out_dir (str): where to save the CSV file with cleaned and joined results
 
     Returns:
-        str: the location of the output CSV file with filtered and joined results
+        str: the location of the output CSV file with cleaned and joined results
     """
     #: silence pandas SettingWithCopyWarning
     pd.options.mode.chained_assignment = None
@@ -953,7 +953,7 @@ def join_spreadsheet_info(filtered_results_file, out_dir):
     combined_df = pd.concat(dfs)
 
     #: join the spreadsheet info to the results
-    results_df = pd.read_csv(filtered_results_file)
+    results_df = pd.read_csv(cleaned_results_file)
     joined_df = pd.merge(results_df, combined_df, left_on="udot_file_name", right_on="udot_file_name", how="inner")
 
     #: calculate the URLs (file in udot projectwise, file in udot cloud storage, mosaic in ugrc cloud storage)
