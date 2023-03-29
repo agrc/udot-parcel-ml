@@ -987,6 +987,26 @@ def join_spreadsheet_info(cleaned_results_file, out_dir):
     return out_dir
 
 
+def _filter_too_many_letters(df):
+    df["too_many_letters"] = "pass"
+    mask = (df["text"].str.contains("^[^:18]*$")) & (df["text"].str.contains("(?:[A-Z][^A-Z]*){4,}"))
+    df.loc[mask, "keep"] = "no"
+    df.loc[mask, "too_many_letters"] = "fail"
+    logging.info("Number of parcels with 4+ letters and no colon, 1, or 8 flagged: %i", mask.value_counts()[1])
+
+    return df
+
+
+def _filter_five_number_run(df):
+    df["five_number_run"] = "pass"
+    mask = (df["text"].str.contains("^[^:18]*$")) & (df["text"].str.contains(r"\d{5,}"))
+    df.loc[mask, "keep"] = "no"
+    df.loc[mask, "five_number_run"] = "fail"
+    logging.info("Number of parcels with 5+ numbers and no colon, 1, or 8 flagged: %i", mask.value_counts()[1])
+
+    return df
+
+
 def filter_results(previous_results_file, out_dir):
     """filter ocr results down further by filtering out additional irrelevant patterns
 
@@ -1105,11 +1125,8 @@ def filter_results(previous_results_file, out_dir):
     #: 3ST2EQ = fail (4 letters and no colon, 1, or 8)
     #: 4BARS = fail
     #: 25DBIA = fail
-    working_df["too_many_letters"] = "pass"
-    mask = (working_df["text"].str.contains("^[^:18]*$")) & (working_df["text"].str.contains("(?:[A-Z][^A-Z]*){4,}"))
-    working_df.loc[mask, "keep"] = "no"
-    working_df.loc[mask, "too_many_letters"] = "fail"
-    logging.info("Number of parcels with 4+ letters and no colon, 1, or 8 flagged: %i", mask.value_counts()[1])
+
+    working_df = _filter_too_many_letters(working_df)
 
     #: remove parcels with 5 or more numbers in a row (and not a colon, 1, or a 8)
     #: the colon is often confused as a 1 or 8, so if those exist, the parcel is kept (UDOT prefers this)
@@ -1119,11 +1136,8 @@ def filter_results(previous_results_file, out_dir):
     #: 257212A = pass (1 might be a confused colon)
     #: 03702M = fail
     #: 699062ON = fail
-    working_df["five_number_run"] = "pass"
-    mask = (working_df["text"].str.contains("^[^:18]*$")) & (working_df["text"].str.contains(r"\d{5,}"))
-    working_df.loc[mask, "keep"] = "no"
-    working_df.loc[mask, "five_number_run"] = "fail"
-    logging.info("Number of parcels with 5+ numbers and no colon, 1, or 8 flagged: %i", mask.value_counts()[1])
+
+    working_df = _filter_five_number_run(working_df)
 
     #: save all results
     #: save results to CSV
