@@ -1048,7 +1048,10 @@ def filter_results(previous_results_file, out_dir):
         lambda r: "".join(c for c in unicodedata.normalize("NFD", r["text"]) if unicodedata.category(c) != "Mn"), axis=1
     )
 
-    #: flag parcels that contains special characters
+    #: flag parcels that contains special characters (other than a colon)
+    #: 123:2A = pass
+    #: 10-CI = fail
+    #: #605" = fail
     working_df["special_char"] = "pass"
     mask = working_df["text"].str.contains(r"[^\w:]") == True
     working_df.loc[mask, "keep"] = "no"
@@ -1056,6 +1059,9 @@ def filter_results(previous_results_file, out_dir):
     logging.info("Number parcels with special characters flagged: %i", mask.value_counts()[1])
 
     #: flag parcels that start with a letter or non-digit, should start with a number
+    #: 123:2A = pass
+    #: A23:2A = fail
+    #: TYP:S7 = fail
     working_df["nondigit_start"] = "pass"
     mask = ~working_df["text"].str.contains(r"^\d") == True
     working_df.loc[mask, "keep"] = "no"
@@ -1063,6 +1069,9 @@ def filter_results(previous_results_file, out_dir):
     logging.info("Number parcels starting with a non-digit flagged: %i", mask.value_counts()[1])
 
     #: flag parcels with a ':P' pattern; permits, not relevant - but PUE is okay!
+    #: 123:PUE = pass
+    #: 123:P = fail
+    #: 123:PR = fail
     working_df["permit"] = "pass"
     mask = working_df["text"].str.contains(r"(?!:PUE):P") == True
     working_df.loc[mask, "keep"] = "no"
@@ -1070,6 +1079,9 @@ def filter_results(previous_results_file, out_dir):
     logging.info("Number of permits (:P pattern, but not :PUE) flagged: %i", mask.value_counts()[1])
 
     #: flag parcels with a colon, that do not have a number before the colon
+    #: most of these also fail the nondigit_start filter
+    #: 123:2A = pass
+    #: ABC:2A = fail
     working_df["no_number_before_colon"] = "pass"
     mask = working_df["text"].str.contains(r"^\D*:") == True
     working_df.loc[mask, "keep"] = "no"
@@ -1077,6 +1089,8 @@ def filter_results(previous_results_file, out_dir):
     logging.info("Number of colons not preceeded by a number flagged: %i", mask.value_counts()[1])
 
     #: flag parcels longer than 13 characters
+    #: 1649NT:STPUEQ = pass
+    #: 1649NTS:STPUEQR = fail
     working_df["too_long"] = "pass"
     mask = working_df["text"].str.len() > 13
     working_df.loc[mask, "keep"] = "no"
@@ -1084,13 +1098,27 @@ def filter_results(previous_results_file, out_dir):
     logging.info("Number of parcels exceeding 13 characters flagged: %i", mask.value_counts()[1])
 
     #: flag parcels with 4 or more letters given that no colon exists (or 1 or 8)
+    #: the colon is often confused as a 1 or 8, so if those exist, the parcel is kept (UDOT prefers this)
+    #: 1572NT:2EC = pass (has a colon)
+    #: 3:ST2EQ = pass (has a colon)
+    #: 31ST2EQ = pass (1 might be a confused colon)
+    #: 3ST2EQ = fail (4 letters and no colon, 1, or 8)
+    #: 4BARS = fail
+    #: 25DBIA = fail
     working_df["too_many_letters"] = "pass"
     mask = (working_df["text"].str.contains("^[^:18]*$")) & (working_df["text"].str.contains("(?:[A-Z][^A-Z]*){4,}"))
     working_df.loc[mask, "keep"] = "no"
     working_df.loc[mask, "too_many_letters"] = "fail"
     logging.info("Number of parcels with 4+ letters and no colon, 1, or 8 flagged: %i", mask.value_counts()[1])
 
-    #: remove parcels with 5 or more numbers in a row (and not a 1 or a 8)
+    #: remove parcels with 5 or more numbers in a row (and not a colon, 1, or a 8)
+    #: the colon is often confused as a 1 or 8, so if those exist, the parcel is kept (UDOT prefers this)
+    #: 1572NT:2EC = pass
+    #: 23582A = pass (8 might be a confused colon)
+    #: 2572:2A = pass (has a colon)
+    #: 257212A = pass (1 might be a confused colon)
+    #: 03702M = fail
+    #: 699062ON = fail
     working_df["five_number_run"] = "pass"
     mask = (working_df["text"].str.contains("^[^:18]*$")) & (working_df["text"].str.contains(r"\d{5,}"))
     working_df.loc[mask, "keep"] = "no"
