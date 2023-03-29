@@ -8,6 +8,7 @@ A module that contains tests for the project module.
 from pathlib import Path
 
 import numpy as np
+import pandas as pd
 import pytest
 
 import row
@@ -140,3 +141,29 @@ def test_can_mosaic_non_square_crops():
 
     assert mosaic is not None
     assert mosaic.shape == (112, 112, 3)
+
+
+def test_too_many_letters():
+    df = pd.DataFrame(
+        data={
+            "text": ["1572NT:2EC", "3:ST2EQ", "31ST2EQ", "3ST2EQ", "4BARS", "25DBIA"],
+            "expected": ["pass", "pass", "pass", "fail", "fail", "fail"],
+        }
+    )
+
+    df = row._filter_too_many_letters(df)
+
+    pd.testing.assert_series_equal(df["too_many_letters"], df["expected"], check_names=False)
+
+
+def test_five_number_run():
+    df = pd.DataFrame(
+        data={
+            "text": ["23582A", "1572NT:2EC", "2572:2A", "03702M", "699062ON"],
+            "expected": ["pass", "pass", "pass", "fail", "fail"],
+        }
+    )
+
+    df = row._filter_five_number_run(df)
+
+    pd.testing.assert_series_equal(df["five_number_run"], df["expected"], check_names=False)
