@@ -1071,7 +1071,7 @@ def filter_results(previous_results_file, out_dir):
 
     #: flag parcels with a colon, that do not have a number before the colon
     working_df["no_number_before_colon"] = "pass"
-    mask = working_df["text"].str.contains(r"^[^0-9]*:") == True
+    mask = working_df["text"].str.contains(r"^\D*:") == True
     working_df.loc[mask, "keep"] = "no"
     working_df.loc[mask, "no_number_before_colon"] = "fail"
     logging.info("Number of colons not preceeded by a number flagged: %i", mask.value_counts()[1])
@@ -1092,7 +1092,7 @@ def filter_results(previous_results_file, out_dir):
 
     #: remove parcels with 5 or more numbers in a row (and not a 1 or a 8)
     working_df["five_number_run"] = "pass"
-    mask = (working_df["text"].str.contains("^[^:18]*$")) & (working_df["text"].str.contains("[0-9]{5,}"))
+    mask = (working_df["text"].str.contains("^[^:18]*$")) & (working_df["text"].str.contains(r"\d{5,}"))
     working_df.loc[mask, "keep"] = "no"
     working_df.loc[mask, "five_number_run"] = "fail"
     logging.info("Number of parcels with 5+ numbers and no colon, 1, or 8 flagged: %i", mask.value_counts()[1])
