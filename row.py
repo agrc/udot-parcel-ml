@@ -1029,6 +1029,9 @@ def filter_results(previous_results_file, out_dir):
     logging.info("Removing leading colons")
     working_df["text"] = working_df["text"].apply(lambda x: x.lstrip(":"))
 
+    #: remove trailing exclamation points
+    working_df["text"] = working_df["text"].progress_apply(lambda x: x.rstrip("!"))
+
     #: replace euro symbol with 'E'
     logging.info("Replacing euro symbol with 'E'")
     working_df["text"] = working_df.apply(lambda r: r["text"].replace("€", "E").strip(), axis=1)
