@@ -1018,12 +1018,18 @@ def filter_results(previous_results_file, out_dir):
 
     #: remove periods, parenthesis, double colons, and slashes
     logging.info("Removing periods, parenthesis, double colons, and slashes")
-    working_df["text"] = working_df.apply(lambda r: r["text"].replace(".", "").strip(), axis=1)
-    working_df["text"] = working_df.apply(lambda r: r["text"].replace("(", "").replace("(", "").strip(), axis=1)
-    working_df["text"] = working_df.apply(lambda r: r["text"].replace(")", "").replace(")", "").strip(), axis=1)
-    working_df["text"] = working_df.apply(lambda r: r["text"].replace("/", "").strip(), axis=1)
-    working_df["text"] = working_df.apply(lambda r: r["text"].replace("\\", "").strip(), axis=1)
-    working_df["text"] = working_df.apply(lambda r: r["text"].replace("::", ":").strip(), axis=1)
+    empty = ""
+    working_df["text"] = working_df.apply(
+        lambda r: r["text"]
+        .replace(".", empty)
+        .replace("(", empty)
+        .replace(")", empty)
+        .replace("/", empty)
+        .replace("\\", empty)
+        .replace("::", empty)
+        .strip(),
+        axis=1,
+    )
 
     #: remove leading colons
     logging.info("Removing leading colons")
