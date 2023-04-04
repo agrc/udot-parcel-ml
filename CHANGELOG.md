@@ -1,5 +1,37 @@
 # Changelog
 
+## [1.6.0](https://github.com/agrc/udot-parcel-ml/compare/v1.5.5...v1.6.0) (2023-04-04)
+
+
+### 📖 Documentation Improvements
+
+* update docstring ([7cefe4c](https://github.com/agrc/udot-parcel-ml/commit/7cefe4cf8a0edc51b64c0dac31c895345115918d))
+
+
+### 🚀 Features
+
+* download and combine OCR results ([9071c35](https://github.com/agrc/udot-parcel-ml/commit/9071c3511b48945d9a70bf2beca1d54cf093f0c5))
+* filter OCR results for quality ([00db2bf](https://github.com/agrc/udot-parcel-ml/commit/00db2bfdc1650b74f9bfcedbb09ee43e925b752d))
+* function to join spreadsheet info to results ([a69d4cf](https://github.com/agrc/udot-parcel-ml/commit/a69d4cfd6a54341f1e218bab85043c74f6ea3a00))
+* strip trailing !s ([11f85f0](https://github.com/agrc/udot-parcel-ml/commit/11f85f0d79f667f0eb56855a469f15184b833bb0))
+
+
+### 🎨 Design Improvements
+
+* combine replacements ([9e39b27](https://github.com/agrc/udot-parcel-ml/commit/9e39b27658e820ab58baf8840cf296186fb942e4))
+* simplify regex ([da98de1](https://github.com/agrc/udot-parcel-ml/commit/da98de17250ec70098ad272b2821c389c2bf10d4))
+* spacing ([b83f9f9](https://github.com/agrc/udot-parcel-ml/commit/b83f9f9f16e7799a770778e873aba311cccc319a))
+
+
+### 🐛 Bug Fixes
+
+* tqdm not in this env ([e99e04e](https://github.com/agrc/udot-parcel-ml/commit/e99e04ee102fb3269421a212d2b44559b5a11368))
+
+
+### 🌲 Dependencies
+
+* q2 package updates ([704c6ca](https://github.com/agrc/udot-parcel-ml/commit/704c6ca850c7d6f4709bb799a32007519f386890))
+
 ## [1.5.5](https://github.com/agrc/udot-parcel-ml/compare/v1.5.4...v1.5.5) (2023-02-23)
 
 
