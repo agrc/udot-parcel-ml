@@ -1155,6 +1155,32 @@ def filter_results(previous_results_file, out_dir):
     duplicate_diff = before_length - after_length
     logging.info("rumber of rows after removing duplicates: %i", after_length)
     logging.info("removed %i duplicate rows", duplicate_diff)
+
+    #: only keep desired column names
+    keep_cols = [
+        "file_name",
+        "udot_file_name",
+        "name",
+        "project_number",
+        "project_name",
+        "guid",
+        "projectwise_url",
+        "udot_url",
+        "mosaic_url",
+        "text",
+        "keep",
+        "special_char",
+        "nondigit_start",
+        "permit",
+        "no_number_before_colon",
+        "too_long",
+        "too_many_letters",
+        "five_number_run",
+        "zero",
+    ]
+
+    working_no_duplicates = working_no_duplicates[keep_cols]
+
     #: save all results
     #: save results to CSV
     out_file_all = out_dir / f"final-all-ocr-results-{datetime.now().strftime('%Y-%m-%d-%H-%M')}.csv"
