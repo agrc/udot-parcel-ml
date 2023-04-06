@@ -1184,17 +1184,17 @@ def filter_results(previous_results_file, out_dir):
     #: save all results
     #: save results to CSV
     out_file_all = out_dir / f"final-all-ocr-results-{datetime.now().strftime('%Y-%m-%d-%H-%M')}.csv"
-    working_df.to_csv(out_file_all)
+    working_no_duplicates.to_csv(out_file_all)
     logging.info("saved final all ocr results to %s", out_file_all)
 
     #: save only good results to CSV
-    keeps = working_df[working_df["keep"] == "yes"]
+    keeps = working_no_duplicates[working_no_duplicates["keep"] == "yes"]
     out_file_keeps = out_dir / f"final-good-ocr-results-{datetime.now().strftime('%Y-%m-%d-%H-%M')}.csv"
     keeps.to_csv(out_file_keeps)
     logging.info("saved final all ocr results to %s", out_file_keeps)
 
     #: save only bad results to CSV
-    discards = working_df[working_df["keep"] == "no"]
+    discards = working_no_duplicates[working_no_duplicates["keep"] == "no"]
     out_file_discards = out_dir / f"final-bad-ocr-results-{datetime.now().strftime('%Y-%m-%d-%H-%M')}.csv"
     discards.to_csv(out_file_discards)
     logging.info("saved final all ocr results to %s", out_file_discards)
