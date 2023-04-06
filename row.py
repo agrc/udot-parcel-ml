@@ -1199,6 +1199,10 @@ def filter_results(previous_results_file, out_dir):
     discards.to_csv(out_file_discards)
     logging.info("saved final all ocr results to %s", out_file_discards)
 
+    pre_dup = working_df[working_df["keep"] == "yes"]
+    dup_diff = len(pre_dup.index) - len(keeps.index)
+    logging.info("good duplicates removed: %i", dup_diff)
+
     return out_dir
 
 
