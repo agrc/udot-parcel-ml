@@ -1139,6 +1139,12 @@ def filter_results(previous_results_file, out_dir):
 
     working_df = _filter_five_number_run(working_df)
 
+    #: remove parcels where text = '0'
+    working_df["zero"] = "pass"
+    mask = working_df["text"] == "0"
+    working_df.loc[mask, "keep"] = "no"
+    working_df.loc[mask, "zero"] = "fail"
+    logging.info("Number of parcels equal to 0 flagged: %i", mask.value_counts()[1])
     #: save all results
     #: save results to CSV
     out_file_all = out_dir / f"final-all-ocr-results-{datetime.now().strftime('%Y-%m-%d-%H-%M')}.csv"
