@@ -1145,6 +1145,16 @@ def filter_results(previous_results_file, out_dir):
     working_df.loc[mask, "keep"] = "no"
     working_df.loc[mask, "zero"] = "fail"
     logging.info("Number of parcels equal to 0 flagged: %i", mask.value_counts()[1])
+
+    #: drop duplicates on the 'udot_file_name' and 'text' fields
+    before_length = len(working_df.index)
+    logging.info("rumber of rows before final de-duplication: %i", before_length)
+    working_no_duplicates = working_df.drop_duplicates(["udot_file_name", "text"], inplace=False, ignore_index=True)
+
+    after_length = len(working_no_duplicates.index)
+    duplicate_diff = before_length - after_length
+    logging.info("rumber of rows after removing duplicates: %i", after_length)
+    logging.info("removed %i duplicate rows", duplicate_diff)
     #: save all results
     #: save results to CSV
     out_file_all = out_dir / f"final-all-ocr-results-{datetime.now().strftime('%Y-%m-%d-%H-%M')}.csv"
