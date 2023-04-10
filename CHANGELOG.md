@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.7.0](https://github.com/agrc/udot-parcel-ml/compare/v1.6.0...v1.7.0) (2023-04-10)
+
+
+### 🚀 Features
+
+* drop duplicate results ([55ae5ab](https://github.com/agrc/udot-parcel-ml/commit/55ae5ab49245543250f46875820b1bc4d5b377b9))
+* flag parcels equal to zero ([59f0db3](https://github.com/agrc/udot-parcel-ml/commit/59f0db377e75b070f2b5110c0d0bc612c1143e77))
+
 ## [1.6.0](https://github.com/agrc/udot-parcel-ml/compare/v1.5.5...v1.6.0) (2023-04-04)
 
 
