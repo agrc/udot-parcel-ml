@@ -57,3 +57,28 @@ To work with the CLI,
 1. start the job
 
    `python row_cli.py process circles --job=elephant --from=gs://bucket--save-to=bucket --index=gs://bucket --task-index=0 --file-count=1 --instances=1 --project=1234 --processor=123abc`
+
+## Postprocessing, results cleanup, final products
+
+1. organize the OCR results into one cloud storage location
+   - place all parquet (.gz) files in one "folder" (ex: prefix = alligator)
+1. download and combine the OCR results to local file storage (./data)
+   
+   `python row_cli.py ocr-results download alligator --from=gs://ut-dts-agrc-udot-parcels-dev --save-to=./data`
+
+1. clean the OCR results, save output locally (./data/cleaned)
+
+   `python row_cli.py ocr-results clean ./data/ocr_results/combined_ocr_results.gz --save-to=./data/cleaned`
+
+1. join the UDOT spreadsheet info to the OCR results, save locally (./data/joined)
+
+   `python row_cli.py ocr-results join ./data/cleaned/cleaned-ocr-results-2023-03-28-09-28.csv --save-to=./data/joined`
+
+1. filter the joined results to produced the final products, save locally (./data/filtered)
+
+   `python row_cli.py ocr-results filter ./data/joined/joined-ocr-results-2023-03-28-09-31.csv --save-to=./data/filtered`
+
+   - 3 CSV files will be saved with the following naming conventions:
+      1. "final-good-ocr-results-{%YY-%mm-%dd-%HH-%MM}.csv"
+      1. "final-bad-ocr-results-{%YY-%mm-%dd-%HH-%MM}.csv"
+      1. "final-all-ocr-results-{%YY-%mm-%dd-%HH-%MM}.csv"
