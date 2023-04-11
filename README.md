@@ -58,7 +58,7 @@ To work with the CLI,
 
    `python row_cli.py process circles --job=elephant --from=gs://bucket--save-to=bucket --index=gs://bucket --task-index=0 --file-count=1 --instances=1 --project=1234 --processor=123abc`
 
-## Postprocessing, results cleanup, final products
+## Postprocessing, filtering results, generating final products
 
 1. organize the OCR results into one cloud storage location
    - place all parquet (.gz) files in one "folder" (ex: prefix = alligator)
