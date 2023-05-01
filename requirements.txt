@@ -1,5 +1,5 @@
 fastparquet==2023.2.0
-flask==2.2.*
+flask==2.3.*
 google-cloud-documentai==2.15.*
 google-cloud-logging==3.5.*
 google-cloud-storage==2.8.*
