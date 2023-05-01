@@ -1,4 +1,4 @@
-fastparquet==2023.2.0
+fastparquet==2023.4.0
 flask==2.2.*
 google-cloud-documentai==2.15.*
 google-cloud-logging==3.5.*
