@@ -1,4 +1,4 @@
-fastparquet~=2023.4
+fastparquet~=2023.7
 flask~=2.3
 google-cloud-documentai~=2.15
 google-cloud-logging~=3.5
