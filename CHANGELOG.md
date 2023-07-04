@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.7.1](https://github.com/agrc/udot-parcel-ml/compare/v1.7.0...v1.7.1) (2023-07-04)
+
+
+### 📖 Documentation Improvements
+
+* update readme ([c5c3e1d](https://github.com/agrc/udot-parcel-ml/commit/c5c3e1d69e353ed021b7d66a736ab46362ba8d65))
+
+
+### 🌲 Dependencies
+
+* update packages ([a5a992d](https://github.com/agrc/udot-parcel-ml/commit/a5a992d47c0dfaed832ee524a06cd3b840c972da))
+
 ## [1.7.0](https://github.com/agrc/udot-parcel-ml/compare/v1.6.0...v1.7.0) (2023-04-10)
 
 
