@@ -51,7 +51,7 @@ jobs:
             type=raw,value=latest
 
       - name: 🔰 Setup pack
-        uses: buildpacks/github-actions/setup-pack@v5.2.0
+        uses: buildpacks/github-actions/setup-pack@v5.3.0
 
       - name: 🖇️ Create custom pack run image
         run: docker build -t custom-run-image -f run.Dockerfile .
