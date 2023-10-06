@@ -19,7 +19,7 @@ jobs:
 
     steps:
       - name: ⬇️ Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: 🗝️ Authenticate to Google Cloud
         id: auth
@@ -35,7 +35,7 @@ jobs:
           install_components: "beta"
 
       - name: 🗝️ Authenticate Docker to Google Cloud
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: us-central1-docker.pkg.dev
           username: oauth2accesstoken
@@ -43,7 +43,7 @@ jobs:
 
       - name: 🏷️ Extract tags from GitHub
         id: meta
-        uses: docker/metadata-action@v4
+        uses: docker/metadata-action@v5
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           images: us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job
@@ -51,7 +51,7 @@ jobs:
             type=raw,value=latest
 
       - name: 🔰 Setup pack
-        uses: buildpacks/github-actions/setup-pack@v5.2.0
+        uses: buildpacks/github-actions/setup-pack@v5.4.0
 
       - name: 🖇️ Create custom pack run image
         run: docker build -t custom-run-image -f run.Dockerfile .
