@@ -1,11 +1,11 @@
 fastparquet~=2024.5
 flask~=3.0
-google-cloud-documentai~=2.29
-google-cloud-logging~=3.10
-google-cloud-storage~=2.17
+google-cloud-documentai~=2.30
+google-cloud-logging~=3.11
+google-cloud-storage~=2.18
 gunicorn~=22.0
 opencv-python~=4.10
 openpyxl~=3.1
 pandas~=2.2
 pdf2image~=1.17
-pyarrow~=16.1
+pyarrow~=17.0
