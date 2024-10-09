@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.7.3](https://github.com/agrc/udot-parcel-ml/compare/v1.7.2...v1.7.3) (2024-10-09)
+
+
+### Dependencies
+
+* bump the major-dependencies group across 1 directory with 9 updates ([e0e466e](https://github.com/agrc/udot-parcel-ml/commit/e0e466e622e0cd1194153397b2bf8688ee744b93))
+* bump the major-dependencies group with 13 updates ([b258e27](https://github.com/agrc/udot-parcel-ml/commit/b258e27002e68e6f70876b46af7f6783acd4cd87))
+* bump the safe-dependencies group with 1 update ([e1db0ea](https://github.com/agrc/udot-parcel-ml/commit/e1db0ea7faec7081a9c42d47a1e7556a3266238c))
+* remove black ([1981134](https://github.com/agrc/udot-parcel-ml/commit/19811341747305822480dd245ab999c65ff33837))
+
 ## [1.7.2](https://github.com/agrc/udot-parcel-ml/compare/v1.7.1...v1.7.2) (2023-07-04)
 
 
