@@ -1,5 +1,5 @@
 fastparquet~=2024.5
-flask~=3.0
+flask~=3.1
 google-cloud-documentai~=2.33
 google-cloud-logging~=3.11
 google-cloud-storage~=2.18
