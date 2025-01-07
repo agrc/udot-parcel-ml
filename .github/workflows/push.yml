@@ -45,7 +45,7 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./cov.xml
+          files: ./cov.xml
 
   release:
     name: Create release
