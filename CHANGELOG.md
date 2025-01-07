@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.7.3](https://github.com/agrc/udot-parcel-ml/compare/v1.7.2...v1.7.3) (2025-01-07)
+
+
+### Dependencies
+
+* bump the major-dependencies group across 1 directory with 7 updates ([93ff7f6](https://github.com/agrc/udot-parcel-ml/commit/93ff7f675a09355553bd42194c0b2534c9517e3f))
+* bump the major-dependencies group across 1 directory with 9 updates ([e0e466e](https://github.com/agrc/udot-parcel-ml/commit/e0e466e622e0cd1194153397b2bf8688ee744b93))
+* bump the major-dependencies group with 13 updates ([b258e27](https://github.com/agrc/udot-parcel-ml/commit/b258e27002e68e6f70876b46af7f6783acd4cd87))
+* bump the safe-dependencies group with 1 update ([e1db0ea](https://github.com/agrc/udot-parcel-ml/commit/e1db0ea7faec7081a9c42d47a1e7556a3266238c))
+* remove black ([1981134](https://github.com/agrc/udot-parcel-ml/commit/19811341747305822480dd245ab999c65ff33837))
+* update fastparquet requirement from ~=2024.5 to ~=2024.11 ([8f3e5d5](https://github.com/agrc/udot-parcel-ml/commit/8f3e5d51c967b06c1628ed1fd921f43e23ea2468))
+* update flask requirement from ~=3.0 to ~=3.1 ([a59d97a](https://github.com/agrc/udot-parcel-ml/commit/a59d97afcc7f781ac9fc617232f826b7f96c81cc))
+* update google-cloud-documentai requirement from ~=2.33 to ~=3.1 ([bef71ba](https://github.com/agrc/udot-parcel-ml/commit/bef71ba12cd3b4fa9f46bc973aa92e31b960eb15))
+* update pyarrow requirement from ~=17.0 to ~=18.1 ([e3b654d](https://github.com/agrc/udot-parcel-ml/commit/e3b654dbc76d842db4a699ef3d76de4ea63a7313))
+* update pytest-cov requirement from ~=5.0 to ~=6.0 ([#124](https://github.com/agrc/udot-parcel-ml/issues/124)) ([4399f6d](https://github.com/agrc/udot-parcel-ml/commit/4399f6d1e7614c97a3bf49b5f24b8ce3b2230c37))
+
 ## [1.7.2](https://github.com/agrc/udot-parcel-ml/compare/v1.7.1...v1.7.2) (2023-07-04)
 
 
