@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.7.4](https://github.com/agrc/udot-parcel-ml/compare/v1.7.3...v1.7.4) (2025-08-01)
+
+
+### Dependencies
+
+* update google-cloud-storage requirement from ~=3.1 to ~=3.2 ([#155](https://github.com/agrc/udot-parcel-ml/issues/155)) ([3fa59b6](https://github.com/agrc/udot-parcel-ml/commit/3fa59b61b26a2abe6a6719a4970310e5f663dc7c))
+* update opencv-python requirement from ~=4.11 to ~=4.12 ([c21a020](https://github.com/agrc/udot-parcel-ml/commit/c21a0200af47ffb8df69b247bbe0d4c4ec593e55))
+* update pandas requirement from ~=2.2 to ~=2.3 ([e90947b](https://github.com/agrc/udot-parcel-ml/commit/e90947b9108dd5700de6b7934a99cbff98417d38))
+* update pyarrow requirement from ~=20.0 to ~=21.0 ([328645f](https://github.com/agrc/udot-parcel-ml/commit/328645f8611cc7e06062dd331838cdbc4226f57f))
+* update pytest requirement from ~=8.3 to ~=8.4 ([55f1223](https://github.com/agrc/udot-parcel-ml/commit/55f122320e295f9a1854c88752810ac437717f80))
+* update pytest-cov requirement from ~=6.0 to ~=6.2 ([ea22b28](https://github.com/agrc/udot-parcel-ml/commit/ea22b289352f1c793e48c323426d72e78cf7187c))
+
 ## [1.7.3](https://github.com/agrc/udot-parcel-ml/compare/v1.7.2...v1.7.3) (2025-05-15)
 
 
