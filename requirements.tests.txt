@@ -1,5 +1,5 @@
 pytest-black~=0.6
-pytest-cov~=6.2
+pytest-cov~=7.0
 pytest-instafail~=0.5
 pytest-isort~=4.0
 pytest-pylint~=0.21
