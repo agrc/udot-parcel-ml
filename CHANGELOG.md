@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.7.5](https://github.com/agrc/udot-parcel-ml/compare/v1.7.4...v1.7.5) (2025-11-13)
+
+
+### Dependencies
+
+* **dev:** update pylint requirement from ~=3.3 to ~=4.0 ([2ffe6f3](https://github.com/agrc/udot-parcel-ml/commit/2ffe6f3e1e89eaf763c8df93e475aeab7778234a))
+* update google-cloud-documentai requirement from ~=3.5 to ~=3.7 ([eb4edf2](https://github.com/agrc/udot-parcel-ml/commit/eb4edf268cf414dabe91c0b162e6c238be37ddd6))
+* update google-cloud-storage requirement from ~=3.2 to ~=3.4 ([c076e43](https://github.com/agrc/udot-parcel-ml/commit/c076e43859cc92c5e5256d13206a19ece2736de9))
+* update pytest-cov requirement from ~=6.2 to ~=7.0 ([db3f280](https://github.com/agrc/udot-parcel-ml/commit/db3f280a141b61b143066706b12dd04875d67635))
+
 ## [1.7.4](https://github.com/agrc/udot-parcel-ml/compare/v1.7.3...v1.7.4) (2025-08-01)
 
 
