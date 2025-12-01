@@ -4,5 +4,5 @@ pytest-instafail~=0.5
 pytest-isort~=4.0
 pytest-pylint~=0.21
 pytest-watch~=4.2
-pytest~=8.4
+pytest~=9.0
 -r requirements.txt
